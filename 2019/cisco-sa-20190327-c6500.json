@@ -1,0 +1,819 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in 802.1x function of Cisco IOS Software on the Catalyst 6500 Series Switches could allow an unauthenticated, adjacent attacker to access the network prior to authentication.\r\n\r\nThe vulnerability is due to how the 802.1x packets are handled in the process path. An attacker could exploit this vulnerability by attempting to connect to the network on an 802.1x configured port. A successful exploit could allow the attacker to intermittently obtain access to the network.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\nThis advisory is available at the following link:\r\nhttps://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20190327-c6500 [\"https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20190327-c6500\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco Catalyst 6500 Series Switches that are running a vulnerable release of Cisco IOS Software if the 802.1x feature is enabled with authentication host-mode being multi-domain, authentication violation being restrict, and in closed authentication mode on a given interface.\r\n\r\nFor information about which software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n\r\nAssessing the 802.1x Configuration\r\n\r\nTo determine whether the 802.1x feature is configured in a manner that makes a device vulnerable, perform the following tasks:\r\n\r\nAdministrators can log in to the device and use the show running-config | include multi-domain command in the CLI to check for the presence of the authentication host-mode multi-domain command in the interface configuration. If the command returns no output, the device is not vulnerable. If the command returns output, identify all the interfaces with the authentication host-mode multi-domain command present and proceed to the next step.\r\nFor each interface identified in the previous step, administrators can use the show running-config command in the CLI to check for the presence of authentication open. For each interface where the authentication mode is configured as open, the device on that interface is not vulnerable. For all other interfaces, complete the next step.\r\nFor each interface identified in the previous steps, administrators can use the show running-config command in the CLI to check for the presence of authentication violation restrict. If this command is present, the interface is vulnerable.\r\n\r\nThe following shows an example of an AFFECTED configuration:\r\n\r\n\r\ninterface GigabitEthernet1/4/1\r\n switchport   switchport   switchport access vlan 100   switchport mode access   switchport voice vlan 101   authentication event fail action next-method   authentication event server dead action authorize voice   authentication event server alive action reinitialize  authentication host-mode multi-domain   authentication order dot1x mab   authentication priority dot1x mab   authentication port-control auto   authentication periodic   authentication timer reauthenticate server   authentication violation restrict   mab   dot1x pae authenticator   dot1x timeout tx-period 2   spanning-tree portfast edge   spanning-tree bpduguard enable\r\n\r\nThe following shows an example of a NON-AFFECTED configuration:\r\n\r\n\r\ninterface GigabitEthernet1/4/1\r\n switchport   switchport   switchport access vlan 100   switchport mode access   switchport voice vlan 101   authentication event fail action next-method   authentication event server dead action authorize voice   authentication event server alive action reinitialize  authentication host-mode multi-domain   authentication open   authentication order dot1x mab   authentication priority dot1x mab   authentication port-control auto   authentication periodic   authentication timer reauthenticate server   authentication violation shutdown   mab   dot1x pae authenticator   dot1x timeout tx-period 2   spanning-tree portfast edge   spanning-tree bpduguard enable\r\n   Determining the Cisco IOS Software Release\r\nTo determine which Cisco IOS Software release is running on a device, administrators can log in to the device, use the show version command in the CLI, and then refer to the system banner that appears. If the device is running Cisco IOS Software, the system banner displays text similar to Cisco Internetwork Operating System Software or Cisco IOS Software. The banner also displays the installed image name in parentheses, followed by the Cisco IOS Software release number and release name. Some Cisco devices do not support the show version command or may provide different output.\r\n\r\nThe following example shows the output of the command for a device that is running Cisco IOS Software Release 15.5(2)T1 and has an installed image name of C2951-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version\r\n  Cisco IOS Software, C2951 Software (C2951-UNIVERSALK9-M), Version 15.5(2)T1, RELEASE SOFTWARE (fc1)  Technical Support: http://www.cisco.com/techsupport  Copyright (c) 1986-2015 by Cisco Systems, Inc.  Compiled Mon 22-Jun-15 09:32 by prod_rel_team  .  .  .\r\n\r\nFor information about the naming and numbering conventions for Cisco IOS Software releases, see the Cisco IOS and NX-OS Software Reference Guide [\"https://www.cisco.com/c/en/us/about/security-center/ios-nx-os-reference-guide.html\"].",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect Cisco IOS XE Software, Cisco IOS XR Software, or Cisco NX-OS Software.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability could be exploited when a host has already authenticated on the affected configured port and a new host in unauthorized mode tries to connect. The impact is intermittent access to the network prior to authentication.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "If the port is also configured with either authentication violation shutdown|protect, this vulnerability would not be exploitable.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "For detailed information about affected and fixed software releases, consult the Cisco IOS Software Checker.\r\n\r\nWhen considering software upgrades, customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n                          Cisco IOS Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco IOS Software, Cisco provides a tool, the Cisco IOS Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"], that identifies any Cisco Security Advisories that impact a specific Cisco IOS Software release and the earliest release that fixes the vulnerabilities described in each advisory (���First Fixed���). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities described in all the advisories identified (���Combined First Fixed���).\r\n\r\nCustomers can use this tool to perform the following tasks:\r\n\r\nInitiate a search by choosing one or more releases from a drop-down list or uploading a file from a local system for the tool to parse\r\nEnter the output of the show version command for the tool to parse\r\nCreate a custom search by including all previously published Cisco Security Advisories, a specific advisory, or all advisories in the most recent bundled publication\r\n\r\nTo determine whether a release is affected by any published Cisco Security Advisory, use the Cisco IOS Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] on Cisco.com or enter a Cisco IOS Software release���for example, 15.1(4)M2���in the following field:\r\n\r\n\r\n\r\nBy default, the Cisco IOS Software Checker includes results only for vulnerabilities that have a Critical or High Security Impact Rating (SIR). To include results for Medium SIR vulnerabilities, use the Cisco IOS Software Checker on Cisco.com and check the Medium check box in the Impact Rating drop-down list.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Catalyst 6500 Series 802.1x Authentication Bypass Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20190327-c6500"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20190327-c6500",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20190327-c6500"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS and NX-OS Software Reference Guide",
+				"url": "https://www.cisco.com/c/en/us/about/security-center/ios-nx-os-reference-guide.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories and Alerts page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;IOS Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;IOS Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS Software Catalyst 6500 Series 802.1x Authentication Bypass Vulnerability",
+		"tracking": {
+			"current_release_date": "2019-03-27T16:00:00+00:00",
+			"generator": {
+				"date": "2022-09-03T03:17:06+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20190327-c6500",
+			"initial_release_date": "2019-03-27T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2019-03-27T15:02:57+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.2(60)EZ15",
+										"product": {
+											"name": "12.2(60)EZ15",
+											"product_id": "CSAFPID-247726"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.2EZ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SXJ6",
+										"product": {
+											"name": "12.2(33)SXJ6",
+											"product_id": "CSAFPID-189689"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SXJ7",
+										"product": {
+											"name": "12.2(33)SXJ7",
+											"product_id": "CSAFPID-193314"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SXJ8",
+										"product": {
+											"name": "12.2(33)SXJ8",
+											"product_id": "CSAFPID-198053"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SXJ9",
+										"product": {
+											"name": "12.2(33)SXJ9",
+											"product_id": "CSAFPID-204098"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SXJ10",
+										"product": {
+											"name": "12.2(33)SXJ10",
+											"product_id": "CSAFPID-209012"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.2SXJ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY1",
+										"product": {
+											"name": "15.1(1)SY1",
+											"product_id": "CSAFPID-115285"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY",
+										"product": {
+											"name": "15.1(2)SY",
+											"product_id": "CSAFPID-184932"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY1",
+										"product": {
+											"name": "15.1(2)SY1",
+											"product_id": "CSAFPID-188061"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY2",
+										"product": {
+											"name": "15.1(2)SY2",
+											"product_id": "CSAFPID-189219"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY2",
+										"product": {
+											"name": "15.1(1)SY2",
+											"product_id": "CSAFPID-191635"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY3",
+										"product": {
+											"name": "15.1(1)SY3",
+											"product_id": "CSAFPID-194944"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY3",
+										"product": {
+											"name": "15.1(2)SY3",
+											"product_id": "CSAFPID-198059"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY4",
+										"product": {
+											"name": "15.1(1)SY4",
+											"product_id": "CSAFPID-198426"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY4",
+										"product": {
+											"name": "15.1(2)SY4",
+											"product_id": "CSAFPID-201019"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY5",
+										"product": {
+											"name": "15.1(1)SY5",
+											"product_id": "CSAFPID-204109"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY5",
+										"product": {
+											"name": "15.1(2)SY5",
+											"product_id": "CSAFPID-204110"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY4a",
+										"product": {
+											"name": "15.1(2)SY4a",
+											"product_id": "CSAFPID-204832"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY6",
+										"product": {
+											"name": "15.1(1)SY6",
+											"product_id": "CSAFPID-209043"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY6",
+										"product": {
+											"name": "15.1(2)SY6",
+											"product_id": "CSAFPID-209044"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY7",
+										"product": {
+											"name": "15.1(2)SY7",
+											"product_id": "CSAFPID-210406"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY8",
+										"product": {
+											"name": "15.1(2)SY8",
+											"product_id": "CSAFPID-214052"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY9",
+										"product": {
+											"name": "15.1(2)SY9",
+											"product_id": "CSAFPID-220440"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY10",
+										"product": {
+											"name": "15.1(2)SY10",
+											"product_id": "CSAFPID-222650"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY11",
+										"product": {
+											"name": "15.1(2)SY11",
+											"product_id": "CSAFPID-227307"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY12",
+										"product": {
+											"name": "15.1(2)SY12",
+											"product_id": "CSAFPID-229115"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY13",
+										"product": {
+											"name": "15.1(2)SY13",
+											"product_id": "CSAFPID-237634"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY",
+										"product": {
+											"name": "15.2(1)SY",
+											"product_id": "CSAFPID-192726"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY1",
+										"product": {
+											"name": "15.2(1)SY1",
+											"product_id": "CSAFPID-204828"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY0a",
+										"product": {
+											"name": "15.2(1)SY0a",
+											"product_id": "CSAFPID-209063"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY2",
+										"product": {
+											"name": "15.2(1)SY2",
+											"product_id": "CSAFPID-209064"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY",
+										"product": {
+											"name": "15.2(2)SY",
+											"product_id": "CSAFPID-209065"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY1a",
+										"product": {
+											"name": "15.2(1)SY1a",
+											"product_id": "CSAFPID-209439"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY1",
+										"product": {
+											"name": "15.2(2)SY1",
+											"product_id": "CSAFPID-211976"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY2",
+										"product": {
+											"name": "15.2(2)SY2",
+											"product_id": "CSAFPID-214053"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY3",
+										"product": {
+											"name": "15.2(1)SY3",
+											"product_id": "CSAFPID-216259"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY4",
+										"product": {
+											"name": "15.2(1)SY4",
+											"product_id": "CSAFPID-222651"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY3",
+										"product": {
+											"name": "15.2(2)SY3",
+											"product_id": "CSAFPID-227285"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY5",
+										"product": {
+											"name": "15.2(1)SY5",
+											"product_id": "CSAFPID-227308"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY6",
+										"product": {
+											"name": "15.2(1)SY6",
+											"product_id": "CSAFPID-229114"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY7",
+										"product": {
+											"name": "15.2(1)SY7",
+											"product_id": "CSAFPID-233437"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(1)SY",
+										"product": {
+											"name": "15.3(1)SY",
+											"product_id": "CSAFPID-209532"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(0)SY",
+										"product": {
+											"name": "15.3(0)SY",
+											"product_id": "CSAFPID-212701"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)SY1",
+										"product": {
+											"name": "15.3(1)SY1",
+											"product_id": "CSAFPID-216258"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)SY2",
+										"product": {
+											"name": "15.3(1)SY2",
+											"product_id": "CSAFPID-220444"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(1)SY",
+										"product": {
+											"name": "15.4(1)SY",
+											"product_id": "CSAFPID-217807"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)SY1",
+										"product": {
+											"name": "15.4(1)SY1",
+											"product_id": "CSAFPID-220594"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)SY2",
+										"product": {
+											"name": "15.4(1)SY2",
+											"product_id": "CSAFPID-224611"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)SY3",
+										"product": {
+											"name": "15.4(1)SY3",
+											"product_id": "CSAFPID-228056"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)SY4",
+										"product": {
+											"name": "15.4(1)SY4",
+											"product_id": "CSAFPID-230997"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.5(1)SY",
+										"product": {
+											"name": "15.5(1)SY",
+											"product_id": "CSAFPID-225786"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.5(1)SY1",
+										"product": {
+											"name": "15.5(1)SY1",
+											"product_id": "CSAFPID-227110"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.5(1)SY2",
+										"product": {
+											"name": "15.5(1)SY2",
+											"product_id": "CSAFPID-231862"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.5SY"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2019-1758",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvk25074"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-115285",
+					"CSAFPID-184932",
+					"CSAFPID-188061",
+					"CSAFPID-189219",
+					"CSAFPID-189689",
+					"CSAFPID-191635",
+					"CSAFPID-192726",
+					"CSAFPID-193314",
+					"CSAFPID-194944",
+					"CSAFPID-198053",
+					"CSAFPID-198059",
+					"CSAFPID-198426",
+					"CSAFPID-201019",
+					"CSAFPID-204098",
+					"CSAFPID-204109",
+					"CSAFPID-204110",
+					"CSAFPID-204828",
+					"CSAFPID-204832",
+					"CSAFPID-209012",
+					"CSAFPID-209043",
+					"CSAFPID-209044",
+					"CSAFPID-209063",
+					"CSAFPID-209064",
+					"CSAFPID-209065",
+					"CSAFPID-209439",
+					"CSAFPID-209532",
+					"CSAFPID-210406",
+					"CSAFPID-211976",
+					"CSAFPID-212701",
+					"CSAFPID-214052",
+					"CSAFPID-214053",
+					"CSAFPID-216258",
+					"CSAFPID-216259",
+					"CSAFPID-217807",
+					"CSAFPID-220440",
+					"CSAFPID-220444",
+					"CSAFPID-220594",
+					"CSAFPID-222650",
+					"CSAFPID-222651",
+					"CSAFPID-224611",
+					"CSAFPID-225786",
+					"CSAFPID-227110",
+					"CSAFPID-227285",
+					"CSAFPID-227307",
+					"CSAFPID-227308",
+					"CSAFPID-228056",
+					"CSAFPID-229114",
+					"CSAFPID-229115",
+					"CSAFPID-230997",
+					"CSAFPID-231862",
+					"CSAFPID-233437",
+					"CSAFPID-237634",
+					"CSAFPID-247726"
+				]
+			},
+			"release_date": "2019-03-27T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-115285",
+						"CSAFPID-184932",
+						"CSAFPID-188061",
+						"CSAFPID-189219",
+						"CSAFPID-189689",
+						"CSAFPID-191635",
+						"CSAFPID-192726",
+						"CSAFPID-193314",
+						"CSAFPID-194944",
+						"CSAFPID-198053",
+						"CSAFPID-198059",
+						"CSAFPID-198426",
+						"CSAFPID-201019",
+						"CSAFPID-204098",
+						"CSAFPID-204109",
+						"CSAFPID-204110",
+						"CSAFPID-204828",
+						"CSAFPID-204832",
+						"CSAFPID-209012",
+						"CSAFPID-209043",
+						"CSAFPID-209044",
+						"CSAFPID-209063",
+						"CSAFPID-209064",
+						"CSAFPID-209065",
+						"CSAFPID-209439",
+						"CSAFPID-209532",
+						"CSAFPID-210406",
+						"CSAFPID-211976",
+						"CSAFPID-212701",
+						"CSAFPID-214052",
+						"CSAFPID-214053",
+						"CSAFPID-216258",
+						"CSAFPID-216259",
+						"CSAFPID-217807",
+						"CSAFPID-220440",
+						"CSAFPID-220444",
+						"CSAFPID-220594",
+						"CSAFPID-222650",
+						"CSAFPID-222651",
+						"CSAFPID-224611",
+						"CSAFPID-225786",
+						"CSAFPID-227110",
+						"CSAFPID-227285",
+						"CSAFPID-227307",
+						"CSAFPID-227308",
+						"CSAFPID-228056",
+						"CSAFPID-229114",
+						"CSAFPID-229115",
+						"CSAFPID-230997",
+						"CSAFPID-231862",
+						"CSAFPID-233437",
+						"CSAFPID-237634",
+						"CSAFPID-247726"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 4.7,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-115285",
+						"CSAFPID-184932",
+						"CSAFPID-188061",
+						"CSAFPID-189219",
+						"CSAFPID-189689",
+						"CSAFPID-191635",
+						"CSAFPID-192726",
+						"CSAFPID-193314",
+						"CSAFPID-194944",
+						"CSAFPID-198053",
+						"CSAFPID-198059",
+						"CSAFPID-198426",
+						"CSAFPID-201019",
+						"CSAFPID-204098",
+						"CSAFPID-204109",
+						"CSAFPID-204110",
+						"CSAFPID-204828",
+						"CSAFPID-204832",
+						"CSAFPID-209012",
+						"CSAFPID-209043",
+						"CSAFPID-209044",
+						"CSAFPID-209063",
+						"CSAFPID-209064",
+						"CSAFPID-209065",
+						"CSAFPID-209439",
+						"CSAFPID-209532",
+						"CSAFPID-210406",
+						"CSAFPID-211976",
+						"CSAFPID-212701",
+						"CSAFPID-214052",
+						"CSAFPID-214053",
+						"CSAFPID-216258",
+						"CSAFPID-216259",
+						"CSAFPID-217807",
+						"CSAFPID-220440",
+						"CSAFPID-220444",
+						"CSAFPID-220594",
+						"CSAFPID-222650",
+						"CSAFPID-222651",
+						"CSAFPID-224611",
+						"CSAFPID-225786",
+						"CSAFPID-227110",
+						"CSAFPID-227285",
+						"CSAFPID-227307",
+						"CSAFPID-227308",
+						"CSAFPID-228056",
+						"CSAFPID-229114",
+						"CSAFPID-229115",
+						"CSAFPID-230997",
+						"CSAFPID-231862",
+						"CSAFPID-233437",
+						"CSAFPID-237634",
+						"CSAFPID-247726"
+					]
+				}
+			],
+			"title": "Cisco IOS Software Catalyst 6500 Series 802.1x Authentication Bypass Vulnerability"
+		}
+	]
+}

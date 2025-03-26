@@ -1,0 +1,99 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "Cisco would like to thank Mike Guy of CenturyLink for reporting this issue."
+			}
+		],
+		"category": "csaf_informational_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software can be configured for certificate authentication in remote access VPN deployments.\r\n\r\nAn external researcher has identified several misconfigured Cisco ASA and FTD Software remote access devices where the ASA/FTD device may admit VPN remote access to users who possess a valid certificate from a public certificate authority (CA) when the VPN endpoint is configured to have its server identity certificate issued from the same public CA.\r\n\r\nCisco would like to raise awareness for customers in regard to how Cisco ASA and FTD Software apply default settings to trustpoints for imported certificates, and how to ensure a trustpoint is configured for its desired function only.\r\n\r\nCisco does not consider this a vulnerability in Cisco ASA or FTD Software or the digital certificates authentication feature, but a configuration issue.\r\n\r\nFuture releases of Cisco ASA and FTD Software, including Cisco Adaptive Security Device Manager (ASDM), Cisco Security Manager, and Cisco Firepower Management Center (FMC), will raise warning alerts when importing certificates to alert customers of the default behavior and to provide guidance how to harden the configuration via Cisco bug IDs CSCvt50528, CSCvv11100, and CSCvv11051.\r\n\r\nHowever, it is not a requirement to run code integrated with these Cisco bug IDs to take the appropriate hardening actions. Customers are advised to review this advisory and make any respective configuration changes.",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "The target audiences for this informational advisory are customers who have deployed Cisco ASA/FTD devices as remote access VPN endpoints and are performing any client-based certificate authentication.\r\nWhen a new certificate is imported to the configuration, the default settings for the trustpoint usage are for ipsec-client and ssl-client validation, so by default, that trustpoint can be used to authenticate VPN users. If the trustpoint's intended use is only as a server identity certificate and the corresponding certificate authority trust should not be used for VPN validation, the ASA/FTD administrator has to configure the device as such using the validation-usage command.\r\n\r\nWithout altering the configuration, if using client certificate authentication without other authentication and authorization methods, it may be possible to authenticate using any user identity certificate that is issued by the same certificate authority as the ASA/FTD device’s identity certificate. Installations that use additional authentication and authorization would either prevent or require the additional steps to be passed before being granted access to the network.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Identification\r\nWhile all trustpoint configurations should be reviewed to ensure they are configured for their desired purpose, the primary risk is when using:\r\n\r\nThe ASA/FTD devices as a remote access VPN endpoint.\r\nClient certificate authentication where certificates are issued by certificate authority A.\r\nA certificate for the identity of the ASA/FTD device issued by certificate authority B.\r\n\r\nThe intention would be that the administrators of the ASA/FTD VPN endpoint only wish to consider client certificates issued by certificate authority A. For example, the client-issued certificates could come from a company’s private CA (CA A), while the ASA/FTD identity certificate may have been issued by a public CA (CA B).\r\n\r\nTo determine whether a Cisco ASA or FTD device is affected by the issue described in this advisory, use this process:\r\n\r\n1) Confirm if the device is configured to allow remote access VPN.\r\n        Cisco ASA Feature  Identification Configuration          AnyConnect IKEv2 Remote Access (with client services)  crypto ikev2 enable <interface_name> client-services port <port #>      AnyConnect SSL VPN  webvpn\r\nenable <interface_name>      Clientless SSL VPN  webvpn\r\nenable <interface_name>\r\nAlternatively, on FMC, go to Devices -> VPN -> Remote Access and see if any profiles exist.\r\n\r\nIf enabled, proceed to the next step.\r\n\r\n2) Confirm if using client certificate authentication.\r\n\r\nAdministrators can use the show running-config all tunnel-group command from either the ASA CLI or FTD CLI to determine whether any of the connection profiles are using an authentication method that contains a certificate. If either the Authentication, Authorization and Accounting (AAA) or Security Assertion Markup Language (SAML) 2.0 method alone is used, the device is not affected. The following example shows the output of the command for an ASA device that is using both AAA and client certificate authentication:\r\n\r\n\r\nciscoasa# show running-config all tunnel-group\r\n authentication aaa certificate  .\r\n\r\nAlternatively, on FMC, go to Devices -> VPN -> Remote Access and click the Remote Access profile name. For the different connection profiles, examine the AAA column; if any of the Authentication fields indicate Client Certificate Only or Client Certificate & AAA, then client certificates are in use. Proceed to the next step.\r\n\r\nNote: If alternative authentication methods are configured, those authentication methods will still need to be fulfilled to pass authentication and be granted access to the network.\r\n\r\n3) Determine if using a certificate for the identity of the ASA/FTD issued by a certificate authority that the administrator doesn't control.\r\n\r\nAdministrators can first use the show running-config ssl | include trust-point command to identify the device’s identity certificate used on the remote access VPN-enabled interface:\r\n\r\n\r\nciscoasa# show running-config ssl | include trust-point\r\nssl trust-point IDENTITY outside\r\n\r\nIn the previous example, the interface named outside is associated with the identity certificate configured within the trustpoint named IDENTITY.\r\n\r\nAdministrators can view the certificates included in this trustpoint and specifically look at the Subject Name of the CA Certificate to identify whether this certificate has been issued by a public CA:\r\n\r\n\r\nciscoftd# show crypto ca certificate IDENTITY\r\nCertificate    .    .    Issuer Name:\r\nl=Sydney\r\nc=AU\r\no=GoDaddy.com\\, Inc.\r\nou=http://certs.godaddy.com/repository/    cn=Go Daddy Secure Certificate Authority - G2\r\n  Subject Name:\r\n  .\r\n.\r\n    cn=FPR2100-FTD\r\n  Validity Date:\r\n    start date: 07:16:53 UTC Jul 26 2020\r\n    end   date: 07:16:53 UTC Jul 26 2021\r\n  Storage: config\r\n  Associated Trustpoints: FPR2100-FTD.cisco.com\r\n\r\nAlternatively, on FMC, go to Devices -> VPN -> Remote Access and click the Remote Access profile name. Click Access Interfaces. This will show you the identity certificate presented on the remote access VPN interface in the SSL Global Identity Certificate field.\r\n  Remediation\r\nWhen a new certificate is imported to the configuration, the default settings for the trustpoint usage are for ipsec-client and ssl-client validation, so by default, that trustpoint can be used to authenticate VPN users. Administrators should review all their trustpoint usage configurations. If the trustpoint holds the certificates for server authentication, that trustpoint should be configured with the validation-usage ssl-server configuration command. Any trustpoint not used explicitly for client authentication should have the no validation-usage configuration applied as per the following procedures:\r\n\r\nFor ASA, administrators can log into the device and reconfigure the trustpoint using the validation-usage command:\r\n\r\n\r\ncrypto ca trustpoint <name of identity trustpoint>\r\nno validation-usage\r\n\r\nFor FTD managed via FMC, administrators can use FlexConfig. Proceed with the following steps:\r\n\r\n1. Validate the configuration of the trustpoint that needs reconfiguring via the show running-config all crypto ca trustpoint FTD CLI command and confirm that validation-usage is set to ipsec-client ssl-client.\r\n\r\n2. On FMC, go to Objects -> Object Management -> FlexConfig -> FlexConfig Object, and fill in the Name and Description fields. Complete the text box with the command as shown in the following example. Note you could define the TrustPointName as a variable or just enter the name of the TrustPointName you wish to alter:\r\n\r\n\r\nName: NoValidationUsage\r\nDescription: no validation-usage ipsec-client ssl-client\r\nText Box:\r\ncrypto ca trustpoint TrustPointName\r\nno validation-usage\r\n\r\n3. Apply FlexConfig to the affected devices by selecting Devices -> FlexConfig.\r\n\r\n4. Click New Policy, create a name, and select the devices to assign the policy to. On the next screen, select Add FlexConfig Object and click the object you created in the previous steps; in this example, NoValidationUsage.\r\n\r\n5. Save the FlexConfig.\r\n\r\n6. Deploy the FlexConfig.\r\n\r\n7. Validate the configuration was a success by logging into the device and issuing the show running-config all crypto ca trustpoint FTD CLI command. Under the public trustpoint, it should say no validation-usage.\r\n\r\nIf the client certificates are issued from a different CA than the identity certificate, that trustpoint will still be required to have the default settings of validation-usage ipsec-client ssl-client or just validation-usage ssl-client, depending on the designed usage.\r\n\r\nFor FTD managed via Firepower Device Management (FDM), there is currently no way to alter the trustpoint configuration via FlexConfig. A new version will be released that supports the ability to reconfigure the trustpoint.",
+				"title": "Recommendations"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "Cisco would like to thank Mike Guy of CenturyLink for reporting this issue.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Adaptive Security Appliance Software and Firepower Threat Defense Software Trustpoint Configuration Defaults",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-racerts-WvuYpxew"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Adaptive Security Appliance Software and Firepower Threat Defense Software Trustpoint Configuration Defaults",
+		"tracking": {
+			"current_release_date": "2020-07-31T22:35:48+00:00",
+			"generator": {
+				"date": "2022-09-03T03:06:48+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-racerts-WvuYpxew",
+			"initial_release_date": "2020-07-31T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2020-07-31T15:39:13+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2020-07-31T22:35:48+00:00",
+					"number": "1.1.0",
+					"summary": "Republish for external email notification."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {}
+}

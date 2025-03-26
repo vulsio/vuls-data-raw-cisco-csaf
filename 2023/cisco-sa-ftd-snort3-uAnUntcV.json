@@ -1,0 +1,537 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the TLS 1.3 implementation of the Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to cause the Snort 3 detection engine to unexpectedly restart.\r\n\r\nThis vulnerability is due to a logic error in how memory allocations are handled during a TLS 1.3 session. Under specific, time-based constraints, an attacker could exploit this vulnerability by sending a crafted TLS 1.3 message sequence through an affected device. A successful exploit could allow the attacker to cause the Snort 3 detection engine to reload, resulting in a denial of service (DoS) condition. While the Snort detection engine reloads, packets going through the FTD device that are sent to the Snort detection engine will be dropped. The Snort detection engine will restart automatically. No manual intervention is required.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the November 2023 release of the Cisco ASA, FTD, and FMC Security Advisory Bundled publication. For a complete list of the advisories and links to them, see Cisco Event Response: November 2023 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74985\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected devices that were running a vulnerable release of Cisco FTD Software and for which both of the following conditions were true:\r\n\r\nThe device was running Snort 3.\r\nThe device was using an SSL policy with TLS 1.3 decryption enabled.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n    Determine Cisco FTD Software Snort Configuration\r\nTo determine if Snort 3 is running on Cisco FTD Software, see Determine the Active Snort Version that Runs on Firepower Threat Defense (FTD) [\"https://www.cisco.com/c/en/us/support/docs/security/secure-firewall-threat-defense/220415-determine-the-active-snort-version-that.html\"]. Snort 3 has to be active for this vulnerability to be exploited.\r\n    Determine Cisco FTD Software SSL Policy Configuration\r\nSSL decryption policies are not configured by default.\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration Using the FTD Software CLI\r\n\r\nTo determine whether an SSL policy is configured on a device that is running Cisco FTD Software, log in to the Cisco FTD Software CLI and use the show ssl-policy-config command.\r\n\r\nIf the command output shows SSL policy not yet applied, the device is not affected by this vulnerability, as shown in the following example:\r\n\r\n\r\n>show ssl-policy-config\r\nSSL policy not yet applied\r\n\r\nIf the command output shows a policy, the device has an SSL policy applied and could be affected by this vulnerability if TLS 1.3 decryption is enabled, as shown in the following example:\r\n\r\n\r\n> show ssl-policy-config\r\n===================[ CSCwc59953 ]===================\r\n=================[ Default Action ]=================\r\nDefault Action            : Do Not Decrypt\r\n...\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration for Devices that Are Managed by Cisco Firepower Device Manager Software\r\n\r\nTo determine whether an SSL policy is configured on a device that is managed by Cisco Firepower Device Manager (FDM) Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nIf SSL decryption is not enabled, the device is not affected by this vulnerability.\r\nIf a Policy Name is listed, the device could be affected by this vulnerability if TLS 1.3 Decryption is enabled.\r\n\r\n\r\nFor detailed information about SSL decryption policies, see the SSL Decryption [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html\"] chapter of the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration for Devices that Are Managed by Cisco Firepower Management Center Software\r\n\r\nTo determine whether an SSL policy is configured on a device that is managed by Cisco Firepower Management Center (FMC) Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nLook in the SSL Policy area.\r\n\r\nIf None is listed, the device is not affected by this vulnerability.\r\nIf a Policy Name is listed, the device could be affected by this vulnerability if TLS 1.3 Decryption is enabled.\r\n\r\n\r\nFor detailed information about SSL decryption policies, see the SSL Policy [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html\"] chapter of the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration for Devices that Are Managed by Cisco Defense Orchestrator\r\n\r\nTo determine whether an SSL policy is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose the FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nLook in the Decryption Policy area.\r\nIf None is listed, the device is not affected by this vulnerability.\r\nIf a Policy Name is listed, the device could be affected by this vulnerability if TLS 1.3 Decryption is enabled.\r\n\r\n\r\nFor detailed information about Cisco Defense Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about SSL decryption policies for Cisco FMC Devices managed with Cisco Defense Orchestrator, see the Decryption Policies [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html\"] chapter of Managing Firewall Threat Defense with Cloud-delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about SSL decryption policies for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the SSL Decryption Policy [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy\"] section of the Managing FDM Devices with Cisco Defense Orchestrator guide.\r\n  Determine Cisco FTD Software TLS 1.3 Decryption Configuration\r\nThe default setting for TLS 1.3 decryption varies by platform when an SSL policy is configured. Note that TLS 1.3 decryption for Cisco FDM controlled devices is not offered until Cisco FTD Release 7.3.0. TLS 1.3 decryption is offered in Cisco FTD Release 7.2.0 for devices that are managed by Cisco FMC and Cisco Defense Orchestrator.\r\n\r\nThese are the default settings for the platforms:\r\n\r\nTLS 1.3 decryption is not enabled by default for devices managed by Cisco FDM Software.\r\nTLS 1.3 decryption is not enabled by default for devices managed by Cisco FMC Software.\r\nTLS 1.3 decryption is enabled by default for devices managed by Cisco Discovery Orchestrator Software.\r\n\r\nDetermine Cisco FTD Software TLS 1.3 Decryption Configuration Using the FTD Software CLI\r\n\r\nTo determine from the CLI whether TLS 1.3 decryption is configured on a device, log in to the Cisco FTD Software CLI and use the grep tls13 /ngfw/var/sf/detection_engines/*/ssl/ssl.rules command.\r\n\r\nIf the output of the command shows \"tls13_decryption\" \"false\", the device is not affected by this vulnerability.\r\nIf the output of the command shows nothing, the device is not affected by this vulnerability.\r\nIf the output of command shows \"tls13_decryption\" \"true\", the device has an SSL policy applied and could be affected by this vulnerability if TLS 1.3 Decryption is enabled, as shown in the following example:\r\n\r\n\r\n> expert\r\nadmin@ftd:~$\r\nadmin@ftd:~$grep tls13 /ngfw/var/sf/detection_engines/*/ssl/ssl.rules\r\n   \"tls13_decryption\" \"true\";\r\n\r\nDetermine Cisco FTD Software TLS 1.3 Decryption Configuration for Devices that Are Managed by Cisco FDM Software\r\n\r\nTo determine whether TLS 1.3 Decryption is configured on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nClick the SSL Decryption Settings button.\r\nClick on the Advanced tab.\r\nIf the TLS 1.3 Decryption slider is not enabled, the device is not affected by this vulnerability.\r\nIf the TLS 1.3 TLS 1.3 Decryption slider is enabled, the device is affected by this vulnerability.\r\n\r\n\r\nFor detailed information about TLS 1.3 decryption, see the Configure Advanced and Undecryptable Traffic Settings [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html#Cisco_Task_in_List_GUI.dita_5d1e9ebe-75f2-4849-a2e8-54cf31e95c06\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software TLS 1.3 Decryption Configuration for Devices that Are Managed by Cisco FMC Software\r\n\r\nTo determine whether TLS 1.3 Decryption is configured on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose SSL.\r\nChoose the appropriate SSL Policy.\r\nClick the Edit pencil icon.\r\nClick the Advanced Settings tab.\r\nIf the Enable TLS 1.3 Decryption box is not checked, the device is not affected by this vulnerability.\r\nIf the Enable TLS 1.3 Decryption box is checked, the device is affected by this vulnerability.\r\n\r\n\r\nFor detailed information about TLS 1.3 decryption, see the SSL Policy Advanced Options [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8\"] section in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nDetermine Cisco FTD Software TLS 1.3 Decryption Configuration for Devices that Are Managed by Cisco Defense Orchestrator Software\r\n\r\nTo determine whether TLS 1.3 Decryption is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Decryption.\r\nChoose the appropriate Decryption Policy.\r\nClick the Edit pencil icon.\r\nClick the Advanced Settings tab.\r\nIf Enable TLS 1.3 Decryption is not enabled, the device is not affected by this vulnerability.\r\nIf Enable TLS 1.3 Decryption is enabled, the device is affected by this vulnerability.\r\n\r\n\r\nFor detailed information about devices that are managed by Cisco Defense Orchestrator, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about TLS 1.3 decryption, see the Decryption Policy Advanced Options [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8\"] section of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about TLS 1.3 decryption for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the SSL Decryption Policy [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following products:\r\n\r\nCisco Adaptive Security Appliance (ASA) Software\r\nCisco FMC Software\r\nOpen Source Snort 2\r\nOpen Source Snort 3",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There are workarounds and mitigations that address this vulnerability. To remove the attack vector for this vulnerability, either of the following two options can be used. Only one of the two options needs to be applied.\r\n\r\nRevert to Snort 2\r\nDisable TLS 1.3 Decryption\r\n  Reverting to Snort 2\r\nBefore downgrading, review the Before you Begin section in the Switching Between Snort 2 and Snort 3 [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nNote: Downgrading to Snort 2 will delete customer policies, NAP customizations, and Hostname redirect in active authentications. To discuss the effects of reverting on your deployment, contact the Technical Assistance Center (TAC) [\"https://www.cisco.com/go/tac/\"].\r\n\r\nReverting to Snort 2 for Cisco FTD devices managed by FDM Software\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Device.\r\nIn the Updates area, choose View Configuration.\r\nIn the Intrusion Rule section, choose Downgrade to 2.0.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about reverting to Snort 2, see the Switching Between Snort 2 and Snort 3 [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nReverting to Snort 2 for Cisco FTD devices managed by FMC Software\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Devices menu, choose Device Management.\r\nChoose the appropriate Cisco FTD device.\r\nClick the Edit pencil icon.\r\nChoose the Device tab.\r\nIn the Inspection Engine area, choose Revert to Snort 2.\r\n\r\nAfter making the changes above, deploy changes to your FTD devices.\r\n\r\nFor detailed information about reverting to Snort 2, see the Snort 3 Inspection Engine [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable\"] chapter of the Cisco Secure Firewall Management Center Snort 3 Configuration Guide.\r\n\r\nReverting to Snort 2 for Cisco FTD devices managed by Cisco Defense Orchestrator\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nIn the navigation bar, click Inventory.\r\nClick the Devices tab.\r\nClick the FTD tab and click the device you want to revert.\r\nIn the Device Actions pane located to the right, click Upgrade.\r\nSet the upgrade toggle to Intrusion Prevention Engine.\r\nClick Revert to Snort Engine 2.0.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about Cisco Defense Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about reverting to Snort 2 for Cisco FMC Devices managed with Cisco Defense Orchestrator, see the Snort 3 Inspection Engine [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable\"] chapter of the Cisco Secure Firewall Management Center Snort 3 Configuration Guide.\r\n\r\nFor detailed information about reverting to Snort 2 for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the Revert From Snort 3.0 for FDM-Managed Device [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/onboard-devices-and-services.html?bookSearch=true#Revert_From_Snort_3_for_FTD\"] section of the Managing FDM Devices with Cisco Defense Orchestrator guide.\r\n  Disabling TLS 1.3 Decryption\r\nThis mitigation can affect your client and server connections. When TLS 1.3 decryption is disabled, the TLS connection downgrades to TLS 1.2 while matching the decryption rule. The effects on the deployment will depend on the clients and servers that will connect through the Cisco FTD device. To discuss the effects this will have on your deployment, contact the Technical Assistance Center (TAC) [\"https://www.cisco.com/go/tac/\"] .\r\n\r\nDisabling TLS 1.3 for Cisco FTD Software devices managed by FDM Software\r\n\r\nTo disable TLS 1.3 Decryption on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nClick the SSL Decryption Settings button.\r\nClick on the Advanced tab.\r\nDisable the TLS 1.3 Decryption setting.\r\nClick OK.\r\n\r\nAfter changing the policy above, deploy the new policy to your Cisco FTD devices.\r\n\r\nFor detailed information about TLS 1.3 decryption, see the Configure Advanced and Undecryptable Traffic Settings [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html#Cisco_Task_in_List_GUI.dita_5d1e9ebe-75f2-4849-a2e8-54cf31e95c06\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDisabling TLS 1.3 for Cisco FTD Software devices managed by FMC Software\r\n\r\nTo disable TLS 1.3 Decryption on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose SSL.\r\nChoose the appropriate SSL Policy.\r\nClick the Edit pencil icon.\r\nClick the Advanced Settings tab.\r\nUncheck the Enable TLS 1.3 Decryption box.\r\nClick Save to save your changes.\r\n\r\nAfter changing the policy above, deploy the new policy to your FTD devices.\r\n\r\nFor detailed information about TLS 1.3 decryption, see the SSL Policy Advanced Options [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8\"] section in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nDisabling TLS 1.3 for Cisco FTD Software devices managed by Cisco Defense Orchestrator\r\n\r\nTo disable TLS 1.3 Decryption on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Decryption.\r\nChoose the appropriate Decryption Policy.\r\nClick the Edit pencil icon.\r\nClick the Advanced Settings tab.\r\nDisable Enable TLS 1.3 Decryption.\r\nClick Save.\r\n\r\nAfter changing the policy above, deploy the new policy to your FTD devices.\r\n\r\nFor detailed information about devices managed by Cisco Defense Orchestrator, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about TLS 1.3 decryption, see the Decryption Policy Advanced Options [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8\"] section of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about TLS 1.3 decryption for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the SSL Decryption Policy [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n\r\nWhile these workarounds and mitigations have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\nCisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number—for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n  Only this advisoryAll Critical and High advisoriesAll advisoriesCisco ASA SoftwareCisco FMC SoftwareCisco FTD SoftwareAny Platform3000 Series Industrial Security Appliances (ISA)ASA 5500-X Series FirewallsASA Service ModuleAdaptive Security Virtual Appliance (ASAv)Firepower 1000 SeriesFirepower 2100 SeriesFirepower 4100 SeriesFirepower 9000 SeriesFirepower NGFW VirtualSecure Firewall 3100 SeriesFirepower Management Center Appliances\r\n\r\n\r\n\r\n\r\n Additional Resources\r\nFor help determining the best Cisco ASA, FTD, or FMC Software release, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\nCisco ASA Compatibility [\"https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html\"]\r\nCisco Secure Firewall ASA Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html\"]\r\nCisco Secure Firewall Threat Defense Compatibility Guide [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html\"]",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firepower Threat Defense Software Snort 3 Detection Engine Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ftd-snort3-uAnUntcV"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: November 2023 Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74985"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Determine the Active Snort Version that Runs on Firepower Threat Defense (FTD)",
+				"url": "https://www.cisco.com/c/en/us/support/docs/security/secure-firewall-threat-defense/220415-determine-the-active-snort-version-that.html"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Decryption",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Policy",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Defense Orchestrator documentation.",
+				"url": "https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html"
+			},
+			{
+				"category": "external",
+				"summary": "Decryption Policies",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Decryption Policy",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy"
+			},
+			{
+				"category": "external",
+				"summary": "Configure Advanced and Undecryptable Traffic Settings",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html#Cisco_Task_in_List_GUI.dita_5d1e9ebe-75f2-4849-a2e8-54cf31e95c06"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Policy Advanced Options",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8"
+			},
+			{
+				"category": "external",
+				"summary": "Decryption Policy Advanced Options",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8"
+			},
+			{
+				"category": "external",
+				"summary": "Switching Between Snort 2 and Snort 3",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089"
+			},
+			{
+				"category": "external",
+				"summary": "&nbsp;Technical Assistance Center (TAC)",
+				"url": "https://www.cisco.com/go/tac/"
+			},
+			{
+				"category": "external",
+				"summary": "Snort 3 Inspection Engine",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable"
+			},
+			{
+				"category": "external",
+				"summary": "Revert From Snort 3.0 for FDM-Managed Device",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/onboard-devices-and-services.html?bookSearch=true#Revert_From_Snort_3_for_FTD"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco ASA Compatibility",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall ASA Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall Threat Defense Compatibility Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Firepower Threat Defense Software Snort 3 Detection Engine Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2023-11-01T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:28:08+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-ftd-snort3-uAnUntcV",
+			"initial_release_date": "2023-11-01T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-11-01T16:00:05+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2.0",
+										"product": {
+											"name": "7.2.0",
+											"product_id": "CSAFPID-287081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.0.1",
+										"product": {
+											"name": "7.2.0.1",
+											"product_id": "CSAFPID-290469"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 4100 Series",
+						"product": {
+							"name": "Cisco Firepower 4100 Series",
+							"product_id": "CSAFPID-277441"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall Threat Defense Virtual",
+						"product": {
+							"name": "Cisco Secure Firewall Threat Defense Virtual",
+							"product_id": "CSAFPID-277464"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287081:277392"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-287081:277393"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287081:277438"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-287081:277440"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-287081:277441"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-287081:277464"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-287081:286865"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290469:277392"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290469:277393"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290469:277438"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-290469:277440"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-290469:277441"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-290469:277464"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290469:286865"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-286865"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2023-20070",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwc59953"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-287081:277392",
+					"CSAFPID-287081:277393",
+					"CSAFPID-287081:277438",
+					"CSAFPID-287081:277440",
+					"CSAFPID-287081:277441",
+					"CSAFPID-287081:277464",
+					"CSAFPID-287081:286865",
+					"CSAFPID-290469:277392",
+					"CSAFPID-290469:277393",
+					"CSAFPID-290469:277438",
+					"CSAFPID-290469:277440",
+					"CSAFPID-290469:277441",
+					"CSAFPID-290469:277464",
+					"CSAFPID-290469:286865"
+				]
+			},
+			"release_date": "2023-11-01T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:277440",
+						"CSAFPID-287081:277441",
+						"CSAFPID-287081:277464",
+						"CSAFPID-287081:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:277440",
+						"CSAFPID-290469:277441",
+						"CSAFPID-290469:277464",
+						"CSAFPID-290469:286865"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There are workarounds and mitigations that address this vulnerability. To remove the attack vector for this vulnerability, either of the following two options can be used. Only one of the two options needs to be applied.\r\n\r\nRevert to Snort 2\r\nDisable TLS 1.3 Decryption\r\n  Reverting to Snort 2\r\nBefore downgrading, review the Before you Begin section in the Switching Between Snort 2 and Snort 3 [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nNote: Downgrading to Snort 2 will delete customer policies, NAP customizations, and Hostname redirect in active authentications. To discuss the effects of reverting on your deployment, contact the Technical Assistance Center (TAC) [\"https://www.cisco.com/go/tac/\"].\r\n\r\nReverting to Snort 2 for Cisco FTD devices managed by FDM Software\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Device.\r\nIn the Updates area, choose View Configuration.\r\nIn the Intrusion Rule section, choose Downgrade to 2.0.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about reverting to Snort 2, see the Switching Between Snort 2 and Snort 3 [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nReverting to Snort 2 for Cisco FTD devices managed by FMC Software\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Devices menu, choose Device Management.\r\nChoose the appropriate Cisco FTD device.\r\nClick the Edit pencil icon.\r\nChoose the Device tab.\r\nIn the Inspection Engine area, choose Revert to Snort 2.\r\n\r\nAfter making the changes above, deploy changes to your FTD devices.\r\n\r\nFor detailed information about reverting to Snort 2, see the Snort 3 Inspection Engine [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable\"] chapter of the Cisco Secure Firewall Management Center Snort 3 Configuration Guide.\r\n\r\nReverting to Snort 2 for Cisco FTD devices managed by Cisco Defense Orchestrator\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nIn the navigation bar, click Inventory.\r\nClick the Devices tab.\r\nClick the FTD tab and click the device you want to revert.\r\nIn the Device Actions pane located to the right, click Upgrade.\r\nSet the upgrade toggle to Intrusion Prevention Engine.\r\nClick Revert to Snort Engine 2.0.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about Cisco Defense Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about reverting to Snort 2 for Cisco FMC Devices managed with Cisco Defense Orchestrator, see the Snort 3 Inspection Engine [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable\"] chapter of the Cisco Secure Firewall Management Center Snort 3 Configuration Guide.\r\n\r\nFor detailed information about reverting to Snort 2 for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the Revert From Snort 3.0 for FDM-Managed Device [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/onboard-devices-and-services.html?bookSearch=true#Revert_From_Snort_3_for_FTD\"] section of the Managing FDM Devices with Cisco Defense Orchestrator guide.\r\n  Disabling TLS 1.3 Decryption\r\nThis mitigation can affect your client and server connections. When TLS 1.3 decryption is disabled, the TLS connection downgrades to TLS 1.2 while matching the decryption rule. The effects on the deployment will depend on the clients and servers that will connect through the Cisco FTD device. To discuss the effects this will have on your deployment, contact the Technical Assistance Center (TAC) [\"https://www.cisco.com/go/tac/\"] .\r\n\r\nDisabling TLS 1.3 for Cisco FTD Software devices managed by FDM Software\r\n\r\nTo disable TLS 1.3 Decryption on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nClick the SSL Decryption Settings button.\r\nClick on the Advanced tab.\r\nDisable the TLS 1.3 Decryption setting.\r\nClick OK.\r\n\r\nAfter changing the policy above, deploy the new policy to your Cisco FTD devices.\r\n\r\nFor detailed information about TLS 1.3 decryption, see the Configure Advanced and Undecryptable Traffic Settings [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html#Cisco_Task_in_List_GUI.dita_5d1e9ebe-75f2-4849-a2e8-54cf31e95c06\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDisabling TLS 1.3 for Cisco FTD Software devices managed by FMC Software\r\n\r\nTo disable TLS 1.3 Decryption on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose SSL.\r\nChoose the appropriate SSL Policy.\r\nClick the Edit pencil icon.\r\nClick the Advanced Settings tab.\r\nUncheck the Enable TLS 1.3 Decryption box.\r\nClick Save to save your changes.\r\n\r\nAfter changing the policy above, deploy the new policy to your FTD devices.\r\n\r\nFor detailed information about TLS 1.3 decryption, see the SSL Policy Advanced Options [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8\"] section in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nDisabling TLS 1.3 for Cisco FTD Software devices managed by Cisco Defense Orchestrator\r\n\r\nTo disable TLS 1.3 Decryption on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Decryption.\r\nChoose the appropriate Decryption Policy.\r\nClick the Edit pencil icon.\r\nClick the Advanced Settings tab.\r\nDisable Enable TLS 1.3 Decryption.\r\nClick Save.\r\n\r\nAfter changing the policy above, deploy the new policy to your FTD devices.\r\n\r\nFor detailed information about devices managed by Cisco Defense Orchestrator, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about TLS 1.3 decryption, see the Decryption Policy Advanced Options [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html#Cisco_Reference.dita_9fb8dc41-d845-4470-8c77-2ce3910180b8\"] section of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about TLS 1.3 decryption for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the SSL Decryption Policy [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n\r\nWhile these workarounds and mitigations have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:277440",
+						"CSAFPID-287081:277441",
+						"CSAFPID-287081:277464",
+						"CSAFPID-287081:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:277440",
+						"CSAFPID-290469:277441",
+						"CSAFPID-290469:277464",
+						"CSAFPID-290469:286865"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 4,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:N/I:N/A:L",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:277440",
+						"CSAFPID-287081:277441",
+						"CSAFPID-287081:277464",
+						"CSAFPID-287081:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:277440",
+						"CSAFPID-290469:277441",
+						"CSAFPID-290469:277464",
+						"CSAFPID-290469:286865"
+					]
+				}
+			],
+			"title": "Cisco Firepower Threat Defense Software Snort 3 Detection Engine Denial of Service Vulnerability"
+		}
+	]
+}

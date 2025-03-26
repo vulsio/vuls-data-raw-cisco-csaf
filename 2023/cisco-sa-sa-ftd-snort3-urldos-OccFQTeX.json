@@ -1,0 +1,1178 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the SSL file policy implementation of Cisco Firepower Threat Defense (FTD) Software that occurs when the SSL/TLS connection is configured with a URL Category and the Snort 3 detection engine could allow an unauthenticated, remote attacker to cause the Snort 3 detection engine to unexpectedly restart.\r\n\r\nThis vulnerability exists because  a logic error occurs when a Snort 3 detection engine inspects an SSL/TLS connection that has either a URL Category configured on the SSL file policy or a URL Category configured on an access control policy with TLS server identity discovery enabled. Under specific, time-based constraints, an attacker could exploit this vulnerability by sending a crafted SSL/TLS connection through an affected device. A successful exploit could allow the attacker to trigger an unexpected reload of the Snort 3 detection engine, resulting in either a bypass or denial of service (DoS) condition, depending on device configuration. See the Details [\"#details\"] section of this advisory for more information. The Snort 3 detection engine will restart automatically. No manual intervention is required.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the November 2023 release of the Cisco ASA, FTD, and FMC Security Advisory Bundled publication. For a complete list of the advisories and links to them, see Cisco Event Response: November 2023 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74985\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco FTD Software if it was running a vulnerable release and met all of the following conditions:\r\n\r\nThe device was running Snort 3.\r\nThe device had at least one of the following configurations:\r\n\r\nAn SSL policy with a URL category configured.\r\nAn access control policy with TLS server identity discovery enabled and a URL category configured.\r\n\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n  Determine Cisco FTD Software Snort Configuration\r\nTo determine whether Snort 3 is running on Cisco FTD Software, see Determine the Active Snort Version that Runs on Firepower Threat Defense (FTD) [\"https://www.cisco.com/c/en/us/support/docs/security/secure-firewall-threat-defense/220415-determine-the-active-snort-version-that.html\"]. Snort 3 must be active for this vulnerability to be exploited.\r\n  Determine Cisco FTD Software SSL Policy Configuration\r\nSSL decryption policies are not configured by default.\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration Using the FTD Software CLI\r\n\r\nTo determine whether an SSL policy is configured on a device that is running Cisco FTD Software, log in to the Cisco FTD Software CLI and use the show ssl-policy-config command.\r\n\r\nIf the command output shows SSL policy not yet applied, the device might not be affected by this vulnerability, as shown in the following example:\r\n\r\n\r\n>show ssl-policy-config\r\nSSL policy not yet applied\r\n\r\nIf the command output shows a policy, the device has an SSL policy applied and could be affected by this vulnerability, as shown in the following example:\r\n\r\n\r\n> show ssl-policy-config\r\n===================[ CSCwe87591 ]===================\r\n=================[ Default Action ]=================\r\nDefault Action            : Do Not Decrypt\r\n...\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration for Devices that Are Managed by Cisco Firepower Device Manager Software\r\n\r\nTo determine whether an SSL policy is configured on a device that is managed by Cisco Firepower Device Manager (FDM) Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nIf SSL decryption is not enabled, the device might not be affected by this vulnerability.\r\nIf a Policy Name is listed, the device has an SSL policy applied and could be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about SSL decryption policies, see the SSL Decryption [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html\"] chapter of the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration for Devices that are Managed by Cisco Firepower Management Center Software\r\n\r\nTo determine whether an SSL policy is configured on a device that is managed by Cisco Firepower Management Center (FMC) Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nLook in the SSL Policy area.\r\n\r\nIf None is listed, the device might not be affected by this vulnerability.\r\nIf a Policy Name is listed, the device has an SSL policy applied and could be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about SSL decryption policies, see the SSL Policy [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html\"] chapter of the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nDetermine Cisco FTD Software SSL Policy Configuration for Devices that are Managed by Cisco Defense Orchestrator\r\n\r\nTo determine whether an SSL policy is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nLook in the Decryption area.\r\nIf None is listed, the device might not be affected by this vulnerability.\r\nIf a Policy Name is listed, the device has an SSL policy applied and could be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about devices managed by Cisco Defense Orchestrator, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about SSL decryption policies for Cisco FMC Devices managed with Cisco Defense Orchestrator, see the Decryption Policies [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html\"] chapter of Managing Firewall Threat Defense with Cloud-delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about SSL decryption policies for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the SSL Decryption Policy [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n  Determine Cisco FTD Software SSL Policy URL Category Configuration\r\nURL Categories in the SSL policy are not configured by default.\r\n\r\nDetermine Cisco FTD Software SSL Policy URL Category Configuration Using the FTD Software CLI\r\n\r\nTo determine whether a URL category for the SSL policy is configured on a device by using the CLI, log in to the Cisco FTD Software CLI and use the grep url /ngfw/var/sf/detection_engines/*/ssl/ssl.rules command.\r\n\r\nIf the command output shows url_categories (any), the device might not be affected by this vulnerability, as shown in the following example:\r\n\r\n\r\n> expert\r\nadmin@ftd:~$\r\nadmin@ftd:~$grep url /ngfw/var/sf/detection_engines/*/ssl/ssl.rules\r\nurl_categories (any);\r\n\r\nIf the command output shows url_categories (string of numbers), the device has an SSL policy with a URL category configured and is affected by this vulnerability, as shown in the following example:\r\n\r\n\r\n> expert\r\nadmin@ftd:~$\r\nadmin@ftd:~$grep url /ngfw/var/sf/detection_engines/*/ssl/ssl.rules\r\nurl_categories (2107:0:0,2107:1:100);\r\n\r\nDetermine Cisco FTD Software SSL Policy URL Category Configuration for Devices that are Managed by Cisco FDM Software\r\n\r\nTo determine whether a URL Category is configured on a device that is managed by Cisco FDM software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nFor each rule configured, look in the URLs column.\r\nIf the value in that column is ANY, the device might not be affected by this vulnerability.\r\nIf the value in that column has any other value, the device has an SSL policy with URL category configured and is affected by this vulnerability.\r\n\r\n\r\nFor detailed information about URL Categories, see the URL Criteria for SSL Decryption Rules [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nFor detailed information about URL filtering, see the URL filtering [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html\"] section of the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html\"] chapter in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software SSL Policy URL Category Configuration for Devices that are Managed by Cisco FMC Software\r\n\r\nTo determine whether a URL Category is configured on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the FMC Software web interface.\r\nFrom the Policies menu, choose SSL.\r\nChoose the appropriate SSL Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the Categories column.\r\nIf the value in that column is any, the device might not be affected by this vulnerability.\r\nIf the value in that column has any other value, the device has an SSL policy with URL category configured and is affected by this vulnerability.\r\n\r\n\r\nFor detailed information about URL Categories, see the Category Rule Conditions [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-rules.html\"] section in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nFor detailed information about URL filtering, see the URL filtering [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-url-filtering.html\"] section of the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-overview.html\"] chapter in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nDetermine Cisco FTD Software SSL Policy URL Category Configuration for Devices that are Managed by Cisco Defense Orchestrator\r\n\r\nTo determine whether a URL Category is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Decryption.\r\nChoose the appropriate Decryption Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the Categories column.\r\nIf the value in that column is any, the device might not be affected by this vulnerability.\r\nIf the value in that column has any other value, the device has an SSL policy with URL category configured and is affected by this vulnerability.\r\n\r\n\r\nFor detailed information about Cisco Defense Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about URL Categories, see the Decryption Rules [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-rules.html\"] chapter of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about URL filtering, see the  Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-overview.html\"] chapter of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about URL Categories for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the URL Criteria for SSL Decryption Rules [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n\r\nFor detailed information about URL filtering, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true#FTD_Access_Control_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n  Determine Cisco FTD Software TLS Server Identity Discovery Configuration\r\nTLS server identity discovery is disabled by default.\r\n\r\nDetermine Cisco FTD Software TLS Server Identity Discovery Configuration Using the FTD Software CLI\r\n\r\nTo determine whether TLS server identity discovery is configured on a device that is running Cisco FTD Software, log in to the Cisco FTD Software CLI and use the show access-control-config command. Scroll down to the Advanced Settings section. If the output shows TLS Server Identity Discovery Enabled, the device could be affected by this vulnerability:\r\n\r\nThe following example shows the TLS server identity discovery disabled:\r\n\r\n\r\n>show access-control-config\r\n\r\n===============[ Advanced Settings ]================\r\nGeneral Settings\r\n  Maximum URL Length                  : 1024\r\n  Interactive Block Bypass Timeout    : 600\r\n  TLS Server Identity Discovery       : Disabled\r\nThe following example shows the TLS server identity discovery enabled:\r\n\r\n\r\n> show access-control-config\r\n===============[ Advanced Settings ]================\r\nGeneral Settings\r\n  Maximum URL Length                  : 1024\r\n  Interactive Block Bypass Timeout    : 600\r\n  SSL Policy                          : Certificate-Visibility-SSL-Policy\r\n  TLS Server Identity Discovery       : Enabled\r\nNote: Due to CSCvz06256 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvz06256\"], this command will not show the TLS server identity discovery setting for the Cisco FTD 7.0 software train.\r\n\r\nDetermine Cisco FTD Software TLS Server Identity Discovery Configuration for Devices Managed by Cisco FDM Software\r\n\r\nTo determine whether TLS server identity discovery is configured on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FDM web interface.\r\nFrom the Policies menu, choose Access Control.\r\nClick on the Settings gear icon.\r\nLocate the TLS Server Identity Discovery setting.\r\nIf the setting is enabled, the device could be affected by this vulnerability.\r\nIf the setting is disabled, the device might not be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about TLS server identity discovery, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/710/fdm/fptd-fdm-config-guide-710/fptd-fdm-access.html\"] chapter of Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software TLS Server Identity Discovery Configuration for Devices that are Managed by Cisco FMC Software\r\n\r\nTo determine whether TLS server identity discovery is configured on a device that is managed by Cisco FMC, complete the following steps:\r\n\r\nLog in to the Cisco FMC web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nClick on the Advanced tab.\r\nLocate the TLS Server Identity Discovery setting.\r\nIf the setting is enabled, the device could be affected by this vulnerability.\r\nIf the setting is disabled, the device might not be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about TLS server identity discovery, see the Access Control Policy [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-policies.html?bookSearch=true#ID-2176-00000314\"] chapter of Cisco Secure Firewall Management Center Device Configuration.\r\n\r\nDetermine Cisco FTD Software TLS Server Identity Discovery Configuration for Devices Managed by Cisco Defense Orchestrator\r\n\r\nTo determine whether TLS server identity discovery is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nChoose More and then Click on then Advanced Settings.\r\nLocate the TLS Server Identity Discovery setting.\r\nIf the setting is enabled, the device could be affected by this vulnerability.\r\nIf the setting is disabled, the device might not be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about TLS server identity discovery, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n  Determine Cisco FTD Software Access Control Policy URL Category Configuration\r\nURL Categories in the access control policy are not configured by default.\r\n\r\nDetermine Cisco FTD Software Access Control Policy URL Category Configuration Using the FTD Software CLI\r\n\r\nUse the show access-control-config command. Scroll down to the Rule section.\r\n\r\nIf the output of command does not include a category section, the device might not be affected by this vulnerability, as shown in the following example that shows no URL category configured:\r\n\r\n\r\n> show access-control-config\r\n--------------[ Rule: CSCwe87591_AC ]---------------\r\n    Action                : Fast-path\r\n       Source ISE Metadata    :\r\n    Source Zones          : inside_zone\r\n    Destination Zones     : outside_zone\r\n    Users\r\n    URLs\r\n    Logging Configuration\r\nIf the output of command shows Category: any value, the device could be affected by this vulnerability, as shown in this example with URL category configured:\r\n\r\n\r\n> show access-control-config\r\n\r\n--------------[ Rule: CSCwe87591_AC ]---------------\r\n    Action                : Fast-path\r\n       Source ISE Metadata    :\r\n    Source Zones          : inside_zone\r\n    Destination Zones     : outside_zone\r\n    Users\r\n    URLs\r\n      Category            : Botnets\r\n      Reputation          : Unknown\r\n    Logging Configuration\r\nDetermine Cisco FTD Software Access Control Policy URL Category Configuration for Devices that are Managed by Cisco FDM\r\n\r\nTo determine whether an access control policy URL category is configured on a device that is managed by Cisco FDM, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the Access Control tab.\r\nFor each rule configured, look in the URLs column.\r\nIf the value in that column is ANY, the device might not be affected by this vulnerability.\r\nIf the value in that column has any other value, the device could be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about access control policy URL categories, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-access.html\"] chapter in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software Access Control Policy URL Category Configuration for Devices that are Managed by Cisco FMC Software\r\n\r\nTo determine whether an access control policy URL category is configured on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the URLs column.\r\nIf the value in that column is Any, the device might not be affected by this vulnerability.\r\nIf the value in that column has any other value, the device could be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about access control policy URL categories, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html?bookSearch=true#topic_96A0CC92335B4F2CB60FAB309DF8EB64\"] chapter in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nDetermine Cisco FTD Software Access Control Policy URL Category Configuration for Devices that are Managed by Cisco Defense Orchestrator\r\n\r\nTo determine whether an access control policy URL category is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the URLs column.\r\nIf the value in that column is Any, the device might not be affected by this vulnerability.\r\nIf the value in that column has any other value, the device could be affected by this vulnerability.\r\n\r\n\r\nFor detailed information about devices that are managed by Cisco Defense Orchestrator, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about access control policy URL categories, see the  Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-overview.html\"] chapter of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about access control policy URL Categories, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true#FTD_Access_Control_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has confirmed that this vulnerability does not affect the following products:\r\n\r\nCisco Adaptive Security Appliance (ASA) Software\r\nCisco FMC Software\r\nOpen Source Snort 2\r\nOpen Source Snort 3",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The following Cisco FTD Software Snort 3 configuration parameters govern how traffic is handled if the Snort 3 process restarts, which could change how encrypted traffic is handled during an exploit of this vulnerability.\r\n\r\nSnort Fail Open\r\nSnort preserve-connection\r\n\r\nFor additional information, see the Snort Restart Traffic Behavior section of the Firepower Management Center Configuration Guide  [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/get-started-deployment.html#concept_uc1_gtq_ty\"]or the  Managing Firewall Threat Defense with Cloud-delivered Firewall Management Center in Cisco Defense Orchestrator [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_get-started-deployment.html?bookSearch=true#concept_uc1_gtq_ty\"] guide.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "An indication that this vulnerability might have been exploited is if specific Snort 3 counters have been incremented. The administrator can issue the show snort counters CLI command and look for non-zero values for rules_url_retry and/or cache_original_expire.\r\n\r\n\r\n# show snort counters\r\n.\r\n.\r\n.\r\n              rules_url_retry: 1676\r\n        cache_original_expire: 124\r\n.\r\n.\r\n.\r\n#\r\n\r\nThese counters can increment for other conditions as well. If further assistance is needed, contact the Cisco Technical Assistance Center (TAC).",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround and mitigations that address this vulnerability. To remove the attack vector for this vulnerability, do one of the following:\r\n\r\nRevert to Snort 2.\r\nRemain on Snort 3 but ensure that neither of the following is configured:\r\nAn SSL policy with a URL category configured.\r\nAn Access Control policy with TLS Server Identity Discovery enabled and a URL category configured.\r\n\r\n\r\nNote: A Decryption policy or SSL policy does not need to be configured and associated with the Access Control policy for TLS Server Identity Discovery to be enabled.\r\n  Revert to Snort 2\r\nBefore downgrading, review the Before you Begin section in the Switching Between Snort 2 and Snort 3 [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089\"] section of the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nNote: Downgrading to Snort 2 will delete customer policies, NAP customizations, and Hostname redirect in active authentications. To discuss the effects of reverting on the deployment, contact the Technical Assistance Center (TAC) [\"https://www.cisco.com/go/tac/\"]\r\n\r\nRevert to Snort 2 for Cisco FTD devices by using the CLI\r\n\r\nThere is no option to change this configuration by using the CLI.\r\n\r\nRevert to Snort 2 for Cisco FTD devices that are managed by FDM Software\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Device.\r\nIn the Updates area, choose View Configuration.\r\nIn the Intrusion Rule section, choose Downgrade to 2.0.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about reverting to Snort 2, see the Switching Between Snort 2 and Snort 3 [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089\"] section of the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nRevert to Snort 2 for Cisco FTD devices that are managed by FMC Software\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Devices menu, choose Device Management.\r\nChoose the appropriate Cisco FTD device.\r\nClick the Edit pencil icon.\r\nChoose the Device tab.\r\nIn the Inspection Engine area, choose Revert to Snort 2.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about reverting to Snort 2, see the Snort 3 Inspection Engine [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable\"] chapter of the Cisco Secure Firewall Management Center Snort 3 Configuration Guide.\r\n\r\nRevert to Snort 2 for Cisco FTD devices managed by Cisco Defense Orchestrator\r\n\r\nTo revert to Snort 2 on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nIn the navigation bar, click Inventory.\r\nClick the Devices tab.\r\nClick the FTD tab and click the device you want to revert.\r\nIn the Device Actions pane located to the right, click Upgrade.\r\nSet the upgrade toggle to Intrusion Prevention Engine.\r\nClick Revert to Snort Engine 2.0.\r\n\r\nAfter making the changes above, deploy changes to your Cisco FTD devices.\r\n\r\nFor detailed information about Cisco Defense Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about reverting to Snort 2 for Cisco FMC Devices managed by Cisco Defense Orchestrator, see the Snort 3 Inspection Engine [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable\"] chapter of the Cisco Secure Firewall Management Center Snort 3 Configuration Guide.\r\n\r\nFor detailed information about reverting to Snort 2 for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the Revert From Snort 3.0 for FDM-Managed Device [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/onboard-devices-and-services.html?bookSearch=true#Revert_From_Snort_3_for_FTD\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n  Mitigations for Cisco FDM Managed Devices\r\nFor Cisco FTD devices that stay on Snort 3, both the access control policy and SSL policy must be checked to ensure the device is not affected by this vulnerability. If either place is configured in a vulnerable manner, the device is affected by this vulnerability.\r\n\r\nAccess Control Policy\r\n\r\nIf the device is using an access control policy with TLS server identity discovery enabled and URL categories configured, the device is affected by this vulnerability. The following options can be used to close the vector of attack:\r\n\r\nDisable the TLS server identity discovery and leave the URL categories configured.\r\nRemove the URL categories configuration and leave the TLS server identity enabled.\r\n\r\nSSL Policy\r\n\r\nIf the device is using an SSL policy with URL categories configured, the device is affected by this vulnerability. The following options can be used to close the vector of attack:\r\n\r\nRemove the URL categories configuration from the SSL policy.\r\nRemove the SSL policy from the access control policy.\r\n  Disable TLS Server Identity Discovery\r\nDisabling TLS Server Identity Discovery Cisco FTD devices using the CLI\r\n\r\nThere is no option to change this configuration using the CLI.\r\n\r\nDisabling TLS Server Identity Discovery Cisco for Devices that are Managed by Cisco FDM Software\r\n\r\nTo disable the TLS server identity discovery for Cisco FDM Software-managed devices, do the following:\r\n\r\nLog in to the Cisco FDM web interface.\r\nFrom the Policies menu, choose Access Control.\r\nClick the Settings gear icon.\r\nIf the TLS Server Identity Discovery setting is enabled, disable it and click OK.\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco FTD devices.\r\n\r\nFor more information, see the Access Control Chapter [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/710/fdm/fptd-fdm-config-guide-710/fptd-fdm-access.html\"] of the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\n\r\nDisabling TLS Server Identity Discovery Cisco for Devices that are Managed by Cisco FMC Software\r\n\r\nTo disable the TLS server identity discovery for devices that are managed by Cisco FMC Software, do the following:\r\n\r\nLog in to the Cisco FMC web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nClick on the Advanced tab.\r\nLocate the TLS Server Identity Discovery setting.\r\nIf the setting is enabled, click the Edit pencil icon.\r\nUncheck the Early application detection and URL categorization box and choose OK.\r\nClick Save to save the policy.\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco FTD devices.\r\n\r\nFor more information, see the Access Control Chapter [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/710/management-center-device-config-71/access-prefilter.html\"] of the Firepower Management Center Device Configuration Guide.\r\n\r\nDisabling TLS Server Identity Discovery Cisco for Devices that are Managed by Cisco Defense Orchestrator\r\n\r\nTo disable the TLS server identity discovery for devices managed by Cisco Defense Orchestrator, do the following:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the CDO Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nChoose More and then click on then Advanced Settings\r\nLocate the TLS Server Identity Discovery setting.\r\nIf the setting is enabled, click the Edit pencil icon.\r\nUncheck the Early application detection and URL categorization box and choose OK.\r\nClick Save to save the policy\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco Defense Orchestrator devices.\r\n\r\nFor more information, see the Cisco Defense Orchestrator documentation [\"https://docs.defenseorchestrator.com/\"].\r\n\r\nFor detailed information about TLS server identity discovery for Cisco FMC Devices managed with Cisco Defense Orchestrator, see the Access Control Policies [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-policies.html#ID-2176-00000314\"] chapter of Managing Firewall Threat Defense with Cloud-delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about TLS server identity discovery for Cisco FDM Devices managed with Cisco Defense Orchestrator, see the Configuring FDM-Managed Devices [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n  Removing Access Control Policy URL categories\r\nRemoving Access Control Policy URL categories for Cisco FTD devices using the CLI\r\n\r\nThere is no option to change this configuration using the CLI.\r\n\r\nRemoving Access Control Policy URL categories for Cisco FTD devices managed by FDM Software\r\n\r\nTo disable the Access Control Policy URL Category on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FDM web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the Access Control tab.\r\nFor each rule configured, look in the URLs column.\r\nIf there is a category listed, then click on the name of the category.\r\nIn the pop-up window, click the X next to the name to remove the category and choose OK.\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco FTD devices.\r\n\r\nFor detailed information about access control policy URL Categories, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-access.html\"] chapter in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nRemoving Access Control Policy URL categories for Cisco FTD devices managed by FMC Software\r\n\r\nTo disable the access control policy URL category on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the URLs column.\r\nIf there is a category listed, then click on the name of the category.\r\nIn the pop-up window, click the trash can icon to delete the URL category and choose Save.\r\nChoose Save.\r\n\r\nAfter changing the policies above, deploy the new policies to your FTD devices.\r\n\r\nFor detailed information about access control policy URL categories, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html?bookSearch=true#topic_96A0CC92335B4F2CB60FAB309DF8EB64\"] chapter in Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nRemoving Access Control Policy URL categories for Cisco FTD devices managed by Cisco Defense Orchestrator\r\n\r\nTo disable the Access Control Policy URL Category on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Cisco Defense Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the URLs column.\r\nIf there is a category listed, then click on the name of the category.\r\nIn the pop-up window, click the X next to the name to remove the category and choose Apply.\r\nChoose Save.\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco FTD devices.\r\n\r\nFor detailed information about Cisco Defense Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about access control policy URL categories, see the  Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-overview.html\"] chapter of Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator.\r\n\r\nFor detailed information about access control policy URL categories, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true#FTD_Access_Control_Policy\"] section of Managing FDM Devices with Cisco Defense Orchestrator guide.\r\n  Removing SSL Policy URL categories\r\nRemoving SSL Policy URL categories for Cisco FTD devices using the CLI\r\n\r\nThere is no option to change this configuration using the CLI.\r\n\r\nRemoving SSL Policy URL categories for Cisco FTD devices managed by FDM Software\r\n\r\nTo remove the SSL policy URL Category configuration on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FDM web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nFor each rule configured, look in the URLs column.\r\nIf there is a category listed, then click on the name of the category.\r\nIn the pop-up window, click the X next to the name of the category to remove the category\r\nChoose OK.\r\n\r\nAfter changing the policies above, deploy the new policies to your FTD devices.\r\n\r\nFor detailed information about URL Categories, see the URL Criteria for SSL Decryption Rules [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html\"] section in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nFor detailed information about URL filtering, see the URL filtering [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html\"] section of the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html\"] chapter in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nRemoving SSL Policy URL categories for Cisco FTD devices managed by FMC\r\n\r\nTo remove the SSL policy URL Category configuration on a device that is managed by Cisco FMC Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose SSL.\r\nChoose the appropriate SSL Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the Categories column.\r\nIf there is a category listed, then click on the name of the category.\r\nIn the pop-up window, click the trash can icon to delete the URL category and choose Save.\r\nChoose Save.\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco FTD devices.\r\n\r\nFor detailed information about URL Categories, see the Category Rule Conditions [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-rules.html\"] section in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nFor detailed information about URL filtering, see the URL filtering [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-url-filtering.html\"] section of the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-overview.html\"] chapter in the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nRemoving SSL Policy URL categories for Cisco FTD devices managed by Cisco Discovery Orchestrator\r\n\r\nTo remove the SSL policy URL Category configuration on a device that is managed by Cisco Discovery Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Discovery Orchestrator web interface.\r\nFrom the  Cisco Discovery Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Decryption.\r\nChoose the appropriate Decryption Policy.\r\nClick the Edit pencil icon.\r\nFor each rule configured, look in the URL column.\r\nIf there is a category listed, then click on the name of the category.\r\nIn the pop-up window, click the trash can icon to remove the category and choose Save.\r\nChoose Save.\r\n\r\nAfter changing the policies above, deploy the new policies to your Cisco FTD devices.\r\n\r\nFor detailed information about Cisco Discovery Orchestrator managed devices, see the Cisco Defense Orchestrator documentation. [\"https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html\"]\r\n\r\nFor detailed information about URL categories, see the Decryption Rules [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-rules.html\"] chapter of the Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator guide.\r\n\r\nFor detailed information about URL filtering, see the  Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-overview.html\"] chapter of the Managing Firewall Threat Defense with Cloud-Delivered Firewall Management Center in Cisco Defense Orchestrator guide.\r\n\r\nFor detailed information about URL categories for Cisco FDM Devices managed with Cisco Discovery Orchestrator, see the URL Criteria for SSL Decryption Rules [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html\"] section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n\r\nFor detailed information about URL filtering, see the Access Control [\"https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true#FTD_Access_Control_Policy\"]  section of Managing FDM Devices with Cisco Defense Orchestrator.\r\n  Removing SSL Policy from Access Control Policy\r\nRemoving SSL Policy from Access Control Policy for Cisco FTD Devices Using the CLI\r\n\r\nThere is no option to change this configuration using the CLI.\r\n\r\nRemoving SSL Policy from Access Control Policy for Cisco FTD Devices Managed by FDM Software\r\n\r\nTo remove the SSL policy URL category configuration on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FDM web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the SSL Decryption tab.\r\nIf SSL Decryption is enabled, disable it.\r\n\r\nAfter changing the policies above, deploy the new policies to your FTD devices.\r\n\r\nFor detailed information about SSL Decryption, see the SSL Decryption [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html\"] chapter in the Cisco Firepower Threat Defense Configuration Guide for Firepower Device Manager.\r\n\r\nRemoving SSL Policy from Access Control Policy for Cisco FTD Devices Managed by FMC\r\n\r\nTo remove the SSL policy URL category configuration on a device that is managed by Cisco FDM Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nLook in the SSL Policy area.\r\nIf a Policy Name is listed, click on the name.\r\nIn the pop-up window, choose None from the drop-down menu and choose OK.\r\nChoose Save.\r\n\r\nAfter changing the policies above, deploy the new policies to your FTD devices.\r\n\r\nFor detailed information about SSL decryption policies, see the SSL Policy [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html\"] chapter of the Cisco Secure Firewall Management Center Configuration Guide.\r\n\r\nRemoving SSL Policy from Access Control Policy for Cisco FTD Devices Managed by Cisco Discovery Orchestrator\r\n\r\nTo remove the SSL policy URL category configuration on a device that is managed by Cisco Discovery Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Discovery Orchestrator web interface.\r\nFrom the Cisco Discovery Orchestrator Policies menu, choose FTD Policies.\r\nFrom the FTD Policies menu, choose Access Control.\r\nChoose the appropriate Access Control Policy.\r\nClick the Edit pencil icon.\r\nLook in the Decryption area.\r\nIf there is a policy name in the pop-up window, choose None from the drop-down menu and choose Apply.\r\nChoose Save.\r\n\r\nWhile these workarounds and mitigations have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\nCisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number—for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n  Only this advisoryAll Critical and High advisoriesAll advisoriesCisco ASA SoftwareCisco FMC SoftwareCisco FTD SoftwareAny Platform3000 Series Industrial Security Appliances (ISA)ASA 5500-X Series FirewallsASA Service ModuleAdaptive Security Virtual Appliance (ASAv)Firepower 1000 SeriesFirepower 2100 SeriesFirepower 4100 SeriesFirepower 9000 SeriesFirepower NGFW VirtualSecure Firewall 3100 SeriesFirepower Management Center Appliances\r\n\r\n\r\n\r\n\r\n\r\nFor instructions on upgrading your FTD device, see Cisco Firepower Management Center Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html\"].\r\n\r\n Additional Resources\r\nFor help determining the best Cisco ASA, FTD, or FMC Software release, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\nCisco ASA Compatibility [\"https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html\"]\r\nCisco Secure Firewall ASA Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html\"]\r\nCisco Secure Firewall Threat Defense Compatibility Guide [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html\"]",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firepower Threat Defense Software SSL/TLS URL Category and Snort 3 Detection Engine Bypass and Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-sa-ftd-snort3-urldos-OccFQTeX"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: November 2023 Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74985"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Determine the Active Snort Version that Runs on Firepower Threat Defense (FTD)",
+				"url": "https://www.cisco.com/c/en/us/support/docs/security/secure-firewall-threat-defense/220415-determine-the-active-snort-version-that.html"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Decryption",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-ssl-decryption.html"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Policy",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-policies.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Defense Orchestrator documentation.",
+				"url": "https://docs.defenseorchestrator.com/#!g-managing-security-and-network-devices-with-cdo.html"
+			},
+			{
+				"category": "external",
+				"summary": "Decryption Policies",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-policies.html"
+			},
+			{
+				"category": "external",
+				"summary": "SSL Decryption Policy",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html#FTD_SSL_Decryption_Policy"
+			},
+			{
+				"category": "external",
+				"summary": "URL filtering",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html"
+			},
+			{
+				"category": "external",
+				"summary": "Category Rule Conditions",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/encrypted-traffic-rules.html"
+			},
+			{
+				"category": "external",
+				"summary": "URL filtering",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-url-filtering.html"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-overview.html"
+			},
+			{
+				"category": "external",
+				"summary": "Decryption Rules",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_decryption-rules.html"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-overview.html"
+			},
+			{
+				"category": "external",
+				"summary": "URL Criteria for SSL Decryption Rules",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true#FTD_Access_Control_Policy"
+			},
+			{
+				"category": "external",
+				"summary": "CSCvz06256",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvz06256"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/710/fdm/fptd-fdm-config-guide-710/fptd-fdm-access.html"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control Policy",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/access-policies.html?bookSearch=true#ID-2176-00000314"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-access.html"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/720/fdm/fptd-fdm-config-guide-720/fptd-fdm-access.html?bookSearch=true#topic_96A0CC92335B4F2CB60FAB309DF8EB64"
+			},
+			{
+				"category": "external",
+				"summary": "Firepower Management Center Configuration Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/get-started-deployment.html#concept_uc1_gtq_ty"
+			},
+			{
+				"category": "external",
+				"summary": "Managing Firewall Threat Defense with Cloud-delivered Firewall Management Center in Cisco Defense Orchestrator",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_get-started-deployment.html?bookSearch=true#concept_uc1_gtq_ty"
+			},
+			{
+				"category": "external",
+				"summary": "Switching Between Snort 2 and Snort 3",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/730/fdm/fptd-fdm-config-guide-730/fptd-fdm-intrusion.html?bookSearch=true#id_120089"
+			},
+			{
+				"category": "external",
+				"summary": "&nbsp;Technical Assistance Center (TAC)",
+				"url": "https://www.cisco.com/go/tac/"
+			},
+			{
+				"category": "external",
+				"summary": "Snort 3 Inspection Engine",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort/720/snort3-configuration-guide-v72/migrating.html#concept_D87B73A83ACA42CCA656F0041F9D860B-enabledisable"
+			},
+			{
+				"category": "external",
+				"summary": "Revert From Snort 3.0 for FDM-Managed Device",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/onboard-devices-and-services.html?bookSearch=true#Revert_From_Snort_3_for_FTD"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control Chapter",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/710/management-center-device-config-71/access-prefilter.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Defense Orchestrator documentation",
+				"url": "https://docs.defenseorchestrator.com/"
+			},
+			{
+				"category": "external",
+				"summary": "Access Control Policies",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/m_access-policies.html#ID-2176-00000314"
+			},
+			{
+				"category": "external",
+				"summary": "Configuring FDM-Managed Devices",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/cdo/managing-ftd-with-cdo/managing-ftd-with-cisco-defense-orchestrator/configuring-ftd-devices.html?bookSearch=true"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Firepower Management Center Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco ASA Compatibility",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall ASA Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall Threat Defense Compatibility Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Firepower Threat Defense Software SSL/TLS URL Category and Snort 3 Detection Engine Bypass and Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2023-11-01T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:27:50+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-sa-ftd-snort3-urldos-OccFQTeX",
+			"initial_release_date": "2023-11-01T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-11-01T15:59:46+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0.0",
+										"product": {
+											"name": "7.0.0",
+											"product_id": "CSAFPID-282695"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.0.1",
+										"product": {
+											"name": "7.0.0.1",
+											"product_id": "CSAFPID-284277"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1",
+										"product": {
+											"name": "7.0.1",
+											"product_id": "CSAFPID-284789"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1.1",
+										"product": {
+											"name": "7.0.1.1",
+											"product_id": "CSAFPID-286538"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.2",
+										"product": {
+											"name": "7.0.2",
+											"product_id": "CSAFPID-286930"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.2.1",
+										"product": {
+											"name": "7.0.2.1",
+											"product_id": "CSAFPID-287122"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.3",
+										"product": {
+											"name": "7.0.3",
+											"product_id": "CSAFPID-287181"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.4",
+										"product": {
+											"name": "7.0.4",
+											"product_id": "CSAFPID-290481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.5",
+										"product": {
+											"name": "7.0.5",
+											"product_id": "CSAFPID-290663"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1.0",
+										"product": {
+											"name": "7.1.0",
+											"product_id": "CSAFPID-286091"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.0.1",
+										"product": {
+											"name": "7.1.0.1",
+											"product_id": "CSAFPID-286543"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.0.2",
+										"product": {
+											"name": "7.1.0.2",
+											"product_id": "CSAFPID-290467"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.0.3",
+										"product": {
+											"name": "7.1.0.3",
+											"product_id": "CSAFPID-290468"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2.0",
+										"product": {
+											"name": "7.2.0",
+											"product_id": "CSAFPID-287081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.0.1",
+										"product": {
+											"name": "7.2.0.1",
+											"product_id": "CSAFPID-290469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1",
+										"product": {
+											"name": "7.2.1",
+											"product_id": "CSAFPID-290563"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2",
+										"product": {
+											"name": "7.2.2",
+											"product_id": "CSAFPID-292413"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.3",
+										"product": {
+											"name": "7.2.3",
+											"product_id": "CSAFPID-294794"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3.0",
+										"product": {
+											"name": "7.3.0",
+											"product_id": "CSAFPID-292363"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1",
+										"product": {
+											"name": "7.3.1",
+											"product_id": "CSAFPID-294962"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1.1",
+										"product": {
+											"name": "7.3.1.1",
+											"product_id": "CSAFPID-300512"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1.2",
+										"product": {
+											"name": "7.3.1.2",
+											"product_id": "CSAFPID-301705"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 4100 Series",
+						"product": {
+							"name": "Cisco Firepower 4100 Series",
+							"product_id": "CSAFPID-277441"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-282695:277393"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-282695:277440"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-284277:277393"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-284789:277393"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-284789:277440"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-286538:277393"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-286930:277393"
+				},
+				"product_reference": "CSAFPID-286930",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-286930:277440"
+				},
+				"product_reference": "CSAFPID-286930",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-287122:277393"
+				},
+				"product_reference": "CSAFPID-287122",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.3 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-287181:277393"
+				},
+				"product_reference": "CSAFPID-287181",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.4 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290481:277393"
+				},
+				"product_reference": "CSAFPID-290481",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.5 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290663:277393"
+				},
+				"product_reference": "CSAFPID-290663",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-286091:277393"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286091:277438"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-286091:277441"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-286091:286865"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-286543:277393"
+				},
+				"product_reference": "CSAFPID-286543",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286543:277438"
+				},
+				"product_reference": "CSAFPID-286543",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290467:286865"
+				},
+				"product_reference": "CSAFPID-290467",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.3 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290468:277393"
+				},
+				"product_reference": "CSAFPID-290468",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.3 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290468:286865"
+				},
+				"product_reference": "CSAFPID-290468",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-287081:277393"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287081:277438"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-287081:286865"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290469:277393"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290469:286865"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290563:277393"
+				},
+				"product_reference": "CSAFPID-290563",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290563:286865"
+				},
+				"product_reference": "CSAFPID-290563",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.2 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-292413:277393"
+				},
+				"product_reference": "CSAFPID-292413",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-292413:286865"
+				},
+				"product_reference": "CSAFPID-292413",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-294794:277392"
+				},
+				"product_reference": "CSAFPID-294794",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.3 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-294794:277393"
+				},
+				"product_reference": "CSAFPID-294794",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.3 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-294794:286865"
+				},
+				"product_reference": "CSAFPID-294794",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-292363:277393"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-292363:286865"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-294962:277393"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-294962:286865"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300512:277392"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300512:277393"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300512:277438"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-300512:277440"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-300512:286865"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-301705:277392"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-301705:277393"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-301705:277438"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-301705:277440"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-301705:286865"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-286865"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2023-20177",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwe87591"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-282695:277393",
+					"CSAFPID-282695:277440",
+					"CSAFPID-284277:277393",
+					"CSAFPID-284789:277393",
+					"CSAFPID-284789:277440",
+					"CSAFPID-286091:277393",
+					"CSAFPID-286091:277438",
+					"CSAFPID-286091:277441",
+					"CSAFPID-286091:286865",
+					"CSAFPID-286538:277393",
+					"CSAFPID-286543:277393",
+					"CSAFPID-286543:277438",
+					"CSAFPID-286930:277393",
+					"CSAFPID-286930:277440",
+					"CSAFPID-287081:277393",
+					"CSAFPID-287081:277438",
+					"CSAFPID-287081:286865",
+					"CSAFPID-287122:277393",
+					"CSAFPID-287181:277393",
+					"CSAFPID-290467:286865",
+					"CSAFPID-290468:277393",
+					"CSAFPID-290468:286865",
+					"CSAFPID-290469:277393",
+					"CSAFPID-290469:286865",
+					"CSAFPID-290481:277393",
+					"CSAFPID-290563:277393",
+					"CSAFPID-290563:286865",
+					"CSAFPID-290663:277393",
+					"CSAFPID-292363:277393",
+					"CSAFPID-292363:286865",
+					"CSAFPID-292413:277393",
+					"CSAFPID-292413:286865",
+					"CSAFPID-294794:277392",
+					"CSAFPID-294794:277393",
+					"CSAFPID-294794:286865",
+					"CSAFPID-294962:277393",
+					"CSAFPID-294962:286865",
+					"CSAFPID-300512:277392",
+					"CSAFPID-300512:277393",
+					"CSAFPID-300512:277438",
+					"CSAFPID-300512:277440",
+					"CSAFPID-300512:286865",
+					"CSAFPID-301705:277392",
+					"CSAFPID-301705:277393",
+					"CSAFPID-301705:277438",
+					"CSAFPID-301705:277440",
+					"CSAFPID-301705:286865"
+				]
+			},
+			"release_date": "2023-11-01T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-282695:277393",
+						"CSAFPID-282695:277440",
+						"CSAFPID-284277:277393",
+						"CSAFPID-284789:277393",
+						"CSAFPID-284789:277440",
+						"CSAFPID-286091:277393",
+						"CSAFPID-286091:277438",
+						"CSAFPID-286091:277441",
+						"CSAFPID-286091:286865",
+						"CSAFPID-286538:277393",
+						"CSAFPID-286543:277393",
+						"CSAFPID-286543:277438",
+						"CSAFPID-286930:277393",
+						"CSAFPID-286930:277440",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:286865",
+						"CSAFPID-287122:277393",
+						"CSAFPID-287181:277393",
+						"CSAFPID-290467:286865",
+						"CSAFPID-290468:277393",
+						"CSAFPID-290468:286865",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:286865",
+						"CSAFPID-290481:277393",
+						"CSAFPID-290563:277393",
+						"CSAFPID-290563:286865",
+						"CSAFPID-290663:277393",
+						"CSAFPID-292363:277393",
+						"CSAFPID-292363:286865",
+						"CSAFPID-292413:277393",
+						"CSAFPID-292413:286865",
+						"CSAFPID-294794:277392",
+						"CSAFPID-294794:277393",
+						"CSAFPID-294794:286865",
+						"CSAFPID-294962:277393",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:277440",
+						"CSAFPID-300512:286865",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:277440",
+						"CSAFPID-301705:286865"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 4,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:N/I:N/A:L",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-282695:277393",
+						"CSAFPID-282695:277440",
+						"CSAFPID-284277:277393",
+						"CSAFPID-284789:277393",
+						"CSAFPID-284789:277440",
+						"CSAFPID-286091:277393",
+						"CSAFPID-286091:277438",
+						"CSAFPID-286091:277441",
+						"CSAFPID-286091:286865",
+						"CSAFPID-286538:277393",
+						"CSAFPID-286543:277393",
+						"CSAFPID-286543:277438",
+						"CSAFPID-286930:277393",
+						"CSAFPID-286930:277440",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:286865",
+						"CSAFPID-287122:277393",
+						"CSAFPID-287181:277393",
+						"CSAFPID-290467:286865",
+						"CSAFPID-290468:277393",
+						"CSAFPID-290468:286865",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:286865",
+						"CSAFPID-290481:277393",
+						"CSAFPID-290563:277393",
+						"CSAFPID-290563:286865",
+						"CSAFPID-290663:277393",
+						"CSAFPID-292363:277393",
+						"CSAFPID-292363:286865",
+						"CSAFPID-292413:277393",
+						"CSAFPID-292413:286865",
+						"CSAFPID-294794:277392",
+						"CSAFPID-294794:277393",
+						"CSAFPID-294794:286865",
+						"CSAFPID-294962:277393",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:277440",
+						"CSAFPID-300512:286865",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:277440",
+						"CSAFPID-301705:286865"
+					]
+				}
+			],
+			"title": "Cisco Firepower Threat Defense Software SSL/TLS URL Category and Snort 3 Detection Engine Bypass and Denial of Service Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,503 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the TLS handler of Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software for Cisco Firepower 1000 Series firewalls could allow an unauthenticated, remote attacker to gain access to sensitive information.\r\n\r\nThe vulnerability is due to improper implementation of countermeasures against the Bleichenbacher attack for cipher suites that rely on RSA for key exchange. An attacker could exploit this vulnerability by sending crafted TLS messages to the device, which would act as an oracle and allow the attacker to carry out a chosen-ciphertext attack. A successful exploit could allow the attacker to perform cryptanalytic operations that may allow decryption of previously captured TLS sessions to the affected device.\r\n\r\nTo exploit this vulnerability, an attacker must be able to perform both of the following actions:\r\n\r\nCapture TLS traffic that is in transit between clients and the affected device\r\nActively establish a considerable number of TLS connections to the affected device\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco Firepower 1000 Series firewalls if they were running a vulnerable release of Cisco ASA Software or FTD Software and had a feature enabled that caused the device to process TLS messages. These features include, but are not limited to, the following:\r\n\r\nAnyConnect SSL VPN\r\nClientless SSL VPN\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n  Determine Whether a Device Could Process SSL or TLS Messages\r\nTo determine whether a device that is running Cisco ASA Software or FTD Software could process SSL or TLS packets, use the show asp table socket | include SSL|DTLS command and verify that it returns output. If this command returns any output, the device is vulnerable. If this command returns empty output, the device is not affected by the vulnerability described in this advisory. The following example shows the output of the show asp table socket | include SSL|DTLS command from a device that is vulnerable:\r\n\r\n\r\nftd# show asp table socket | include SSL|DTLS\r\nSSL       0005aa68  LISTEN     x.x.x.x:443      0.0.0.0:*\r\nSSL       002d9e38  LISTEN     x.x.x.x:8443     0.0.0.0:*\r\nDTLS      0018f7a8  LISTEN     10.0.0.250:443   0.0.0.0:*",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nASA Software that is running on any platform other than Cisco Firepower 1000 Series\r\nFTD Software that is running on any platform other than Cisco Firepower 1000 Series\r\nFirepower Management Center (FMC) Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability. However, disabling use of TLS ciphers that rely on RSA for key exchange is a possible mitigation.\r\n\r\nCisco ASA Software\r\n\r\nTo specify the TLS ciphers to be used on a device that is running Cisco ASA Software, use the ssl cipher   version custom command in global configuration mode. Use a custom string to allow only cipher suites based on Diffie-Hellman key exchange (DHE). Use the  show ssl ciphers  all command to view the list of supported ciphers for each TLS version.\r\n\r\nCisco FTD Software\r\n\r\nOn devices that are running Cisco FTD Software and are managed through Cisco FMC Software, TLS ciphers can be specified through Cisco FMC Software under Devices > Platform Settings > [Edit | New Policy] > SSL > [Edit | Add]. Then select a Custom security level and add the desired ciphers.\r\n\r\nCisco Firepower Device Manager (FDM) does not currently support the selection of specific SSL/TLS ciphers or cipher suites.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, the release information in the following table(s) was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nThe left column lists Cisco software releases, and the right column indicates whether a release was affected by the vulnerability described in this advisory and which release included the fix for this vulnerability.\r\n\r\nCisco ASA Software\r\n        Cisco ASA Software Release  First Fixed Release for This Vulnerability          Earlier than 9.131  Not applicable      9.13  9.13.1.13      9.14  9.14.1.30\r\n1. Cisco ASA Software releases earlier than 9.13 do not support Cisco Firepower 1000 Series firewalls.\r\nCisco FTD Software\r\n        Cisco FTD Software Release  First Fixed Release for This Vulnerability          Earlier than 6.4.01  Not applicable      6.4.0  6.4.0.10      6.5.0  6.5.0.5 (future release)      6.6.0  6.6.1\r\n1. Cisco FTD Software releases earlier than 6.4.0 do not support Cisco Firepower 1000 Series firewalls.\r\n\r\n\r\nTo upgrade to a fixed release of Cisco FTD Software, do one of the following:\r\n\r\nFor devices that are managed by using Cisco Firepower Management Center (FMC), use the FMC interface to install the upgrade. After installation is complete, reapply the access control policy.\r\nFor devices that are managed by using Cisco Firepower Device Manager (FDM), use the FDM interface to install the upgrade. After installation is complete, reapply the access control policy.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firepower 1000 Series Bleichenbacher Attack Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asaftd-tls-bb-2g9uWkP"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			}
+		],
+		"title": "Cisco Firepower 1000 Series Bleichenbacher Attack Vulnerability",
+		"tracking": {
+			"current_release_date": "2020-10-21T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T22:54:54+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-asaftd-tls-bb-2g9uWkP",
+			"initial_release_date": "2020-10-21T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2020-10-19T18:29:59+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.14.1",
+										"product": {
+											"name": "9.14.1",
+											"product_id": "CSAFPID-278380"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.14.1.10",
+										"product": {
+											"name": "9.14.1.10",
+											"product_id": "CSAFPID-278725"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.14.1.15",
+										"product": {
+											"name": "9.14.1.15",
+											"product_id": "CSAFPID-278807"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.14.1.19",
+										"product": {
+											"name": "9.14.1.19",
+											"product_id": "CSAFPID-279344"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.14"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.6.0",
+										"product": {
+											"name": "6.6.0",
+											"product_id": "CSAFPID-225862"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.0.1",
+										"product": {
+											"name": "6.6.0.1",
+											"product_id": "CSAFPID-278885"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.6"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.4.0",
+										"product": {
+											"name": "6.4.0",
+											"product_id": "CSAFPID-265014"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.3",
+										"product": {
+											"name": "6.4.0.3",
+											"product_id": "CSAFPID-265950"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.2",
+										"product": {
+											"name": "6.4.0.2",
+											"product_id": "CSAFPID-268602"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.4",
+										"product": {
+											"name": "6.4.0.4",
+											"product_id": "CSAFPID-276372"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.5",
+										"product": {
+											"name": "6.4.0.5",
+											"product_id": "CSAFPID-276373"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.6",
+										"product": {
+											"name": "6.4.0.6",
+											"product_id": "CSAFPID-276933"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.7",
+										"product": {
+											"name": "6.4.0.7",
+											"product_id": "CSAFPID-276934"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.8",
+										"product": {
+											"name": "6.4.0.8",
+											"product_id": "CSAFPID-276935"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.9",
+										"product": {
+											"name": "6.4.0.9",
+											"product_id": "CSAFPID-278397"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.4"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.14.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-278380:277393"
+				},
+				"product_reference": "CSAFPID-278380",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.14.1.10 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-278725:277393"
+				},
+				"product_reference": "CSAFPID-278725",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.14.1.15 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-278807:277393"
+				},
+				"product_reference": "CSAFPID-278807",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.14.1.19 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-279344:277393"
+				},
+				"product_reference": "CSAFPID-279344",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-225862:277393"
+				},
+				"product_reference": "CSAFPID-225862",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-278885:277393"
+				},
+				"product_reference": "CSAFPID-278885",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-265014:277393"
+				},
+				"product_reference": "CSAFPID-265014",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.3 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-265950:277393"
+				},
+				"product_reference": "CSAFPID-265950",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.2 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-268602:277393"
+				},
+				"product_reference": "CSAFPID-268602",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.4 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-276372:277393"
+				},
+				"product_reference": "CSAFPID-276372",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.5 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-276373:277393"
+				},
+				"product_reference": "CSAFPID-276373",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.6 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-276933:277393"
+				},
+				"product_reference": "CSAFPID-276933",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.7 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-276934:277393"
+				},
+				"product_reference": "CSAFPID-276934",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.8 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-276935:277393"
+				},
+				"product_reference": "CSAFPID-276935",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.9 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-278397:277393"
+				},
+				"product_reference": "CSAFPID-278397",
+				"relates_to_product_reference": "CSAFPID-277393"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2020-3585",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvv13993"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-278380:277393",
+					"CSAFPID-278725:277393",
+					"CSAFPID-278807:277393",
+					"CSAFPID-279344:277393",
+					"CSAFPID-225862:277393",
+					"CSAFPID-265014:277393",
+					"CSAFPID-265950:277393",
+					"CSAFPID-268602:277393",
+					"CSAFPID-276372:277393",
+					"CSAFPID-276373:277393",
+					"CSAFPID-276933:277393",
+					"CSAFPID-276934:277393",
+					"CSAFPID-276935:277393",
+					"CSAFPID-278397:277393",
+					"CSAFPID-278885:277393"
+				]
+			},
+			"release_date": "2020-10-21T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-225862:277393",
+						"CSAFPID-265014:277393",
+						"CSAFPID-265950:277393",
+						"CSAFPID-268602:277393",
+						"CSAFPID-276372:277393",
+						"CSAFPID-276373:277393",
+						"CSAFPID-276933:277393",
+						"CSAFPID-276934:277393",
+						"CSAFPID-276935:277393",
+						"CSAFPID-278397:277393",
+						"CSAFPID-278885:277393",
+						"CSAFPID-278380:277393",
+						"CSAFPID-278725:277393",
+						"CSAFPID-278807:277393",
+						"CSAFPID-279344:277393"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.3,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-278380:277393",
+						"CSAFPID-278725:277393",
+						"CSAFPID-278807:277393",
+						"CSAFPID-279344:277393",
+						"CSAFPID-225862:277393",
+						"CSAFPID-265014:277393",
+						"CSAFPID-265950:277393",
+						"CSAFPID-268602:277393",
+						"CSAFPID-276372:277393",
+						"CSAFPID-276373:277393",
+						"CSAFPID-276933:277393",
+						"CSAFPID-276934:277393",
+						"CSAFPID-276935:277393",
+						"CSAFPID-278397:277393",
+						"CSAFPID-278885:277393"
+					]
+				}
+			],
+			"title": "Cisco Firepower 1000 Series Bleichenbacher Attack Vulnerability"
+		}
+	]
+}

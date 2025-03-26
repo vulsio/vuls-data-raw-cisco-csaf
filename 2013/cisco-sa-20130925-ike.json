@@ -1,0 +1,361 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Internet Key Exchange (IKE) protocol of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause a memory leak that could lead to a device reload.\n\r\n\n\r\nThe vulnerability is due to incorrect handling of malformed IKE packets by the affected software. An attacker could exploit this vulnerability by sending crafted IKE packets to a device configured with features that leverage IKE version 1 (IKEv1).\n\r\n\n\r\nAlthough IKEv1 is automatically enabled on a Cisco IOS Software and Cisco IOS XE Software when IKEv1 or IKE version 2 (IKEv2) is configured, the vulnerability can be triggered only by sending a malformed IKEv1 packet.\n\r\n\n\r\nIn specific conditions, normal IKEv1 packets can also cause an affected release of Cisco IOS Software to leak memory.\n\r\n\n\r\nOnly IKEv1 is affected by this vulnerability.\n\r\n\n\r\nAn exploit could cause Cisco IOS Software not to release allocated memory, causing a memory leak. A sustained attack may result in a device reload.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds to mitigate this vulnerability. \n\r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130925-ike[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130925-ike\"]\n\r\nNote: The September 25, 2013, Cisco IOS Software Security Advisory bundled publication includes eight Cisco Security Advisories. All advisories address vulnerabilities in Cisco IOS Software. Each Cisco IOS Software Security Advisory lists the Cisco IOS Software releases that correct the vulnerability or vulnerabilities detailed in the advisory as well as the Cisco IOS Software releases that correct all Cisco IOS Software vulnerabilities in the September 2013 bundled publication. \r\n\r\nIndividual publication links are in \"Cisco Event Response: Semiannual Cisco IOS Software Security Advisory Bundled Publication\" at the following link: \r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep13.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep13.html\"]\r\n\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "\n",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Although only IKEv1 packets can be used to trigger this vulnerability, devices that are running Cisco IOS Software or Cisco IOS XE Software are vulnerable when they are configured to use IKEv1 or IKEv2.\n\r\n\n\r\nConfiguring IKEv2 on Cisco IOS Software or Cisco IOS XE Software automatically enables IKEv1.\n\r\n\n\r\nA number of features use IKEv1, including different types of VPNs such as the following:\n\r\n\n\r\n\r\n\r\n    LAN-to-LAN VPN \r\n    Remote access VPN (excluding SSLVPN) \r\n    Dynamic Multipoint VPN (DMVPN) \r\n    Group Domain of Interpretation (GDOI) \r\n\r\n\n\r\nThe preferred method to determine whether a device has been configured for IKE is to issue the show ip sockets or show udp EXEC command. If the device has UDP port 500, UDP port 4500, or UDP port 848 open, it is processing IKE packets.\n\r\n\r\n\r\n\n\r\nIn the following example, the device is processing IKE packets in UDP port 500 and UDP port 4500, using either IP version 4 (IPv4) or IP version 6 (IPv6):\n\r\n\n\r\n\r\n\r\n\r\n\r\nrouter# show udp \nProto        Remote      Port      Local       Port  In Out  Stat TTY OutputIF  \n17       --listen--          192.168.130.21    500   0   0 1001011   0   \n17(v6)   --listen--          UNKNOWN           500   0   0 1020011   0   \n17       --listen--          192.168.130.21   4500   0   0 1001011   0   \n17(v6)   --listen--          UNKNOWN          4500   0   0 1020011   0  \n!--- Output truncated \nrouter#\n\n\r\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.0(1)M1 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.0(1)M1, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\nCompiled Wed 02-Dec-09 17:17 by prod_rel_team\r\n!--- output truncated \r\nAdditional information about Cisco IOS Software release naming conventions is available in \"White Paper: Cisco IOS and NX-OS Software Reference Guide\" at http://www.cisco.com/web/about/security/intelligence/ios-ref.html[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS XR Software is not affected by this vulnerability.\n\r\n\n\r\nCisco ASA 5500 Series Adaptive Security Appliance is not affected by this vulnerability.\n\r\n\n\r\n No other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The IKE protocol is used in the IP Security (IPsec) protocol suite to negotiate cryptographic attributes that will be used to encrypt or authenticate the communication session. These attributes include cryptographic algorithm, mode, and shared keys. The result of IKE is a shared session secret that will be used to derive cryptographic keys.\n\r\n\n\r\n Cisco IOS Software or Cisco IOS XE Software support IKE for IPv4 and IPv6 communications.  IKE communication can use any of the following UDP ports:\n\r\n\n\r\n\r\n    UDP port 500 \r\n    UDP port 4500, Network Address Translation (NAT) Traversal (NAT-T) \r\n    UDP port 848,  Group Domain of Interpretation (GDOI) \r\n\r\nA vulnerability in the Internet Key Exchange (IKE) protocol of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause a memory leak that could lead to a device reload.\n\r\n\n\r\nThe vulnerability is due to incorrect handling of malformed IKE packets by the affected software. An attacker could exploit this vulnerability by sending crafted IKE packets to a device configured with features that leverage IKE version 1 (IKEv1).\n\r\n\n\r\nAlthough IKEv1 is automatically enabled on a Cisco IOS Software and Cisco IOS XE Software when IKEv1 or IKE version 2 (IKEv2) is configured, the vulnerability can be triggered only by sending a malformed IKEv1 packet.\n\r\n\n\r\nIn specific conditions, normal IKEv1 packets can also cause an affected release of Cisco IOS Software to leak memory.\n\r\n\n\r\nOnly IKEv1 is affected by this vulnerability.\n\r\n\n\r\nAn exploit could cause Cisco IOS Software not to release allocated memory, causing a memory leak. A sustained attack may result in a device reload.\n\r\nAn attacker could exploit this vulnerability using either IPv4 or IPv6 on any of the listed UDP ports. \n\r\n\n\r\n\r\nHow to Determine Whether the Vulnerability Has Been Exploited\r\nTo determine whether the vulnerability has been exploited on an affected device, issue the show memory debug leaks summary command from the command-line interface.\n\r\n\n\r\nThe following example shows the output of an affected Cisco IOS or Cisco IOS XE device where there are observed memory leaks in IKE FSM CONTEXT: \r\n\r\n\n\r\n\r\nRouter#show memory debug leaks summary\nAdding blocks for GD...\n\n                 I/O memory                 \nAlloc PC        Size     Blocks      Bytes    What\n\n                 Processor memory                 \nAlloc PC        Size     Blocks      Bytes    What\n\n0x651A3D38 0000000092 0000000005 0000000460    IKE FSM CONTEXT\n0x651A3D38 0000000104 0000000002 0000000208    IKE FSM CONTEXT\n0x651A3D38 0000000112 0000000002 0000000224    IKE FSM CONTEXT\n0x651A3D38 0000000156 0000000002 0000000312    IKE FSM CONTEXT\r\n\n\r\nNote: The show memory debug leaks summary command may be CPU intensive and should be used with caution.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCtx66011[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtx66011\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2013-5473.\n\r\n\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds for this vulnerability.\n\r\n\n\r\nThe following identification mechanism exists for this vulnerability.\n\r\nEmbedded Event Manager (EEM)\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect a memory leak that is caused by this vulnerability. The policy allows administrators to monitor the memory for the affected process on a Cisco IOS device. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade or reload the device to recover the lost memory at a suitable time. The example policy is based on a Tcl script that sends a syslog message when the memory keeps dropping and reaches EEM_IKE_BUFF_INCR_THRES and when the IKE buffers have dropped EEM_IKE_BUFF_INCR_THRES times. If IKE buffers are freed the counter starts counting from zero. After generating the memory leak syslog message the script re-initializes. \n\r\nThe Tcl script is available for download in Cisco Beyond: Embedded Event Manager (EEM) Scripting Community[\"https://supportforums.cisco.com/docs/DOC-30300\"].\n\r\n\n\r\n A sample device configuration follows:\n\r\n\n\r\n\n\r\n\r\nevent manager environment EEM_MEM_LEAK_INTERVAL 20\nevent manager environment EEM_MEM_LEAK_MAX_RUNTIME 5\nevent manager environment EEM_IKE_BUFF_INCR_THRES 3\nevent manager environment EEM_FREE_MEMORY_THRES 70\nevent manager directory user policy \"flash:/\"\nevent manager policy eem_ike_mem_leak.tcl\r\n\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\nCisco IOS Software\r\nEach row of the following Cisco IOS Software table corresponds to a Cisco IOS Software train. If a particular train is vulnerable, the earliest releases that contain the fix are listed in the First Fixed Release column. The First Fixed Release for All Advisories in the September 2013 Bundled Publication column lists the earliest possible releases that correct all the published vulnerabilities in the Cisco IOS Software Security Advisory bundled publication. Cisco recommends upgrading to the latest available release where possible.\r\n\r\nThe Cisco IOS Software Checker allows customers to search for Cisco Security Advisories that address specific Cisco IOS Software releases. This tool is available on the Cisco Security (SIO) portal at http://tools.cisco.com/security/center/selectIOSVersion.x[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] \r\n\r\n\r\n\r\n    \r\n        \r\n            Major Release\r\n                 Availability of Repaired Releases\r\n        \r\n        \r\n            Affected 12.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.0 based releases\r\n        \r\n        \r\n            Affected 12.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            12.2EX\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.0SE[\"#15_0SE\"]\n\r\n            \r\n        \r\n        \r\n            12.2EY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.2S[\"#15_2S\"]\n\r\n            \r\n        \r\n        \r\n            12.2EZ\r\n            Not vulnerable\n\r\n            \r\n            Releases prior to 12.2(60)EZ2 are vulnerable; Releases 12.2(60)EZ2 and later are not vulnerable. First fixed in Release 15.0SE[\"#15_0SE\"]\n\r\n            \r\n        \r\n        \r\n            12.2IRB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2IRC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2IRD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2IRE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2IRF\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2IRG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2IRH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2IRI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2IXG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2IXH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2MC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"#15_1M\"]\n\r\n            \r\n        \r\n        \r\n            12.2MRA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2MRB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SB\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SB15\n\r\n            \r\n        \r\n        \r\n            12.2SCA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCF\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCH[\"#12_2SCH\"]\n\r\n            \r\n        \r\n        \r\n            12.2SCH\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SCH1\n\r\n            \r\n        \r\n        \r\n            12.2SE\r\n            Not vulnerable\n\r\n            \r\n            12.2(55)SE8\n\r\n            \r\n        \r\n        \r\n            12.2SEG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.0SE[\"#15_0SE\"]\n\r\n            \r\n        \r\n        \r\n            12.2SG\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            12.2(53)SG10; available December 2013 * [\"#ios_note_1\"]\n\r\n            \r\n        \r\n        \r\n            12.2SGA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SM\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SQ\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SRA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2SRB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2SRC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2SRD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n            12.2SRE\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SRE9\n\r\n            \r\n        \r\n        \r\n            12.2STE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SV\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SVD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SVE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2SW\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"#15_1M\"]\n\r\n            \r\n        \r\n        \r\n            12.2SXF\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory. \n\r\n            \r\n        \r\n        \r\n            12.2SXH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory. \n\r\n            \r\n        \r\n        \r\n            12.2SXI\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SXI12\n\r\n            \r\n        \r\n        \r\n            12.2SXJ\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SXJ6\n\r\n            \r\n        \r\n        \r\n            12.2SY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.0SY[\"#15_0SY\"]\n\r\n            \r\n        \r\n        \r\n            12.2WO\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2XNA\r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n            12.2XNB\r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n            12.2XNC\r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n            12.2XND\r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n            12.2XNE\r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n            12.2XNF\r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n            12.2XO\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            12.2ZYA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            Affected 12.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.3 based releases\r\n        \r\n        \r\n            Affected 12.4-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.4 based releases\r\n        \r\n        \r\n            Affected 15.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.0 based releases\r\n        \r\n        \r\n            Affected 15.1-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            15.1EY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.2S[\"#15_2S\"]\n\r\n            \r\n        \r\n        \r\n            15.1GC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"#15_1M\"]\n\r\n            \r\n        \r\n        \r\n            15.1M\r\n            15.1(4)M5\n\r\n            \r\n            15.1(4)M7\n\r\n            \r\n        \r\n        \r\n            15.1MR\r\n            Releases up to and including 15.1(1)MR4 are not vulnerable. \n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1MRA\r\n            Not vulnerable\n\r\n            \r\n            15.1(3)MRA2\n\r\n            \r\n        \r\n        \r\n            15.1S\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            15.1(3)S6\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\r\n        \r\n        \r\n            15.1SG\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            15.1(2)SG1\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\r\n        \r\n        \r\n            15.1SNG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1SNH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1SNI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1SVD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SVE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SVF\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SY\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            15.1(1)SY2; Available on 28-OCT-13 \n\r\n            15.1(2)SY\r\n        \r\n        \r\n            15.1T\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"#15_1M\"]\n\r\n            \r\n        \r\n        \r\n            15.1XO\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            Affected 15.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            15.2E\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.2GC\r\n            15.2(3)GC1\n\r\n            15.2(4)GC\n\r\n            \r\n            Vulnerable; migrate to any release in 15.4T\n\r\n            \r\n        \r\n        \r\n            15.2JA\r\n            Not vulnerable\n\r\n            \r\n            15.2(4)JA1\n\r\n            \r\n        \r\n        \r\n            15.2JAX\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.2JB\r\n            Not vulnerable\n\r\n            \r\n            15.2(2)JB2\n\r\n            \r\n        \r\n        \r\n            15.2JN\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.2M\r\n            Not vulnerable\n\r\n            \r\n            15.2(4)M4\n\r\n            \r\n        \r\n        \r\n            15.2S\r\n            15.2(4)S\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            15.2(4)S4 \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\r\n        \r\n        \r\n            15.2SA\r\n            Not vulnerable\n\r\n            \r\n            15.2(2)SA\n\r\n            \r\n        \r\n        \r\n            15.2SNG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.2SNH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.2SNI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.3S[\"#15_3S\"]\n\r\n            \r\n        \r\n        \r\n            15.2T\r\n            15.2(3)T3\n\r\n            \r\n            15.2(3)T4\n\r\n            \r\n        \r\n        \r\n            Affected 15.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.3 based releases\r\n        \r\n    \r\n\r\n\n\r\n* Cisco Catalyst 4500 Series Switches with Cisco Catalyst 4500 Supervisor Engines 6-E or 6L-E can migrate to Cisco IOS Software Release 15.1SG[\"http://www.cisco.com/en/US/docs/switches/lan/catalyst4500/release/note/OL_27990-01.html#wp2646498\"].\n\r\n\n\r\n \r\n\r\nCisco IOS XE Software\r\nFor a mapping of Cisco IOS XE Software releases to Cisco IOS Software releases, refer to Cisco IOS XE 2 Release Notes[\"http://www.cisco.com/en/US/docs/ios/ios_xe/2/release/notes/rnasr21.html#wp2310700\"], Cisco IOS XE 3S Release Notes[\"http://www.cisco.com/en/US/docs/ios/ios_xe/3/release/notes/asr1k_rn_3s_sys_req.html#wp2999052\"], and Cisco IOS XE 3SG Release Notes[\"http://www.cisco.com/en/US/docs/switches/lan/catalyst4500/release/note/OL_24726.html#wp2570252\"].\n\r\n\n\r\n\r\n    \r\n        \r\n            Cisco IOS XE Software Release\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2013 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            2.1.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            2.2.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            2.3.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            2.4.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            2.5.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            2.6.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            3.1.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            3.1.xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.1SG or later.\r\n        \r\n        \r\n            3.2.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            3.2xSE\r\n            Not vulnerable\r\n            3.2.3SE\r\n        \r\n        \r\n            3.2.xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.1SG or later.\r\n        \r\n        \r\n            3.2.xXO\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.3.0XO or later.\r\n        \r\n        \r\n            3.2.xSQ\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.3.0SQ or later.\r\n        \r\n        \r\n            3.3.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.6S or later.\r\n        \r\n        \r\n            3.3xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.1SG or later.\r\n        \r\n        \r\n            3.3xXO\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.3xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.4.xS\r\n            Only releases 3.4.2S through 3.4.5S are vulnerable.\r\n            3.4.6S\r\n        \r\n        \r\n            3.4.xSG\r\n            Not vulnerable\r\n            3.4.1SG*[\"#iosxe_note_1\"]\r\n        \r\n        \r\n            3.5.xE \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.5.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.4S or later.\r\n        \r\n        \r\n            3.6.xS\r\n            3.6.1S\r\n            Vulnerable; migrate to 3.7.4S or later.\r\n        \r\n        \r\n            3.7.xS\r\n            Not vulnerable\r\n            3.7.4S\r\n        \r\n        \r\n            3.8.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.9.2S or later.\r\n        \r\n        \r\n            3.9.xS\r\n            Not vulnerable\r\n            3.9.2S\r\n        \r\n        \r\n            3.10.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n\r\n\n\r\n* Cisco Catalyst 4500 Series Switches with Cisco Catalyst 4500 Supervisor Engines 7-E and 7L-E and Cisco Catalyst 4500-X Series Switches can migrate to Cisco IOS XE Software Release 3.4SG[\"http://www.cisco.com/en/US/docs/switches/lan/catalyst4500/release/note/OL_27989-01.html#wp2691896\"].\n\r\n\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected by any of the vulnerabilities that are disclosed in the September 2013 Cisco IOS Software Security Advisory Bundled Publication. \n\r\n\n\r\n\n\r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was discovered during resolution of a support case.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Internet Key Exchange Memory Leak Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130925-ike"
+			}
+		],
+		"title": "Cisco IOS Software Internet Key Exchange Memory Leak Vulnerability",
+		"tracking": {
+			"current_release_date": "2013-09-25T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:22:10+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130925-ike",
+			"initial_release_date": "2013-09-25T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-09-24T16:23:42+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(4)XB7",
+										"product": {
+											"name": "15.1(4)XB7",
+											"product_id": "CSAFPID-114012"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)XB8",
+										"product": {
+											"name": "15.1(4)XB8",
+											"product_id": "CSAFPID-115982"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)XB8a",
+										"product": {
+											"name": "15.1(4)XB8a",
+											"product_id": "CSAFPID-116254"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1XB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)S",
+										"product": {
+											"name": "15.2(2)S",
+											"product_id": "CSAFPID-107861"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)S2",
+										"product": {
+											"name": "15.1(3)S2",
+											"product_id": "CSAFPID-111552"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)S4",
+										"product": {
+											"name": "15.1(3)S4",
+											"product_id": "CSAFPID-111553"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)S3",
+										"product": {
+											"name": "15.1(3)S3",
+											"product_id": "CSAFPID-111558"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)S5",
+										"product": {
+											"name": "15.1(3)S5",
+											"product_id": "CSAFPID-184123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)S5a",
+										"product": {
+											"name": "15.1(3)S5a",
+											"product_id": "CSAFPID-190983"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(4)M3",
+										"product": {
+											"name": "15.1(4)M3",
+											"product_id": "CSAFPID-105332"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)M4",
+										"product": {
+											"name": "15.1(4)M4",
+											"product_id": "CSAFPID-108614"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)M3a",
+										"product": {
+											"name": "15.1(4)M3a",
+											"product_id": "CSAFPID-114167"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(3)GC",
+										"product": {
+											"name": "15.2(3)GC",
+											"product_id": "CSAFPID-116726"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2GC"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.9.1",
+										"product": {
+											"name": "17.9.1",
+											"product_id": "CSAFPID-278025"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.9"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2013-5473",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtx66011",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-105332",
+					"CSAFPID-107861",
+					"CSAFPID-108614",
+					"CSAFPID-111552",
+					"CSAFPID-111553",
+					"CSAFPID-111558",
+					"CSAFPID-114012",
+					"CSAFPID-114167",
+					"CSAFPID-115982",
+					"CSAFPID-116254",
+					"CSAFPID-116726",
+					"CSAFPID-184123",
+					"CSAFPID-190983",
+					"CSAFPID-278025"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Internet Key Exchange Memory Leak Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130925-ike"
+				}
+			],
+			"release_date": "2013-09-25T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There are no workarounds for this vulnerability.\n\r\n\n\r\nThe following identification mechanism exists for this vulnerability.\n\r\nEmbedded Event Manager (EEM)\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect a memory leak that is caused by this vulnerability. The policy allows administrators to monitor the memory for the affected process on a Cisco IOS device. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade or reload the device to recover the lost memory at a suitable time. The example policy is based on a Tcl script that sends a syslog message when the memory keeps dropping and reaches EEM_IKE_BUFF_INCR_THRES and when the IKE buffers have dropped EEM_IKE_BUFF_INCR_THRES times. If IKE buffers are freed the counter starts counting from zero. After generating the memory leak syslog message the script re-initializes. \n\r\nThe Tcl script is available for download in Cisco Beyond: Embedded Event Manager (EEM) Scripting Community[\"https://supportforums.cisco.com/docs/DOC-30300\"].\n\r\n\n\r\n A sample device configuration follows:\n\r\n\n\r\n\n\r\n\r\nevent manager environment EEM_MEM_LEAK_INTERVAL 20\nevent manager environment EEM_MEM_LEAK_MAX_RUNTIME 5\nevent manager environment EEM_IKE_BUFF_INCR_THRES 3\nevent manager environment EEM_FREE_MEMORY_THRES 70\nevent manager directory user policy \"flash:/\"\nevent manager policy eem_ike_mem_leak.tcl\r\n\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-105332",
+						"CSAFPID-107861",
+						"CSAFPID-108614",
+						"CSAFPID-111552",
+						"CSAFPID-111553",
+						"CSAFPID-111558",
+						"CSAFPID-114012",
+						"CSAFPID-114167",
+						"CSAFPID-115982",
+						"CSAFPID-116254",
+						"CSAFPID-116726",
+						"CSAFPID-184123",
+						"CSAFPID-190983",
+						"CSAFPID-278025"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-105332",
+						"CSAFPID-107861",
+						"CSAFPID-108614",
+						"CSAFPID-111552",
+						"CSAFPID-111553",
+						"CSAFPID-111558",
+						"CSAFPID-114012",
+						"CSAFPID-114167",
+						"CSAFPID-115982",
+						"CSAFPID-116254",
+						"CSAFPID-116726",
+						"CSAFPID-184123",
+						"CSAFPID-190983",
+						"CSAFPID-278025"
+					]
+				}
+			],
+			"title": "Cisco IOS Software Internet Key Exchange Memory Leak Vulnerability"
+		}
+	]
+}

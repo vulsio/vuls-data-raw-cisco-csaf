@@ -1,0 +1,214 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the multicast traceroute version 2 (Mtrace2) feature of Cisco IOS XR Software could allow an unauthenticated, remote attacker to exhaust the UDP packet memory of an affected device.\r\n\r\nThis vulnerability exists because the Mtrace2 code does not properly handle packet memory. An attacker could exploit this vulnerability by sending crafted packets to an affected device. A successful exploit could allow the attacker to exhaust the incoming UDP packet memory. The affected device would not be able to process higher-level UDP-based protocols packets, possibly causing a denial of service (DoS) condition.\r\n\r\nNote: This vulnerability can be exploited using IPv4 or IPv6.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the September 2024 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: September 2024 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75416\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco devices if they were running a vulnerable release of Cisco IOS XR Software and are processing Mtrace2 packets.\r\n\r\nCisco IOS XR Software releases earlier than Release 7.7.1 are not affected.\r\n\r\nCisco IOS XR Software releases 7.7.1 through 7.11.2 are affected if the multicast RPM Packet Manager (RPM) is installed and active on the device, regardless of any multicast configuration.\r\n\r\nCisco IOS XR Software releases 24.1.1 and later are affected if the multicast RPM is installed and active and the device has a multicast configuration. If multicast is not configured, the device is not vulnerable.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n\r\nDetermine Whether the Multicast RPM is Active\r\n\r\nTo determine whether the multicast RPM is active, use the show install active summary | include mcast command. If that command returns an empty output, the multicast RPM is not active.\r\n\r\nDetermine Whether Mtrace2 Processing is Enabled\r\n\r\nTo determine whether the device is processing Mtrace2 packets, use the show lpts pifib hardware entry brief location <LC> | include 33433 command and the show lpts pifib entry brief | include 33433 command to see if LPTS entries are created for the Mtrace2 port. If both commands return empty output, the device is not processing Mtrace2 packets.\r\n\r\nIn the following examples, the device does create LPTS entries and will process Mtrace2 packets:\r\n        RP/0/RP0/CPU0:Router#show lpts pifib hardware entry brief location 0/0/CPU0 | include 33433      IPV4 any  any  any  0  17  33433  0  0  UDP-listen  Dlvr RP0  LOW  0  0  0-default      IPV4 any  any  any  0  17  33433  0  1   UDP-listen  Dlvr RP0  LOW  0  0  0-default      IPV4 any  any  any  0  17  33433  0  2   UDP-listen  Dlvr RP0  LOW  0  0  0-default      IPV4 any  any  any  0  17  33433  0  0  UDP-listen  Dlvr RP0  LOW  0  0  0-default      IPV4 any  any  any  0  17  33433  0  1   UDP-listen  Dlvr RP0  LOW  0  0  0-default      IPV4 any  any  any  0  17  33433  0  2  UDP-listen  Dlvr RP0  LOW  0  0  0-default      RP/0/RP0/CPU0:Router#\r\n  RP/0/RP0/CPU0:Router# show lpts pifib entry brief | include 33433\r\n  IPv4       default  UDP    any          0/RP0/CPU0                   any,33433 any    IPv6       default  UDP    any          0/RP0/CPU0                   any,33433 any\r\n\r\nNote: Mtrace2 on Cisco IOS XR Software uses the non-standard port 33433 instead of the standard RFC port of 33435.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The show packet memory command can be used to verify the number of packets that are currently held in the packet memory, as shown in the following example:\r\n\r\n\r\nRP/0/RP0/CPU0:#show packet-memory summary\r\n ProcId JobId Count Percentage Process\r\n4916   328     9      0.18% tcp\r\n4512  1241  1125     22.46% igmp\r\n4527  1246  3875     77.36% mld\r\n\r\nDuring normal operations, the packet count should be low. If the packet count for the mld process or the igmp process steadily increases or never decreases over several runs of that command, the device is affected by this vulnerability.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability. However, there are mitigations for this vulnerability.\r\n\r\nDeactivate the RPM on Cisco IOS XR Releases 7.7 to 7.11\r\n\r\nIf the device does not need the multicast configuration, deactivate and remove the multicast RPM. This will close the vulnerable UDP port.\r\n\r\nIn this example, the multicast package asr9k-mcast-x64-2.0.0.0-r7921.x86_64.rpm is deactivated:\r\n\r\n\r\nRouter# show install active summary | include mcast\r\n\r\nasr9k-mcast-x64-2.0.0.0-r7921.x86_64.rpm\r\n\r\nRouter# install deactivate asr9k-mcast-x64-2.0.0.0-r7921.x86_64.rpm synchronous\r\n\r\nRouter# install commit\r\n\r\nUse an Infrastructure Access Control List (iACLs) to Block Port 33433\r\n\r\nTo protect infrastructure devices and minimize the risk, impact, and effectiveness of direct infrastructure attacks, administrators are advised to deploy iACLs to enforce policies on traffic that is sent to infrastructure equipment. Administrators can construct an iACL by explicitly permitting only authorized traffic that is sent to infrastructure devices in accordance with existing security policies and configurations. For the maximum protection of infrastructure devices, deployed iACLs should be applied in the ingress direction on all interfaces to which an IP address has been configured. An iACL mitigation cannot completely protect against this vulnerability when the attack originates from a trusted source address.\r\n\r\nThe iACL policy denies unauthorized Mtrace2 communications packets that are sent to UDP port 33433 on affected devices. In the following example, 192.168.60.0/24 is the IP address space that is used by the affected devices. Care should be taken to allow required traffic for routing and administrative access before denying all unauthorized traffic. Whenever possible, infrastructure address space should be distinct from the address space for user and services segments. Using this addressing methodology will assist with the construction and deployment of iACLs.\r\n\r\nNote: Mtrace2 also supports IPv6, so a corresponding IPv6 iACL is required if the device has IPv6 configured.\r\n\r\nNote: Cisco uses UDP port 33433, not 33435, for Mtrace2.\r\n\r\n\r\nipv4 access-list Infrastructure-ACL-Policy\r\n!\r\n!-- The following vulnerability-specific access control entries\r\n!-- (ACEs) can drop Mtrace version 2 communication packets\r\n!  deny udp any 192.168.60.0 0.0.0.255 eq 33433\r\n!\r\n!-- Explicit deny ACE for traffic sent to addresses configured\r\n!-- within the infrastructure address space\r\n!  deny ip any 192.168.60.0 0.0.0.255\r\n!\r\n!-- Permit or deny all other Layer 3 and Layer 4 traffic in\r\n!-- accordance with existing security policies and configurations\r\n!\r\n!-- Apply iACL to interfaces in the ingress direction\r\n!\r\ninterface GigabitEthernet0/0 ipv4 access-group Infrastructure-ACL-Policy in\r\n\r\n\r\nFor additional information about iACLs, see Protecting Your Core: Infrastructure Protection Access Control Lists [\"http://www.cisco.com/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"].\r\n\r\nRestart IGMP and MLD Processes\r\n\r\nRestarting the Internet Group Management Protocol (IGMP) process or the Multicast Listener Discovery (MLD) process, or both processes, before the device runs out of memory can ensure that other processes will not be affected. (See the Details section for more information.) Restarting these processes does not prevent the device from leaking UDP memory.\r\n\r\nUse the process restart mld or process restart igmp command to restart the respective processes.\r\n\r\nWhile these mitigations have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu\"] that address the vulnerability described in this advisory. Customers with service contracts that entitle them to regular software updates should obtain security fixes through their usual update channels.\r\n\r\nCustomers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nThe Cisco Support and Downloads page [\"https://www.cisco.com/c/en/us/support/index.html\"] on Cisco.com provides information about licensing and downloads. This page can also display customer device support coverage for customers who use the My Devices tool.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n  Customers Without Service Contracts\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n  Fixed Releases\r\nIn the following table, the left column lists Cisco software releases or trains. The right column indicates whether a release (train) is affected by the vulnerability that is described in this advisory and the first release that includes the fix for this vulnerability.\r\n        Cisco IOS XR Software Release  First Fixed Release          7.6 and earlier  Not affected.      7.7 to 7.10  Migrate to a fixed release.      7.11  7.11.21 (Oct 2024)      24.1  Migrate to a fixed release.      24.2  24.2.2 (Sep 2024)      24.3.1 and later  Not affected.\r\nCisco has released the following umbrella SMUs to address this vulnerability. Customers who require SMUs for releases that are not listed in the following table are advised to contact their support organization.\r\n        Cisco IOS XR Software Release  Platform  SMU Name          7.7.2  IOSXRWBD  iosxrwbd-7.7.2.CSCwm05729      7.11.2  IOSXRWBD\r\nNCS5500  iosxrwbd-7.11.2.CSCwm05729\r\nncs5500-7.11.2.CSCwm05729      24.1.2  8000 Series  8000-24.1.2.CSCwm05729\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software UDP Packet Memory Exhaustion Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-pak-mem-exhst-3ke9FeFy"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: September 2024 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75416"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Protecting Your Core: Infrastructure Protection Access Control Lists",
+				"url": "http://www.cisco.com/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml"
+			},
+			{
+				"category": "external",
+				"summary": "free software updates",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Support and Downloads page",
+				"url": "https://www.cisco.com/c/en/us/support/index.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software UDP Packet Memory Exhaustion Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-09-11T16:00:00+00:00",
+			"generator": {
+				"date": "2024-09-11T15:47:13+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-pak-mem-exhst-3ke9FeFy",
+			"initial_release_date": "2024-09-11T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-09-11T15:46:33+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20304",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwk63828"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2024-09-11T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Packet Memory Exhaustion Vulnerability"
+		}
+	]
+}

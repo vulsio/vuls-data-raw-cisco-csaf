@@ -1,0 +1,115 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "The Cisco IOS Stack Group Bidding Protocol (SGBP) feature in certain  versions of Cisco IOS software is vulnerable to a remotely-exploitable denial  of service condition. Devices that do not support or have not enabled the SGBP  protocol are not affected by this vulnerability.\r\n\r\nCisco has made free software available to address this vulnerability  for affected customers. There are workarounds available to mitigate the effects  of the vulnerability.\r\n\r\nThis advisory is posted at  http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060118-sgbp   [\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060118-sgbp\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This section provides details on affected products.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects any device that runs Cisco IOS and has  enabled the SGBP protocol. SGBP is enabled by defining a stack group, which is  done using the global IOS command sgbp group  <name>. The presence of this command will cause the  device to begin listening on port 9900, even if the remaining SGBP parameters  are not fully configured.\r\n\r\nThe following examples demonstrate device configurations for which SGBP  is enabled:\r\n\r\n\r\nRouter#show sgbp\nGroup Name: test Ref: 0xA3728C00 Seed bid: default, 50, default seed bid setting\r\n\r\nOr:\r\n\r\n\r\nRouter#show running-config | include sgbp\nsgbp group test_group\r\n\r\nIf your device displays output similar to either of the above examples,  please consult the IOS software table below to determine whether your version  of IOS is affected.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco products that do not run IOS, do not contain support for SGBP, or  do not have SGBP enabled are not affected by this vulnerability.\r\n\r\nSystems on which SGBP is not supported or enabled will return either  blank output or an error message. The following examples demonstrate device  configurations that are not affected by this vulnerability:\r\n\r\n   A system that supports but is not enabled for SGBP returns this output:\r\nRouter#show sgbp\nRouter#\r\n\r\n   A system that does not support SGBP returns this error message:\r\nRouter#show sgbp\nRouter#show sgbp              ^  % Invalid input detected at '^' marker.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Multilink PPP (MLP) allows users to combine multiple PPP links into a  single logical network connection, thus enabling on demand bandwidth  allocation. When implemented across multiple device chassis, this is known as  Multichassis Multilink PPP (MMP). The Stack Group Bidding Protocol is the  mechanism by which devices participating in MMP locate each other and negotiate  for a connection termination point.\r\n\r\nThe SGBP implementation provided by the Cisco Internetwork Operating  System (IOS) is susceptible to a denial of service attack when presented with a  crafted UDP packet. Sending such a packet to port 9900 of an affected device  will cause it to freeze and stop responding to or passing traffic. After a  delay, the system watchdog timer will detect this condition and force a reset  of the device. The system recovery behavior will be controlled by the device  configuration register; for example, the router may reload or drop to the ROM  monitor.\r\n\r\nThis vulnerability is documented in Cisco bug ID  CSCsb11124 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsb11124\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)         .",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "This section describes workarounds for these vulnerabilities.\r\n\r\n   Configure Access Control Lists (ACLs)\r\nFor sites that require the SGBP protocol to be enabled, it may be possible to apply Access Control Lists (ACLs) to prevent untrusted hosts from exploiting this vulnerability. The following extended access-list can be adapted to your network. This example assumes that the SGBP members communicate using the 192.168.10.0 network.\r\naccess-list 101 permit udp 192.168.10.0 0.0.0.255 192.168.10.0 0.0.0.255 port eq 9900 \naccess-list 101 deny udp any 192.168.10.0 0.0.0.255 port eq 9900  access-list 101 permit ip any any\r\n    The access-list must then be applied to all interfaces using configuration commands such as:\r\ninterface ethernet 0/0 \nip access-group 101 in\r\n\r\n   Enable Control Plane Policing\r\nThe Control Plane Policy (CoPP) feature may be used to mitigate this vulnerability, as in this example:\r\n! Do not police SGBP traffic from the trusted network \naccess-list 140 deny udp 192.168.10.0 0.0.0.255 any eq 9900  ! Police SGBP traffic from untrusted hosts and networks  access-list 140 permit udp any any eq 9900  ! Do not police any other type of traffic going to the router  access-list 140 deny ip any any  !  class-map match-all sgbp-class  match access-group 140  !  policy-map control-plane-policy  ! Drop all traffic that matches the class \"sgbp-class\" class sgbp-class  drop  !  control-plane  service-policy input control-plane-policy\r\n\r\n Note: CoPP is only available on certain platforms and IOS release trains.   Additional information on the configuration and use of the CoPP feature can be   found at the following URL:\r\n      http://www.cisco.com/en/US/prod/collateral/iosswrel/ps6537/ps6586/ps6642/prod_white_paper0900aecd804fa16a.html [\"http://www.cisco.com/en/US/prod/collateral/iosswrel/ps6537/ps6586/ps6642/prod_white_paper0900aecd804fa16a.html\"]\r\n\r\n   Infrastructure ACLs (iACL)\r\nAlthough it is often difficult to block traffic transiting your network, it is possible to identify traffic which should never be allowed to target your infrastructure devices and block that traffic at the border of your network. Infrastructure ACLs are considered a network security best practice and should be considered as a long-term addition to good network security as well as a workaround for this specific vulnerability. The white paper entitled \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents guidelines and recommended deployment techniques for iACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]\r\n\r\n   Configuring Receive Access Lists (rACLs)\r\nFor distributed platforms, rACLs may be an option starting in Cisco IOS Software Versions 12.0(21)S2 for the 12000 series GSR and 12.0(24)S for the 7500 series. The receive access lists protect the device from harmful traffic before the traffic can impact the route processor. Receive path ACLs are considered a network security best practice, and should be considered as a long-term addition to good network security, as well as a workaround for this specific vulnerability. The CPU load is distributed to the line card processors and helps mitigate load on the main route processor. The white paper entitled \"GSR: Receive Access Control Lists\" will help identify and allow legitimate traffic to your device and deny all unwanted packets: http://www.cisco.com/warp/public/707/racl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a0a5e.shtml\"]",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has provided updated software to address this vulnerability. For  further details, please refer to the software table below.\r\n\r\nWhen considering software upgrades, also consult  http://www.cisco.com/go/psirt [\"http://www.cisco.com/go/psirt\"]  and any subsequent advisories to determine exposure and a complete upgrade  solution.\r\n\r\nIn all cases, customers should exercise caution to be certain the  devices to be upgraded contain sufficient memory and that current hardware and  software configurations will continue to be supported properly by the new  release. If the information is not clear, contact the Cisco Technical  Assistance Center (\"TAC\") or your contracted maintenance provider for  assistance.\r\n\r\nEach row of the Cisco IOS software table (below) describes a release  train and the platforms or products for which it is intended. If a given  release train is vulnerable, then the earliest possible releases that contain  the fix (the \"First Fixed Release\") and the anticipated date of availability  for each are listed in the \"Rebuild\" and \"Maintenance\" columns. A device  running a release in the given train that is earlier than the release in a  specific column (less than the First Fixed Release) is known to be vulnerable.  The release should be upgraded at least to the indicated release or a later  version (greater than or equal to the First Fixed Release label).\r\n\r\nFor more information on the terms \"Rebuild\" and \"Maintenance,\" consult  the following URL: http://www.cisco.com/warp/public/620/1.html [\"http://www.cisco.com/warp/public/620/1.html\"]\r\n\r\nMajor Release\r\n\r\nAvailability of Repaired Releases\r\n\r\n  Affected 12.0-Based Release\r\n\r\n  Rebuild\r\n\r\n  Maintenance\r\n\r\n12.0\r\n\r\nMigrate to 12.2(32)\r\n\r\n12.0S\r\n\r\n12.0(28)S6\r\n\r\n12.0(30)S5; available 23-Feb-06\r\n\r\n12.0(31)S3; available 26-Jan-06\r\n\r\n12.0(32)S; available 26-Jan-06\r\n\r\n12.0SC\r\n\r\nMigrate to 12.3(13a)BC or later\r\n\r\n12.0T\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XA\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XC\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XD\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XE\r\n\r\nMigrate to 12.1(26)E5\r\n\r\n12.0XG\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XH\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XI\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XJ\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XK\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XL\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XN\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.0XR\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n Affected 12.1-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.1\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1AA\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1E\r\n\r\n12.1(26)E5\r\n\r\n12.1EC\r\n\r\nMigrate to 12.3(13a)BC or later\r\n\r\n12.1EX\r\n\r\nMigrate to 12.1(26)E5\r\n\r\n12.1EZ\r\n\r\nMigrate to 12.1(26)E5\r\n\r\n12.1GA\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1GB\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1T\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XA\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XD\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XH\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XI\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XL\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.1XM\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.1XQ\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.1XS\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XU\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XW\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XX\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XY\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1XZ\r\n\r\nMigrate to 12.2(32) or later\r\n\r\n12.1YA\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.1YB\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.1YD\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n Affected 12.2-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.2\r\n\r\n12.2(32)\r\n\r\n12.2B\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2BC\r\n\r\nMigrate to 12.3(13a)BC or later\r\n\r\n12.2BW\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2BY\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2CX\r\n\r\nMigrate to 12.3(13a)BC or later\r\n\r\n12.2DD\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2DX\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2MC\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2S\r\n\r\n12.2(14)S16; available 9-Feb-06\r\n\r\n12.2(18)S and later are not vulnerable.\r\n\r\n12.2SU\r\n\r\nMigrate to 12.3(14)T6\r\n\r\n12.2SY\r\n\r\nMigrate to 12.2SXD or later\r\n\r\n12.2SZ\r\n\r\nMigrate to 12.2S or later\r\n\r\n12.2T\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XA\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XB\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XC\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2XF\r\n\r\nMigrate to 12.3(13a)BC or later\r\n\r\n12.2XG\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XK\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XL\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XS\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XT\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2XV\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2YD\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2YE\r\n\r\nMigrate to 12.2S or later\r\n\r\n12.2YN\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2YT\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2YW\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2YX\r\n\r\nMigrate to 12.3(14)T6\r\n\r\n12.2YY\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2YZ\r\n\r\nMigrate to 12.2S or later\r\n\r\n12.2ZA\r\n\r\nMigrate to 12.2SXD or later\r\n\r\n12.2ZB\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.2ZD\r\n\r\nContact TAC\r\n\r\n12.2ZE\r\n\r\nMigrate to 12.3(16) or later\r\n\r\n12.2ZJ\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n 12.2ZN\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n Affected 12.3-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.3\r\n\r\n12.3(16)\r\n\r\n12.3B\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.3BC\r\n\r\n12.3(13a)BC\r\n\r\n12.3BW\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.3T\r\n\r\n12.3(11)T9\r\n\r\n12.3(14)T6\r\n\r\n12.3XB\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.3XD\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.3XF\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.3XH\r\n\r\nMigrate to 12.3(11)T9 or later\r\n\r\n12.3XI\r\n\r\nContact TAC\r\n\r\n12.3XJ\r\n\r\nMigrate to 12.3(14)YX or later\r\n\r\n12.3XM\r\n\r\nMigrate to 12.3(14)T6\r\n\r\n12.3XQ\r\n\r\nMigrate to 12.4(3) or later\r\n\r\n12.3XU\r\n\r\nMigrate to 12.4(4)T or later\r\n\r\n12.3XW\r\n\r\nMigrate to 12.3(14)YX or later\r\n\r\n12.3YF\r\n\r\nMigrate to 12.3(14)YX or later\r\n\r\n12.3YG\r\n\r\nContact TAC\r\n\r\n12.3YJ\r\n\r\nMigrate to 12.3(14)YQ2\r\n\r\n12.3YK\r\n\r\nContact TAC\r\n\r\n12.3YM\r\n\r\n12.3(14)YM4\r\n\r\n12.3YQ\r\n\r\n12.3(14)YQ2\r\n\r\n12.3YT\r\n\r\nContact TAC\r\n\r\n12.3YU\r\n\r\nContact TAC\r\n\r\n12.3YX\r\n\r\n12.3(14)YX\r\n\r\n Affected 12.4-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.4\r\n\r\n12.4(1b)\r\n\r\n12.4(3)\r\n\r\n12.4MR\r\n\r\n12.4(4)MR\r\n\r\n12.4T\r\n\r\n12.4(2)T3\r\n\r\n12.4(4)T\r\n\r\n12.4XA\r\n\r\n12.4(2)XA\r\n\r\n12.4XB\r\n\r\n12.4(2)XB",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious  use of the vulnerability described in this advisory.\r\n\r\nThis vulnerability was discovered during internal testing.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "IOS Stack Group Bidding Protocol Crafted Packet DoS",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060118-sgbp"
+			}
+		],
+		"title": "IOS Stack Group Bidding Protocol Crafted Packet DoS",
+		"tracking": {
+			"current_release_date": "2006-01-18T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:05:33+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20060118-sgbp",
+			"initial_release_date": "2006-01-18T16:00:00+00:00",
+			"revision_history": [],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2006-0340",
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {},
+			"references": [
+				{
+					"category": "self",
+					"summary": "IOS Stack Group Bidding Protocol Crafted Packet DoS",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060118-sgbp"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "This section describes workarounds for these vulnerabilities.\r\n\r\n   Configure Access Control Lists (ACLs)\r\nFor sites that require the SGBP protocol to be enabled, it may be possible to apply Access Control Lists (ACLs) to prevent untrusted hosts from exploiting this vulnerability. The following extended access-list can be adapted to your network. This example assumes that the SGBP members communicate using the 192.168.10.0 network.\r\naccess-list 101 permit udp 192.168.10.0 0.0.0.255 192.168.10.0 0.0.0.255 port eq 9900 \naccess-list 101 deny udp any 192.168.10.0 0.0.0.255 port eq 9900  access-list 101 permit ip any any\r\n    The access-list must then be applied to all interfaces using configuration commands such as:\r\ninterface ethernet 0/0 \nip access-group 101 in\r\n\r\n   Enable Control Plane Policing\r\nThe Control Plane Policy (CoPP) feature may be used to mitigate this vulnerability, as in this example:\r\n! Do not police SGBP traffic from the trusted network \naccess-list 140 deny udp 192.168.10.0 0.0.0.255 any eq 9900  ! Police SGBP traffic from untrusted hosts and networks  access-list 140 permit udp any any eq 9900  ! Do not police any other type of traffic going to the router  access-list 140 deny ip any any  !  class-map match-all sgbp-class  match access-group 140  !  policy-map control-plane-policy  ! Drop all traffic that matches the class \"sgbp-class\" class sgbp-class  drop  !  control-plane  service-policy input control-plane-policy\r\n\r\n Note: CoPP is only available on certain platforms and IOS release trains.   Additional information on the configuration and use of the CoPP feature can be   found at the following URL:\r\n      http://www.cisco.com/en/US/prod/collateral/iosswrel/ps6537/ps6586/ps6642/prod_white_paper0900aecd804fa16a.html [\"http://www.cisco.com/en/US/prod/collateral/iosswrel/ps6537/ps6586/ps6642/prod_white_paper0900aecd804fa16a.html\"]\r\n\r\n   Infrastructure ACLs (iACL)\r\nAlthough it is often difficult to block traffic transiting your network, it is possible to identify traffic which should never be allowed to target your infrastructure devices and block that traffic at the border of your network. Infrastructure ACLs are considered a network security best practice and should be considered as a long-term addition to good network security as well as a workaround for this specific vulnerability. The white paper entitled \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents guidelines and recommended deployment techniques for iACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]\r\n\r\n   Configuring Receive Access Lists (rACLs)\r\nFor distributed platforms, rACLs may be an option starting in Cisco IOS Software Versions 12.0(21)S2 for the 12000 series GSR and 12.0(24)S for the 7500 series. The receive access lists protect the device from harmful traffic before the traffic can impact the route processor. Receive path ACLs are considered a network security best practice, and should be considered as a long-term addition to good network security, as well as a workaround for this specific vulnerability. The CPU load is distributed to the line card processors and helps mitigate load on the main route processor. The white paper entitled \"GSR: Receive Access Control Lists\" will help identify and allow legitimate traffic to your device and deny all unwanted packets: http://www.cisco.com/warp/public/707/racl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a0a5e.shtml\"]"
+				}
+			],
+			"title": "Cisco IOS Stack Group Bidding Protocol Denial of Service Vulnerability"
+		}
+	]
+}

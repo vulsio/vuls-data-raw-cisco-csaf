@@ -1,0 +1,170 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the IP version 6 (IPv6) processing code of Cisco IOS XR Software for\r\nCisco CRS-3 Carrier Routing System could allow an unauthenticated,\r\nremote attacker to trigger an ASIC scan of the Network Processor Unit (NPU) and a reload of the\r\nline\r\ncard processing an IPv6 packet.\n\r\n\n\r\nThe vulnerability is due\r\nto incorrect processing of an IPv6 packet carrying IPv6 extension\r\nheaders that are valid but unlikely to be seen during normal operation. An attacker\r\ncould exploit\r\nthis vulnerability by sending such an IPv6 packet to an\r\naffected device that is configured to process IPv6 traffic. An exploit\r\ncould allow the attacker to cause a reload of the line card, resulting\r\nin a DoS condition.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. There is no workaround that mitigates this vulnerability.\n\r\n\n\r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150611-iosxr[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150611-iosxr\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "A Cisco CRS-3 Carrier Routing System device is affected by this vulnerability when all the following conditions are met:\n\r\n\n\r\n1) Any of the following line cards are installed on the chassis:\n\r\n\r\n    CRS-MSC-140G: Cisco CRS-3 Modular Services Card (140G)\r\n    CRS-FP140: Cisco CRS-3 Forwarding Processor Card (140 Gbps)\r\n    CRS-LSP: Cisco CRS-3 Label Switch Processor \r\n\r\n2) The Cisco CRS-3 Carrier Routing System device is running a Cisco IOS XR release affected by this vulnerability. See the \"Software Versions and Fixes\" section of this advisory for information about affected releases. Note: Cisco IOS XR Software Releases 4.2.1 and later are not affected by this vulnerability.\n\r\n3) Any previously listed line card is configured to process IPv6 traffic.\r\n\r\nAdministrators can use the show diag command to determine whether any of the affected line cards are installed on a Cisco CRS-3 Carrier Routing System device. The following output shows a Cisco CRS-3 Carrier Routing System device with a CRS-MSC-140G line card installed:\n\r\n\n\r\n\r\nRP/0/RP0/CPU0:router#sh diag\r\nThu Jun  4 14:53:25.229 EDT\r\n\r\nCARD 0/0/* : Cisco CRS Series Modular Services Card 140G\r\n  MAIN:  board type 500064\r\n         800-32942-06 rev B0\r\n         dev N/A\r\n         S/N SAX99999ZZZ\r\n  PCA:   73-12720-06 rev A0\r\n  PID:   CRS-MSC-140G\r\n  VID:   V03\r\n  CLEI:  IPUCAZYBAC\r\n  ECI:   180032\r\n\r\n\n \r\n\r\n\n\r\nAdministrators can use the show version command to determine the Cisco IOS XR release running on the device. A device running Cisco IOS XR will include the string \"Cisco IOS XR\" in the output of the show version command. The following example shows a device running Cisco IOS XR Release 4.1.2:\n\r\n\r\nRP/0/RP0/CPU0:router#sh version \r\nThu Jun  4 14:56:06.484 EDT\r\n\r\nCisco IOS XR Software, Version 4.1.2[Default]\r\nCopyright (c) 2012 by Cisco Systems, Inc.\r\n\r\nROM: System Bootstrap, Version 2.05(20110622:151317) [CRS ROMMON],  \r\n\r\nrouter uptime is 2 years, 11 weeks, 5 days, 10 hours, 22 minutes\r\n\r\nSystem image file is \"disk0:hfr-os-mbi-4.1.2.CSCtw71819-1.0.0/0x100008/mbihfr-rp-x86e.vm\"\r\n\r\ncisco CRS-16/S (Intel 686 F6M14S4) processor with 12582912K bytes of memory.\r\nIntel 686 F6M14S4 processor at 2130Mhz, Revision 2.174\r\n\r\nCisco CRS Series 16 Slots Line Card Chassis\r\n\n \r\n\r\n\n\r\nAdministrators can use the show ipv6 interface brief command to determine if an interface is enabled for IPv6 traffic processing. The following example shows an interface configured for IPv6 processing:\r\n\n\r\n\r\nRP/0/RP0/CPU0:router# show ipv6 interface brief\r\n\r\n <!--output omitted-->\r\nGigabitEthernet0/2/0/0 [Up/Up]\r\nfe80::212:daff:fe62:c150\r\n202::1\r\n \r\n\r\n\n\r\nThe show ipv6 interface brief command will produce an\r\nerror message if the running version of Cisco IOS XR Software does not\r\nsupport IPv6. The output will not show any interfaces with IPv6 addresses if\r\nIPv6 is disabled. \n\r\n\n\r\nAn interface may be configured for IPv6 processing but may not appear on the output of the show ipv6 interface brief command if the interface is part of a bundle or a virtual routing and forwarding (VRF) instance. The show ipv6 vrf all interface command can be used to determine whether any interface has been configured in this way. The following is the output of the show ipv6 vrf all interface command showing an interface configured for IPv6 processing as part of a bundle and assigned to a VRF instance:\n\r\n\n\r\n\r\nRP/0/RP0/CPU0:router#sh ipv6 vrf all interface \r\nThu Jun  4 15:12:11.170 EDT\r\n\r\n\r\n\r\nBundle-Ether4.765 is Up, ipv6 protocol is Up, Vrfid is FDA (0x60000001)\r\n  IPv6 is enabled, link-local address is fe80::21d:a2ff:aabb:ccdd\r\n  Global unicast address(es):\r\n    2001:db8:1:1::1, subnet is 2001:db8:1:1::/64 \r\n  Joined group address(es): ff02::1:ff00:0 ff02::1:aabb:ccdd ff02::2\r\n      ff02::1\r\n  MTU is 1518 (1500 is available to IPv6)\r\n  ICMP redirects are disabled\r\n  ICMP unreachables are enabled\r\n  ND DAD is enabled, number of DAD attempts 1\r\n  ND reachable time is 0 milliseconds\r\n  ND advertised retransmit interval is 0 milliseconds\r\n  Hosts use stateless autoconfig for addresses.\r\n  Outgoing access list is not set\r\n  Inbound  access list is not set\r\n  Table Id is 0xe0800001\r\n\r\n\r\n\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco 12000 Series Routers, Cisco ASR 9000 Series Aggregation Services\r\nRouters, Cisco Carrier Routing System 1 (CRS-1), Cisco CRS-X Carrier Routing System, and Cisco Network Convergence System 6000 Series Routers running Cisco IOS XR Software are not affected by this\r\nvulnerability. Only Cisco CRS-3 Carrier Routing System devices that meet all the conditions in the \"Vulnerable Products\" section of this advisory are affected by this vulnerability.\n\r\n\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "A vulnerability in the IP version 6 (IPv6) processing code of Cisco IOS XR Software for\r\nCisco CRS-3 Carrier Routing System could allow an unauthenticated,\r\nremote attacker to trigger an ASIC scan of the Network Processor Unit (NPU) and a reload of the\r\nline\r\ncard processing an IPv6 packet.\n\r\n\n\r\nThe vulnerability is due\r\nto incorrect processing of an IPv6 packet carrying IPv6 extension\r\nheaders that are valid but unlikely to be seen during normal operation. An attacker\r\ncould exploit\r\nthis vulnerability by sending such an IPv6 packet to an\r\naffected device that is configured to process IPv6 traffic. An exploit\r\ncould allow the attacker to cause a reload of the line card, resulting\r\nin a DoS condition.\n\r\n\n\r\nA Cisco CRS-3 Carrier Routing System device that meets all the conditions listed in the \"Vulnerable Products\" section of this advisory is affected by this vulnerability.\n\r\n\n\r\nThis vulnerability can be triggered by IPv6 transit traffic or IPv6 traffic destined to the device itself.\n\r\n\n\r\nThis vulnerability could be exploited repeatedly to cause an extended DoS condition.\r\n\n\r\n\n\r\nThis vulnerability has been documented in Cisco bug ID CSCtx03546[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtx03546\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned the Common Vulnerabilities and Exposures (CVE) ID CVE-2015-0769.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There is no workaround that mitigates this vulnerability.\r\n\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Alerts archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\n\n\r\nThe following Cisco IOS XR releases are affected by this vulnerability:\r\n\r\n\r\n    Cisco IOS XR Releases 4.0.1, 4.0.2, 4.0.3 and 4.0.4\r\n    Cisco IOS XR Releases 4.1.0, 4.1.1 and 4.1.2\r\n    Cisco IOS XR Release 4.2.0\r\n\r\nThis vulnerability has been corrected in the following Software Maintenance Updates (SMUs):\r\n\r\n\r\n    hfr-px-4.1.0.CSCtx03546.pie for release 4.1.0\r\n    hfr-px-4.1.1.CSCtx03546.pie for release 4.1.1\r\n    hfr-px-4.1.2.CSCtx03546.pie for release 4.1.2\r\n    hfr-px-4.2.0.CSCtx03546.pie for release 4.2.0\r\n\r\nPlease consult the README file associated with each SMU for additional information.\r\n\r\n\r\nCustomers running Cisco IOS XR Releases 4.0.1, 4.0.2, 4.0.3, or 4.0.4 should upgrade to a currently supported release.\n\r\n\n\r\nCisco IOS XR Release 4.2.1 and later already include a fix for this vulnerability. No upgrade or SMU installation will be required.\r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found by Cisco internally.\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Crafted IPv6 Packet Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150611-iosxr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS XR Software Crafted IPv6 Packet Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/Cisco-SA-20150611-CVE-2015-0769"
+			}
+		],
+		"title": "Cisco IOS XR Software Crafted IPv6 Packet Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2015-06-11T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:43:52+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20150611-iosxr",
+			"initial_release_date": "2015-06-11T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2015-06-11T14:43:32+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2015-0769",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtx03546",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS XR Software Crafted IPv6 Packet Denial of Service Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150611-iosxr"
+				}
+			],
+			"release_date": "2015-06-11T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There is no workaround that mitigates this vulnerability.\r\n\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 5,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:P/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 5,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:P/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software crafted IPv6 Packet Denial of Service Vulnerability"
+		}
+	]
+}

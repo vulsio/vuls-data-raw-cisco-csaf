@@ -1,0 +1,333 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco Unified IP Phones 7900 Series versions 9.3(1)SR1 and prior contain an arbitrary code execution vulnerability that could allow a local attacker to execute code or modify arbitrary memory with elevated privileges.\n\r\n\n\r\nThis vulnerability is due to a failure to properly validate input passed to kernel system calls from applications running in userspace. An attacker could exploit this issue by gaining local access to the device using physical access or authenticated access using SSH and executing an attacker-controlled binary that is designed to exploit the issue. Such an attack would originate from an unprivileged context.\n\r\n\n\r\nAng Cui initially reported the issue to the Cisco Product Security Incident Response Team (PSIRT). On November 6, 2012, the Cisco PSIRT disclosed this issue in Cisco bug ID CSCuc83860[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc83860\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) Release Note Enclosure. Subsequently, Mr. Cui has spoken at several public conferences and has performed public demonstrations of a device being compromised and used as a listening device. \n\r\n\n\r\nMitigations are available to help reduce the attack surface of affected devices. See the \"Details\" section of this security advisory and the accompanying Cisco Applied Mitigation Bulletin (AMB) for additional information. \n\r\n\n\r\nUpdate (November 3rd, 2014):\n\r\nUpdated software that resolves the vulnerability described in this document has been released.  This release is generally available and can be downloaded from the product-specific support areas on Cisco.com. The release version is 9.4(2).\n\r\n\n\r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130109-uipphone[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130109-uipphone\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "The vulnerability affects the Cisco Unified IP Phones 7900 Series, also known as TNP phones.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "The following Cisco Unified IP Phones 7900 Series devices are affected by the vulnerability documented in this advisory:\n\r\n\r\n    \r\n    Cisco Unified IP Phone 7906\r\n    \r\n    Cisco Unified IP Phone 7911G\r\n    \r\n    Cisco Unified IP Phone 7931G\r\n    \r\n    Cisco Unified IP Phone 7941G\r\n    \r\n    Cisco Unified IP Phone 7941G-GE\r\n    \r\n    Cisco Unified IP Phone 7942G\r\n    \r\n    Cisco Unified IP Phone 7945G\r\n    \r\n    Cisco Unified IP Phone 7961G\r\n    \r\n    Cisco Unified IP Phone 7961G-GE\r\n    \r\n    Cisco Unified IP Phone 7962G\r\n    \r\n    Cisco Unified IP Phone 7965G\r\n    \r\n    Cisco Unified IP Phone 7970G\r\n    \r\n    Cisco Unified IP Phone 7971G-GE\r\n    \r\n    Cisco Unified IP Phone 7975G\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "The following Cisco Unified IP Phones 7900 Series devices are not affected by the vulnerability documented in this advisory:\n\r\n\r\n    \r\n    Cisco Unified IP Phone 7902G\r\n    \r\n    Cisco Unified IP Phone 7905G\r\n    \r\n    Cisco Unified IP Phone 7910G\r\n    \r\n    Cisco Unified IP Phone 7912G\r\n    \r\n    Cisco Unified IP Phone 7940\r\n    \r\n    Cisco Unified IP Phone 7960\r\n    \r\n    Cisco Unified IP Phone 7985G\r\n    \r\n    Cisco Unified Wireless IP Phone 7920 Versions 1/2/3\r\n    \r\n    Cisco Unified Wireless IP Phone 7921G\r\n    \r\n    Cisco Unified Wireless IP Phone 7925G\r\n    \r\n    Cisco Unified Wireless IP Phone 7925G-EX\r\n    \r\n    Cisco Unified Wireless IP Phone 7926G\r\n    \r\n    Cisco Unified IP Conference Station 7935\r\n    \r\n    Cisco Unified IP Conference Station 7936\r\n    \r\n    Cisco Unified IP Conference Station 7937G\r\n\r\n\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Several models in the CiscoUnified IP Phones 7900 Series contain an input validation vulnerability that could allow a local, authenticated attacker to manipulate arbitrary areas of memory within the device. This is due to a failure to properly validate user-supplied parameters that are passed to kernel system calls. Multiple access vectors have been identified whereby an attacker could gain local access to the device. An attacker can accomplish this by gaining physical access to the device via the AUX port on the back of the device, or remotely by first authenticating to the device via SSH. After the Cisco Unified Communications Manager (CallManager) provisions the device, the remote access method is disabled by default.\n\r\n\n\r\nPublic Demonstrations\n\r\n\n\r\nThis issue has been publicly demonstrated at several venues. In each demonstration, the devices that are used appear to be unprovisioned phones running an affected version of the Cisco Unified IP Phone software. The demonstrations use a physical attack vector to compromise the phone via a local serial port to place a modified binary on the device, which could then be used to manipulate arbitrary regions of kernel memory by exploiting this issue.\n\r\n\n\r\nIn the demonstrations, the handset microphone is enabled while the handset is in the on-hook position (handset in the cradle). The high-gain area microphones on the TNP devices are electrically connected to the speakerphone active indicator and cannot be bypassed through software manipulation. On the 79x1 Series devices, the handset microphone is controlled by software and the General Purpose Input/Output (GPIO) channels on the audio codec, which allows the microphone to be activated and the display indicators on the handset to be bypassed.\n\r\n\n\r\nThe 79x2 and 79x5 Series devices are designed to provide additional protections by electrically connecting the handset microphone to the off-hook switch, which prevents the microphone from being activated without any indication.  \n\r\n\n\r\nPostulated Remote Attacks\n\r\n\n\r\nIn addition to the physical attack vector, multiple network-based attacks have been postulated that leverage certain behaviors of the Cisco Unified IP Phone. Thus far, the attacks have been predicated on exploiting the use of TFTP. TFTP is an unsecured transport protocol that operates over UDP and is susceptible to spoofing attacks. Cisco recognizes that TFTP is unsecured and has enabled administrators to cryptographically secure phone configuration files transferred over TFTP in Cisco Unified Call Manager Version 5.0 and later. Additionally, in version 8.0(1) and all subsequent releases, Cisco instituted a secure-by-default policy. These releases sign device configuration files by default and disable both the SSH and web daemons on the phones. Signing and encrypting device configuration files prevents an attacker from tampering or replacing these files by spoofing a TFTP server or server response. This is accomplished by verifying the cryptographic signature of these file before they are used by a device.\n\r\n\n\r\nIn addition to these default protections, Cisco provides a comprehensive design guide for all voice network deployments. This includes suggested security feature configurations on intermediate and edge devices to prevent spoofed traffic from being passed on the voice network as well as the isolation and segregation of voice traffic from general network traffic. Security information for Cisco Unified Communications Manager Version 9.0 is available at the following link: http://www.cisco.com/en/US/docs/voice_ip_comm/cucm/srnd/9x/security.html[\"http://www.cisco.com/en/US/docs/voice_ip_comm/cucm/srnd/9x/security.html\"]\n\r\n\n\r\nCisco recognizes that while a number of network, device, and configuration-based mitigations exist, there is no way to mitigate the physical attack vector on the affected devices. To this end, Cisco has conducted a phased remediation approach, which started with an intermediate Engineering Special software release for affected devices, that mitigates known attack vectors for the vulnerability documented in this advisory. This software release was available upon request from the Cisco Technical Assistance Center (TAC). Additional enhancements will follow in a Service Release that was posted on Cisco.com on February 14, 2013.  \n\r\n\n\r\nThe final remediation of this vulnerability has been made available as part of the 9.4(2) general availability software release for affected devices.  The software was posted to Cisco.com in September 2014.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCuc83860[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc83860\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-5445.\n\r\n\n\r\nSoftware Hardening\n\r\n\n\r\nChanges have been made to the affected software to harden it against unauthorized access. The following changes have been made:\n\r\n\r\n    Disable the local console port on affected devices.\r\n    \r\n        This change removes the ability to gain access to the command line of an affected device by physically accessing the AUX/Console port on the phone.\r\n    \r\n    \r\n\r\n\r\n    Remove the default user shell.\r\n    \r\n        The interactive Unix-like shell has been removed from the affected devices. If SSH has been enabled, and a user successfully authenticates, the only shells available are the debug and log options.\r\n    \r\n    \r\n\r\nThese changes have been documented in Cisco Bug ID CSCue04937[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCue04937\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only).\n\r\n\n\r\nAdditional hardening measures have been made in the 9.3(1)SR2 service release.  The following change has been made:\n\r\n\r\n    SSH authorized_keys file is no longer sent to phones\r\n    \r\n        This change removes the ability to authenticate to a phone via SSH keys only.  When SSH is enabled, administrators will need to authenticate via Username and Password as defined in a device's profile.\r\n    \r\n    \r\n\r\nThese changes have been documented in Cisco Bug ID CSCue04970[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCue04970\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only).",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Administrators are advised to read and implement the mitigations found in the following Applied Mitigation Bulletin. If Cisco Unified IP Phones are not deployed on a Cisco infrastructure, administrators should at minimum consider deploying encrypted configurations and ensuring that SSH has been disabled. Configuration files from Cisco Unified Communications Manager Version 8.0(1) and later are signed by default for all affected Cisco Unified IP Phones 7900 Series devices.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the companion document \"Identifying and Mitigating Exploitation of the Cisco Unified IP Phone Local Kernel System Call Input Validation Vulnerability\" at the following link:\n\r\nhttp://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27763[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27763\"]\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released software version 9.4(2) that remediates the vulnerability described in this document. Release notes for this update can be found here: Cisco Unified IP Phone 7900 Series Release 9.4(2)[\"http://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cuipph/7900_series/firmware/9-4-2/english/releasenotes/P790_BK_73355F5F_00_7900-series-rn-942/P790_BK_73355F5F_00_7900-series-rn-942_chapter_00.html\"]\n\r\n\n\r\nWhen considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any malicious use of the vulnerability that is described in this advisory. \n\r\n\n\r\nThis vulnerability was reported to Cisco by Ang Cui, Columbia University.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "external",
+				"summary": "Identifying and Mitigating Exploitation of the Cisco Unified IP Phone Local Kernel System Call Input Validation Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27763"
+			},
+			{
+				"category": "self",
+				"summary": "Cisco Unified IP Phone Local Kernel System Call Input Validation Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130109-uipphone"
+			}
+		],
+		"title": "Cisco Unified IP Phone Local Kernel System Call Input Validation Vulnerability",
+		"tracking": {
+			"current_release_date": "2014-11-03T21:48:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:35+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130109-uipphone",
+			"initial_release_date": "2013-01-09T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-01-09T15:49:48+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				},
+				{
+					"date": "2013-01-17T15:39:32+00:00",
+					"number": "1.1.0",
+					"summary": "Added information about Engineering Special release 9.3(1)-ES11."
+				},
+				{
+					"date": "2013-02-14T22:18:07+00:00",
+					"number": "1.2.0",
+					"summary": "Added information regarding the release of general service release 9.3(1)SR2.  Added additional hardening information to Details section."
+				},
+				{
+					"date": "2013-03-27T15:30:57+00:00",
+					"number": "1.3.0",
+					"summary": "Corrected Revision History table for Revision 1.2. Incorrect year had been given."
+				},
+				{
+					"date": "2014-11-03T21:48:48+00:00",
+					"number": "1.4.0",
+					"summary": "Updated Summary and Software Versions and Fixes Section to indicate the release of version 9.4(2), which remediates the core vulnerability."
+				}
+			],
+			"status": "final",
+			"version": "1.4.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7906G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7906G ",
+							"product_id": "CSAFPID-7655"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7911G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7911G ",
+							"product_id": "CSAFPID-7656"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7941G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7941G ",
+							"product_id": "CSAFPID-7657"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7961G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7961G ",
+							"product_id": "CSAFPID-7658"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7970G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7970G ",
+							"product_id": "CSAFPID-7659"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7931G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7931G ",
+							"product_id": "CSAFPID-73426"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7942G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7942G ",
+							"product_id": "CSAFPID-73458"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7962G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7962G ",
+							"product_id": "CSAFPID-73464"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7945G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7945G ",
+							"product_id": "CSAFPID-73470"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7965G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7965G ",
+							"product_id": "CSAFPID-73476"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7971G-GE",
+						"product": {
+							"name": "Cisco Unified IP Phone 7971G-GE ",
+							"product_id": "CSAFPID-109904"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7961G-GE",
+						"product": {
+							"name": "Cisco Unified IP Phone 7961G-GE ",
+							"product_id": "CSAFPID-109994"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7941G-GE",
+						"product": {
+							"name": "Cisco Unified IP Phone 7941G-GE ",
+							"product_id": "CSAFPID-109995"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified IP Phone 7975G",
+						"product": {
+							"name": "Cisco Unified IP Phone 7975G ",
+							"product_id": "CSAFPID-188519"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2012-5445",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuc83860",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-109904",
+					"CSAFPID-109994",
+					"CSAFPID-109995",
+					"CSAFPID-188519",
+					"CSAFPID-73426",
+					"CSAFPID-73458",
+					"CSAFPID-73464",
+					"CSAFPID-73470",
+					"CSAFPID-73476",
+					"CSAFPID-7655",
+					"CSAFPID-7656",
+					"CSAFPID-7657",
+					"CSAFPID-7658",
+					"CSAFPID-7659"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco Unified IP Phone Local Kernel System Call Input Validation Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130109-uipphone"
+				}
+			],
+			"release_date": "2013-01-09T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Administrators are advised to read and implement the mitigations found in the following Applied Mitigation Bulletin. If Cisco Unified IP Phones are not deployed on a Cisco infrastructure, administrators should at minimum consider deploying encrypted configurations and ensuring that SSH has been disabled. Configuration files from Cisco Unified Communications Manager Version 8.0(1) and later are signed by default for all affected Cisco Unified IP Phones 7900 Series devices.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the companion document \"Identifying and Mitigating Exploitation of the Cisco Unified IP Phone Local Kernel System Call Input Validation Vulnerability\" at the following link:\n\r\nhttp://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27763[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27763\"]\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 6.8,
+						"vectorString": "AV:L/AC:L/Au:S/C:C/I:C/A:C/E:F/RL:TF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-109904",
+						"CSAFPID-109994",
+						"CSAFPID-109995",
+						"CSAFPID-188519",
+						"CSAFPID-73426",
+						"CSAFPID-73458",
+						"CSAFPID-73464",
+						"CSAFPID-73470",
+						"CSAFPID-73476",
+						"CSAFPID-7655",
+						"CSAFPID-7656",
+						"CSAFPID-7657",
+						"CSAFPID-7658",
+						"CSAFPID-7659"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 6.8,
+						"vectorString": "AV:L/AC:L/Au:S/C:C/I:C/A:C/E:F/RL:TF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-109904",
+						"CSAFPID-109994",
+						"CSAFPID-109995",
+						"CSAFPID-188519",
+						"CSAFPID-73426",
+						"CSAFPID-73458",
+						"CSAFPID-73464",
+						"CSAFPID-73470",
+						"CSAFPID-73476",
+						"CSAFPID-7655",
+						"CSAFPID-7656",
+						"CSAFPID-7657",
+						"CSAFPID-7658",
+						"CSAFPID-7659"
+					]
+				}
+			],
+			"title": "Cisco Unified IP Phones Local Kernel System Call Input Validation Vulnerability"
+		}
+	]
+}

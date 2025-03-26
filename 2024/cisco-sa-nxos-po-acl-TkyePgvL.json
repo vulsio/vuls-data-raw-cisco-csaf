@@ -1,0 +1,381 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the access control list (ACL) programming for port channel subinterfaces of Cisco Nexus 3000 and 9000 Series Switches in standalone NX-OS mode could allow an unauthenticated, remote attacker to send traffic that should be blocked through an affected device.\r\n\r\nThis vulnerability is due to incorrect hardware programming that occurs when configuration changes are made to port channel member ports. An attacker could exploit this vulnerability by attempting to send traffic through an affected device. A successful exploit could allow the attacker to access network resources that should be protected by an ACL that was applied on port channel subinterfaces.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the February 2024 Cisco FXOS and NX-OS Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: February 2024 Semiannual Cisco FXOS and NX-OS Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75059\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco Nexus 3000 and 9000 Series Switches in standalone NX-OS mode if they were running Cisco NX-OS Software Release 9.3(10), 9.3(11), or 9.3(12) and had an ingress ACL configured on at least one port channel subinterface, as shown in the following example:\r\n\r\n\r\nnxos# show running-config interface port-channel 10.10\r\n\r\ninterface port-channel10.10\r\n  encapsulation dot1q 10\r\n  ip access-group acl-10 in\r\n  ip address 10.10.1.1/24\r\n  no shutdown\r\n\r\nNote: When using an affected configuration, any changes made to port channel member ports may result in ACL programming errors.\r\n  Determine Whether the ACL Programming is Affected\r\nTo determine whether the ACL programming is affected, use the show system internal access-list interface port-channel subinterface input entries detail command at the device CLI. In a regular ACL programming situation, the command is expected to return ACL entries that are associated to the subinterface in question, as seen in the following example:\r\n\r\n\r\nnxos# show system internal access-list interface port-channel 10.10 input entries detail\r\nslot  1\r\n=======\r\n\r\nFlags: F - Fragment entry  E - Port Expansion\r\n       D - DSCP Expansion  M - ACL Expansion\r\n       T - Cross Feature Merge Expansion\r\n       N - NS Transit  B - BCM Expansion  C - COPP\r\n\r\nINSTANCE 0x0\r\n---------------\r\n  Tcam 1 resource usage:\r\n  ----------------------\r\n  LBL B = 0xa\r\n   Bank 1\r\n   ------\r\n     IPv4 Class\r\n     Policies: RACL(acl-10)\r\n       Netflow profile: 0\r\n       Netflow deny profile: 0\r\n       Entries:\r\n         [Index] Entry [Stats]\r\n         ---------------------\r\n  [0x001c:0x001e:0x001e] permit ip 0.0.0.0/0 10.10.1.11/32  routeable 0x1  [0]\r\n[0x001d:0x001f:0x001f] deny ip 0.0.0.0/0 10.10.1.12/32  routeable 0x1  [0]\r\n  [0x001e:0x0020:0x0020] deny ip 0.0.0.0/0 0.0.0.0/0  routeable 0x1  [0]\r\n\r\nIf the command returns no entries for a port channel subinterface that is configured with an access list, ACL programming is affected, as seen in the following example:\r\n\r\n\r\nnxos# show system internal access-list interface port-channel 10.10 input entries detail\r\n\r\nslot  1\r\n=======",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nFirepower 1000 Series\r\nFirepower 2100 Series\r\nFirepower 4100 Series\r\nFirepower 9300 Security Appliances\r\nMDS 9000 Series Multilayer Switches\r\nNexus 1000 Virtual Edge for VMware vSphere\r\nNexus 1000V Switch for Microsoft Hyper-V\r\nNexus 1000V Switch for VMware vSphere\r\nNexus 5500 Platform Switches\r\nNexus 5600 Platform Switches\r\nNexus 6000 Series Switches\r\nNexus 7000 Series Switches\r\nNexus 9000 Series Fabric Switches in ACI mode\r\nSecure Firewall 3100 Series\r\nSecure Firewall 4200 Series\r\nUCS 6200 Series Fabric Interconnects\r\nUCS 6300 Series Fabric Interconnects\r\nUCS 6400 Series Fabric Interconnects\r\nUCS 6500 Series Fabric Interconnects",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There are workarounds that address this vulnerability.\r\n\r\nAfter performing configuration changes to port channel member ports, verify whether the ACL programming is affected on any port channel subinterface, as shown in the Vulnerable Products [\"#vp\"] section of this advisory. Proper ACL programming can be restored on any affected port channel subinterface by removing and reapplying the associated ip access-group configuration command. Reloading an affected device would also fix the ACL programming for all affected subinterfaces.\r\n\r\nWhile these workarounds have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n        Cisco NX-OS Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco NX-OS Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (���First Fixed���). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities described in all the advisories that the Software Checker identifies (���Combined First Fixed���).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search���only this advisory, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or all advisories.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number���for example, 7.0(3)I7(5) for Cisco Nexus 3000 Series Switches or 14.0(1h) for Cisco NX-OS Software in ACI mode.\r\nClick Check.\r\n\r\n       Only this advisory  All Critical and High advisories  All advisories    Cisco NX-OS Software  Cisco NX-OS Software in ACI Mode    Any Platform  MDS 9000 Series Multilayer Switches  Nexus 1000V Series Switches  Nexus 3000 Series Switches  Nexus 5000 Series Switches  Nexus 6000 Series Switches  Nexus 7000 Series Switches  Nexus 9000 Series Switches\r\n\r\n\r\n\r\n\r\n     Cisco Nexus 3000 and 9000 Series Switches SMUs\r\nCisco has released the following SMU to address this vulnerability. Customers can download the SMU from the Software Center [\"https://software.cisco.com/download/home\"] on Cisco.com.\r\n        Cisco NX-OS Software Release  Platform  SMU Name          9.3(12)  Nexus 3000 and 9000 Series Switches  nxos.CSCwf47127-n9k_ALL-1.0.0-9.3.12.lib32_n9000.rpm\r\nFor details about downloading and installing SMUs in Cisco NX-OS Software for Cisco Nexus 3000 and 9000 Series Switches, see the Performing Software Maintenance Upgrades section of the Cisco NX-OS system management configuration guide for Cisco Nexus 3000 Series Switches  [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/system_mgmt/93x/system-management/b-cisco-nexus-3000-series-nx-os-system-management-configuration-guide-93x/b-cisco-nexus-3000-series-nx-os-system-management-configuration-guide-93x_chapter_011000.html\"]and Cisco Nexus 9000 Series Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/system-management/b-cisco-nexus-9000-series-nx-os-system-management-configuration-guide-93x/b-cisco-nexus-9000-series-nx-os-system-management-configuration-guide-93x_chapter_010111.html\"].\r\n      Additional Resources\r\nFor help determining the best Cisco NX-OS Software release for a Cisco Nexus Switch, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\n\r\nCisco MDS Series Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html\"]\r\nCisco Nexus 1000V for VMware Switch [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus1000/sw/recommended_releases/b_Cisco_N1KV_VMware_MinRecommendedReleases.html\"]\r\nCisco Nexus 3000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html\"]\r\nCisco Nexus 5500 Platform Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html\"]\r\nCisco Nexus 5600 Platform Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5600/sw/release/recommended_releases/n5600_recommended_nx-os_releases.html\"]\r\nCisco Nexus 6000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 7000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 9000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html\"]\r\nCisco Nexus 9000 Series ACI-Mode Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/recommended-release/b_Recommended_Cisco_ACI_Releases.html\"]\r\n\r\nTo determine the best release for Cisco UCS Software, see the Recommended Releases documents in the release notes for the device.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Nexus 3000 and 9000 Series Switches Port Channel ACL Programming Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxos-po-acl-TkyePgvL"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: February 2024 Semiannual Cisco FXOS and NX-OS Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75059"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Software Center",
+				"url": "https://software.cisco.com/download/home"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 3000 Series Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/system_mgmt/93x/system-management/b-cisco-nexus-3000-series-nx-os-system-management-configuration-guide-93x/b-cisco-nexus-3000-series-nx-os-system-management-configuration-guide-93x_chapter_011000.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 9000 Series Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/system-management/b-cisco-nexus-9000-series-nx-os-system-management-configuration-guide-93x/b-cisco-nexus-9000-series-nx-os-system-management-configuration-guide-93x_chapter_010111.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco MDS Series Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 1000V for VMware Switch",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus1000/sw/recommended_releases/b_Cisco_N1KV_VMware_MinRecommendedReleases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 3000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 5500 Platform Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 5600 Platform Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5600/sw/release/recommended_releases/n5600_recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 6000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 7000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 9000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 9000 Series ACI-Mode Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/recommended-release/b_Recommended_Cisco_ACI_Releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Nexus 3000 and 9000 Series Switches Port Channel ACL Programming Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-02-28T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:29:03+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-nxos-po-acl-TkyePgvL",
+			"initial_release_date": "2024-02-28T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-02-28T15:57:03+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.3(10)",
+										"product": {
+											"name": "9.3(10)",
+											"product_id": "CSAFPID-288219"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(11)",
+										"product": {
+											"name": "9.3(11)",
+											"product_id": "CSAFPID-292868"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(12)",
+										"product": {
+											"name": "9.3(12)",
+											"product_id": "CSAFPID-299968"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.3"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco NX-OS Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Nexus 3000 Series Switches",
+						"product": {
+							"name": "Cisco Nexus 3000 Series Switches",
+							"product_id": "CSAFPID-265091"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Nexus 9000 Series Switches",
+						"product": {
+							"name": "Cisco Nexus 9000 Series Switches",
+							"product_id": "CSAFPID-265096"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(10) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-288219:265091"
+				},
+				"product_reference": "CSAFPID-288219",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(10) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-288219:265096"
+				},
+				"product_reference": "CSAFPID-288219",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(11) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-292868:265091"
+				},
+				"product_reference": "CSAFPID-292868",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(11) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-292868:265096"
+				},
+				"product_reference": "CSAFPID-292868",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(12) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-299968:265091"
+				},
+				"product_reference": "CSAFPID-299968",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(12) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-299968:265096"
+				},
+				"product_reference": "CSAFPID-299968",
+				"relates_to_product_reference": "CSAFPID-265096"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20291",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwf47127"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-288219:265091",
+					"CSAFPID-288219:265096",
+					"CSAFPID-292868:265091",
+					"CSAFPID-292868:265096",
+					"CSAFPID-299968:265091",
+					"CSAFPID-299968:265096"
+				]
+			},
+			"release_date": "2024-02-28T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-288219:265091",
+						"CSAFPID-288219:265096",
+						"CSAFPID-292868:265091",
+						"CSAFPID-292868:265096",
+						"CSAFPID-299968:265091",
+						"CSAFPID-299968:265096"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There are workarounds that address this vulnerability.\r\n\r\nAfter performing configuration changes to port channel member ports, verify whether the ACL programming is affected on any port channel subinterface, as shown in the Vulnerable Products [\"#vp\"] section of this advisory. Proper ACL programming can be restored on any affected port channel subinterface by removing and reapplying the associated ip access-group configuration command. Reloading an affected device would also fix the ACL programming for all affected subinterfaces.\r\n\r\nWhile these workarounds have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-288219:265091",
+						"CSAFPID-288219:265096",
+						"CSAFPID-292868:265091",
+						"CSAFPID-292868:265096",
+						"CSAFPID-299968:265091",
+						"CSAFPID-299968:265096"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-288219:265091",
+						"CSAFPID-288219:265096",
+						"CSAFPID-292868:265091",
+						"CSAFPID-292868:265096",
+						"CSAFPID-299968:265091",
+						"CSAFPID-299968:265096"
+					]
+				}
+			],
+			"title": "Cisco Nexus 3000 and 9000 Series Switches Port Channel ACL Programming Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,508 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco ASA Software is affected by the following vulnerabilities:\n\r\n\r\n    IKE Version 1 Denial of Service Vulnerability \r\n    Crafted URL Denial of Service Vulnerability \r\n    Denial of Service During Validation of Crafted Certificates \r\n    DNS Inspection Denial of Service Vulnerability \r\n\r\nThese vulnerabilities are independent of each other; a release that is affected by one of the vulnerabilities may not be affected by the others.\n\r\n\n\r\nSuccessful exploitation of any of these vulnerabilities may result in a reload of an affected device, leading to a denial of service (DoS) condition.\n\r\n\n\r\nCisco has released software updates that address these vulnerabilities. Workarounds are available for some of these vulnerabilities.\n\r\n\n\r\nThis advisory is available at the following link:\n\r\n\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa\"]\n\r\n\n\r\nNote: The Cisco Firewall Services Module (FWSM) for Cisco Catalyst 6500 Series Switches and Cisco 7600 Series Routers may be affected by some of the vulnerabilities listed above. A separate Cisco Security Advisory has been published to disclose the vulnerabilities that affect the Cisco FWSM. This advisory is available at\n\r\n\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-fwsm[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-fwsm\"]\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco ASA Software for Cisco ASA 5500 Series Adaptive Security Appliances, Cisco ASA Services Module for Cisco Catalyst 6500 Series Switches and Cisco 7600 Series Routers, and Cisco ASA 1000V Cloud Firewall are affected by multiple vulnerabilities. Affected versions of Cisco ASA Software will vary depending on the specific vulnerability. Consult the \"Software Versions and Fixes\" section of this security advisory for more information about the affected versions.\n\r\n\n\r\nCisco PIX Security Appliances may be affected by some of the vulnerabilities described in this security advisory. Cisco PIX has reached the End of Software Maintenance Releases milestone. Cisco PIX Security Appliance customers are encouraged to migrate to Cisco ASA 5500 Series Adaptive Security Appliances.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "IKE Version 1 Denial of Service Vulnerability\r\nA device running Cisco ASA Software is affected by this vulnerability if IKE version 1 is enabled. IKE version 1 is enabled if the command crypto isakmp enable  (Cisco ASA Software 8.3.x and earlier) or crypto ikev1 enable  (Cisco ASA Software 8.4.x and later) is configured.\n\r\n\n\r\nIKE version 1 is not enabled by default.\n\r\nCrafted URL Denial of Service Vulnerability\r\nA device running Cisco ASA Software is affected by this vulnerability if the device is using authentication, authorization, and accounting (AAA) for network access control and HTTP(S) listening ports to authenticate network users are enabled. HTTP(S) listening ports to authenticate network users are enabled if the command aaa authentication listener is configured.\n\r\n\n\r\nAAA for network access control and HTTP(S) listening ports to authenticate network users are not enabled by default.\n\r\nDenial of Service During Validation of Crafted Certificates\r\nTo be vulnerable, Cisco ASA Software must have at least one authenticated trustpoint enrolled with a third-party certificate authority or enrolled with the Cisco ASA local certificate authority. \r\n\r\nTo determine whether Cisco ASA Software is configured with an authenticated trustpoint, use the show crypto ca certificate command and verify that the certificate is associated to at least one trustpoint. The following example shows a certificate associated to a trustpoint called 'test' \r\n\r\n\r\nciscoasa# show crypto ca certificates\n[...]\n  Status: Available\n  [...]\n  Associated Trustpoints: test\r\n\r\nDigital certificate authentication is not enabled by default.\r\n\r\nDNS Inspection Denial of Service Vulnerability\r\nCisco ASA Software is affected by this vulnerability if DNS inspection is enabled. \r\n\r\nTo determine whether DNS inspection is enabled, use the show service-policy | include dns command. The following example shows Cisco ASA Software with DNS inspection enabled: \r\n\r\n\r\nciscoasa# show service-policy | include dns\n    Inspect: dns preset_dns_map, packet 0, lock fail 0, drop 0, reset-drop 0 \r\nDNS inspection is enabled by default.\n\r\nDetermining the Running Software Version\r\nTo determine whether a vulnerable version of Cisco ASA Software is running on an appliance, administrators can issue the show version command. The following example shows a device running Cisco ASA Software version 8.4(1):\r\n\r\n\r\nciscoasa#show version | include Version\nCisco Adaptive Security Appliance Software Version 8.4(1) \nDevice Manager Version 6.4(1)\n\r\nCustomers who use Cisco Adaptive Security Device Manager (ASDM) to manage devices can locate the software version in the table that is displayed in the login window or upper-left corner of the Cisco ASDM window.\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco ASA-CX Context-Aware Security is not affected by any of these vulnerabilities.\n\r\n\n\r\nWith the exception of the Cisco FWSM, no other Cisco products are currently known to be affected by these vulnerabilities.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco Adaptive Security Appliance (ASA) Software is the operating system used by the Cisco ASA 5500 Series Adaptive Security Appliances, the Cisco ASA Services Module (ASASM) for Cisco Catalyst 6500 Series Switches and Cisco 7600 Series Routers, and the Cisco ASA 1000V Cloud Firewall. The Cisco ASA family provides network security services such as firewall, intrusion prevention system (IPS), anti-X, and VPN.\n\r\n\n\r\nCisco ASA Software contains multiple vulnerabilities that may allow an unauthenticated, remote attacker to cause a reload of an affected device.\n\r\nIKE Version 1 Denial of Service Vulnerability\r\nThe IKE version 1 implementation contains a vulnerability that could allow an unauthenticated, remote attacker to cause a reload of an affected device.\n\r\n\n\r\nThe vulnerability is due to the incorrect processing of an incoming IKE version 1 message. An attacker could exploit this vulnerability by sending a crafted IKE message.  An exploit could allow the attacker to cause a reload of an affected device.\n\r\n\n\r\nOnly traffic directed to the affected system can be used to exploit this vulnerability. This vulnerability affects routed firewall mode in both single and multi-context mode. This vulnerability can be triggered by IP version 4 (IPv4) and IP version 6 (IPv6) traffic.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCub85692[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCub85692\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2013-1149.\n\r\nCrafted URL Denial of Service Vulnerability\r\nA vulnerability in the URL processing code of the authentication proxy feature of Cisco ASA Software could allow an unauthenticated, remote attacker to cause a reload of an affected device.\n\r\n\n\r\nThe vulnerability is due to mishandling of a crafted URL. An attacker could exploit this vulnerability by sending a crafted URL to an affected device.  An exploit could allow the attacker to cause a denial of service condition.\n\r\nBoth transit traffic and traffic directed to the affected system can be used to exploit this vulnerability. This vulnerability affects both routed and transparent firewall mode in both single and multi-context mode. This vulnerability can be triggered by IPv4 and IPv6 traffic. \r\n\r\nThis vulnerability is documented in Cisco bug ID CSCud16590[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCud16590\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-1150.\n\r\nDenial of Service During Validation of Crafted Certificates\r\nA vulnerability in the implementation of the function used to validate digital certificates for authentication could allow an unauthenticated, remote attacker to cause a reload of an affected device.\n\r\n\n\r\nThis vulnerability is due to an implementation error in the code that validates the digital certificates used during authentication.  An attacker could exploit this vulnerability by using a crafted certificate to trigger an authentication operation on an affected device.\n\r\nOnly traffic directed to the affected system can be used to exploit this vulnerability. This vulnerability affects both routed and transparent firewall mode in both single and multi-context mode. This vulnerability can be triggered by IPv4 and IPv6 traffic.\r\n\r\nThis vulnerability is documented in Cisco bug ID CSCuc72408[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc72408\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-1151.\n\r\nDNS Inspection Denial of Service Vulnerability\r\nCisco ASA Software DNS application inspection supports DNS message controls that provide protection against DNS spoofing and cache poisoning.\r\n\r\nA vulnerability in the DNS inspection engine code of Cisco ASA Software could allow an unauthenticated, remote attacker to trigger a reload of the affected device.\n\r\n\n\r\nThis vulnerability is due to improper processing of some fields in DNS messages. An attacker could exploit this vulnerability by sending a crafted DNS message that triggers inspection by an affected device.\n\r\n\n\r\nOnly transit traffic can be used to exploit this vulnerability. This vulnerability affects both routed and transparent firewall mode in both single and multi-context mode. This vulnerability can be triggered by IPv4 and IPv6 traffic.\n\r\nThis vulnerability is documented in Cisco bug ID CSCuc80080[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc80080\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-1152\r\n\r\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "\n\r\nIKE Version 1 Denial of Service Vulnerability\r\nDisabling IKE version 1, if feasible, will mitigate this vulnerability. Note that disabling IKE version 1 will disable IPsec-based VPN tunnels (LAN-to-LAN and remote access) that are configured to use IKE version 1 for Security Association (SA) negotiation and establishment. However, if administrators use only SSL VPN (remote access only), it may be possible to disable IKE version 1 with no impact to the VPN solution. IKE version 1 can be disabled with the global configuration commands  no crypto isakmp enable  (Cisco ASA Software 8.3.x and earlier) or no crypto ikev1 enable  (Cisco ASA Software 8.4.x and later).\r\n\r\nIKE version 2 is not affected by this vulnerability, so migrating to IKE version 2 and disabling IKE version 1 will eliminate this vulnerability.\r\n\r\nCrafted URL Denial of Service Vulnerability\r\nDisabling AAA for network access control and HTTP(S) listening ports to authenticate network users, if feasible, will mitigate this vulnerability. HTTP(S) listening ports to authenticate network users can be disabled with the global configuration command no aaa authentication listener.\r\n\r\nDenial of Service During Validation of Crafted Certificates\r\nThere are no workarounds that mitigate this vulnerability.\r\n\r\nDNS Inspection Denial of Service Vulnerability\r\nDisabling DNS inspection, if feasible, will mitigate this vulnerability. The following commands will disable the DNS inspection that is configured by default: \r\n\r\n\r\nciscoasa(config)# policy-map global_policy\nciscoasa(config-pmap)# class inspection_default\nciscoasa(config-pmap-c)# no inspect dns\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\nThe following table lists all recommended releases. These recommended releases contain the fixes for all vulnerabilities in this advisory. Cisco recommends upgrading to a release that is equal to or later than these recommended releases.\n\r\n\n\r\n\r\n\r\n\r\n    \r\n        \r\n             Major Release\n\r\n            \r\n             Recommended Release \n\r\n            \r\n        \r\n        \r\n             7.0\r\n             Migrate to 7.2.x or later\n\r\n            \r\n        \r\n        \r\n             7.1\r\n             Migrate to 7.2.x or later \r\n        \r\n        \r\n             7.2\r\n             7.2(5.10) \r\n        \r\n        \r\n             8.0\r\n             8.0(5.31) \r\n        \r\n        \r\n             8.1\r\n             Migrate to 8.2.x or later\n\r\n            \r\n        \r\n        \r\n             8.2\r\n             8.2(5.41) \r\n        \r\n        \r\n             8.3\r\n             8.3(2.37) \r\n        \r\n        \r\n             8.4\r\n             8.4(5.6) \r\n        \r\n        \r\n             8.5\r\n             Vulnerable; migrate to 9.x\n\r\n            \r\n        \r\n        \r\n             8.6\r\n             8.6(1.10) \r\n        \r\n        \r\n             8.7\r\n             8.7(1.4)\r\n        \r\n        \r\n             9.0\r\n             9.0(2)\r\n        \r\n        \r\n             9.1\r\n             9.1(2)\n\r\n            \r\n        \r\n    \r\n\r\n\r\nThe following table lists the first fixed releases that contain the fixes for individual vulnerabilities in this advisory. Note that this information is provided for completeness only because different vulnerabilities have different first-fixed releases. Refer to the previous table for releases that have fixes for all vulnerabilities in this advisory.\n\r\n\n\r\n\n\r\n\r\n\r\n\r\n    \r\n        \r\n             Vulnerability\r\n            Major Release\n\r\n            \r\n            First-fixed Release \n\r\n            \r\n        \r\n        \r\n             IKE Version 1 Denial of Service Vulnerability (CSCub85692)\n\r\n            \r\n             7.0\r\n             Migrate to 7.2.x or later\r\n        \r\n        \r\n             7.1\r\n             Migrate to 7.2.x or later\r\n        \r\n        \r\n             7.2\r\n             7.2(5.10)\r\n        \r\n        \r\n             8.0\r\n             8.0(5.28)\r\n        \r\n        \r\n             8.1\r\n             Migrate to 8.2.x or later\n\r\n            \r\n        \r\n        \r\n             8.2\r\n             8.2(5.35)\r\n        \r\n        \r\n             8.3\r\n             8.3(2.34)\r\n        \r\n        \r\n             8.4\r\n             8.4(4.11)\r\n        \r\n        \r\n             8.5\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.6\r\n             8.6(1.10)\r\n        \r\n        \r\n             8.7\r\n             8.7(1.3)\r\n        \r\n        \r\n             9.0\r\n             Not affected\r\n        \r\n        \r\n             9.1\r\n             Not affected\r\n        \r\n        \r\n             Crafted URL Denial of Service Vulnerability (CSCud16590)\n\r\n            \r\n             7.0\r\n             Migrate to 7.2.x or later\r\n        \r\n        \r\n             7.1\r\n             Migrate to 7.2.x or later\r\n        \r\n        \r\n             7.2\r\n             7.2(5.10)\r\n        \r\n        \r\n             8.0\r\n             8.0(5.31)\r\n        \r\n        \r\n             8.1\r\n             Migrate to 8.2.x or later\n\r\n            \r\n        \r\n        \r\n             8.2\r\n             8.2(5.38)\r\n        \r\n        \r\n             8.3\r\n             8.3(2.37)\r\n        \r\n        \r\n             8.4\r\n             8.4(5.3)\r\n        \r\n        \r\n             8.5\r\n             Vulnerable; migrate to 9.x\n\r\n            \r\n        \r\n        \r\n             8.6\r\n             8.6(1.10)\r\n        \r\n        \r\n             8.7\r\n             8.7(1.4)\r\n        \r\n        \r\n             9.0\r\n             9.0(1.1)\r\n        \r\n        \r\n             9.1\r\n             9.1(1.2)\r\n        \r\n        \r\n            Denial of Service During Validation of Crafted Certificates (CSCuc72408)\n\r\n            \r\n             7.0\r\n             Migrate to 7.2.x or later\r\n        \r\n        \r\n             7.1\r\n             Migrate to 7.2.x or later\r\n        \r\n        \r\n             7.2\r\n             7.2(5.10)\r\n        \r\n        \r\n             8.0\r\n             8.0(5.31)\r\n        \r\n        \r\n             8.1\r\n             Migrate to 8.2.x or later\n\r\n            \r\n        \r\n        \r\n             8.2\r\n             8.2(5.38)\r\n        \r\n        \r\n             8.3\r\n             8.3(2.37)\r\n        \r\n        \r\n             8.4\r\n             8.4(5)\r\n        \r\n        \r\n             8.5\r\n             8.5(1.17)\r\n        \r\n        \r\n             8.6\r\n             8.6(1.10)\r\n        \r\n        \r\n             8.7\r\n             8.7(1.3)\r\n        \r\n        \r\n             9.0\r\n             Not affected\r\n        \r\n        \r\n             9.1\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             DNS Inspection Denial of Service Vulnerability (CSCuc80080)\n\r\n            \r\n             7.0\r\n             Not affected\r\n        \r\n        \r\n             7.1\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             7.2\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.0\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.1\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.2\r\n             Not affected\r\n        \r\n        \r\n             8.3\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.4\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.5\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.6\r\n             Not affected\n\r\n            \r\n        \r\n        \r\n             8.7\r\n             Not affected\r\n        \r\n        \r\n             9.0\r\n             9.0(1.2)\r\n        \r\n        \r\n             9.1\r\n             Not affected\r\n        \r\n    \r\n\r\nSoftware Download\r\nCisco ASA Software can be downloaded from the Software Center on Cisco.com by visiting http://www.cisco.com/cisco/software/navigator.html[\"http://www.cisco.com/cisco/software/navigator.html\"]\r\nFor Cisco ASA 5500 Series Adaptive Security Appliances, navigate to Products > Security > Firewalls > Adaptive Security Appliances (ASA) > Cisco ASA 5500 Series Adaptive Security Appliances >  > Adaptive Security Appliance (ASA) Software. Please note that some of these versions are interim versions and can be found by expanding the Interim tab on the download page.\r\n\r\nFor the Cisco ASA Services Module for Cisco Catalyst 6500 Series Switches and Cisco 7600 Series Routers, navigate to Products > Cisco Interfaces and Modules > Cisco Services Modules > Cisco Catalyst 6500 Series / 7600 Series ASA Services Module > Adaptive Security Appliance (ASA) Software. Please note that some of these versions are interim versions and can be found by expanding the Interim tab on the download page.\r\n\r\nFor the Cisco ASA 1000V Cloud Firewall, navigate to Products > Security > Firewalls > Adaptive Security Appliances (ASA) > Cisco ASA 1000V Cloud Firewall > Adaptive Security Appliance (ASA) Software.\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerabilities that are described in this advisory. \r\n\r\nAll the vulnerabilities described in this security advisory were found during the resolution of customer support cases.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Multiple Vulnerabilities in Cisco ASA Software",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa"
+			}
+		],
+		"title": "Multiple Vulnerabilities in Cisco ASA Software",
+		"tracking": {
+			"current_release_date": "2013-05-23T14:16:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:40+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130410-asa",
+			"initial_release_date": "2013-04-10T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-04-10T15:27:44+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2013-05-23T14:16:41+00:00",
+					"number": "1.1.0",
+					"summary": "Made Cisco ASA Software release 9.1(2) the recommended 9.1.x release because the previous 9.1.x recommended release (9.1.1.4) was reported to be unstable in certain configurations. This instability issue is fixed in release 9.1(2)."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Firewall Services Module (FWSM)",
+						"product": {
+							"name": "Cisco Firewall Services Module (FWSM) ",
+							"product_id": "CSAFPID-5176"
+						}
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.2.1",
+										"product": {
+											"name": "8.2.1",
+											"product_id": "CSAFPID-97260"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2",
+										"product": {
+											"name": "8.2.2",
+											"product_id": "CSAFPID-97261"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.3",
+										"product": {
+											"name": "8.2.3",
+											"product_id": "CSAFPID-108072"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.4",
+										"product": {
+											"name": "8.2.4",
+											"product_id": "CSAFPID-108074"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.5",
+										"product": {
+											"name": "8.2.5",
+											"product_id": "CSAFPID-115247"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.4.1",
+										"product": {
+											"name": "8.4.1",
+											"product_id": "CSAFPID-108073"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.2",
+										"product": {
+											"name": "8.4.2",
+											"product_id": "CSAFPID-112139"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.3",
+										"product": {
+											"name": "8.4.3",
+											"product_id": "CSAFPID-115256"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.4",
+										"product": {
+											"name": "8.4.4",
+											"product_id": "CSAFPID-115266"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.5",
+										"product": {
+											"name": "8.4.5",
+											"product_id": "CSAFPID-185255"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.0.1",
+										"product": {
+											"name": "9.0.1",
+											"product_id": "CSAFPID-188865"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.0.2",
+										"product": {
+											"name": "9.0.2",
+											"product_id": "CSAFPID-188866"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.0"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2013-1149",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCud20267,CSCub85692",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5176",
+					"CSAFPID-108073",
+					"CSAFPID-112139",
+					"CSAFPID-115256",
+					"CSAFPID-115266",
+					"CSAFPID-185255"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA Software",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "\n\r\nIKE Version 1 Denial of Service Vulnerability\r\nDisabling IKE version 1, if feasible, will mitigate this vulnerability. Note that disabling IKE version 1 will disable IPsec-based VPN tunnels (LAN-to-LAN and remote access) that are configured to use IKE version 1 for Security Association (SA) negotiation and establishment. However, if administrators use only SSL VPN (remote access only), it may be possible to disable IKE version 1 with no impact to the VPN solution. IKE version 1 can be disabled with the global configuration commands  no crypto isakmp enable  (Cisco ASA Software 8.3.x and earlier) or no crypto ikev1 enable  (Cisco ASA Software 8.4.x and later).\r\n\r\nIKE version 2 is not affected by this vulnerability, so migrating to IKE version 2 and disabling IKE version 1 will eliminate this vulnerability.\r\n\r\nCrafted URL Denial of Service Vulnerability\r\nDisabling AAA for network access control and HTTP(S) listening ports to authenticate network users, if feasible, will mitigate this vulnerability. HTTP(S) listening ports to authenticate network users can be disabled with the global configuration command no aaa authentication listener.\r\n\r\nDenial of Service During Validation of Crafted Certificates\r\nThere are no workarounds that mitigate this vulnerability.\r\n\r\nDNS Inspection Denial of Service Vulnerability\r\nDisabling DNS inspection, if feasible, will mitigate this vulnerability. The following commands will disable the DNS inspection that is configured by default: \r\n\r\n\r\nciscoasa(config)# policy-map global_policy\nciscoasa(config-pmap)# class inspection_default\nciscoasa(config-pmap-c)# no inspect dns\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5176",
+						"CSAFPID-108073",
+						"CSAFPID-112139",
+						"CSAFPID-115256",
+						"CSAFPID-115266",
+						"CSAFPID-185255"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5176",
+						"CSAFPID-108073",
+						"CSAFPID-112139",
+						"CSAFPID-115256",
+						"CSAFPID-115266",
+						"CSAFPID-185255"
+					]
+				}
+			],
+			"title": "IKE Version 1 Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2013-1150",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCud16590",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108073",
+					"CSAFPID-112139",
+					"CSAFPID-115256",
+					"CSAFPID-115266",
+					"CSAFPID-185255"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA Software",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "\n\r\nIKE Version 1 Denial of Service Vulnerability\r\nDisabling IKE version 1, if feasible, will mitigate this vulnerability. Note that disabling IKE version 1 will disable IPsec-based VPN tunnels (LAN-to-LAN and remote access) that are configured to use IKE version 1 for Security Association (SA) negotiation and establishment. However, if administrators use only SSL VPN (remote access only), it may be possible to disable IKE version 1 with no impact to the VPN solution. IKE version 1 can be disabled with the global configuration commands  no crypto isakmp enable  (Cisco ASA Software 8.3.x and earlier) or no crypto ikev1 enable  (Cisco ASA Software 8.4.x and later).\r\n\r\nIKE version 2 is not affected by this vulnerability, so migrating to IKE version 2 and disabling IKE version 1 will eliminate this vulnerability.\r\n\r\nCrafted URL Denial of Service Vulnerability\r\nDisabling AAA for network access control and HTTP(S) listening ports to authenticate network users, if feasible, will mitigate this vulnerability. HTTP(S) listening ports to authenticate network users can be disabled with the global configuration command no aaa authentication listener.\r\n\r\nDenial of Service During Validation of Crafted Certificates\r\nThere are no workarounds that mitigate this vulnerability.\r\n\r\nDNS Inspection Denial of Service Vulnerability\r\nDisabling DNS inspection, if feasible, will mitigate this vulnerability. The following commands will disable the DNS inspection that is configured by default: \r\n\r\n\r\nciscoasa(config)# policy-map global_policy\nciscoasa(config-pmap)# class inspection_default\nciscoasa(config-pmap-c)# no inspect dns\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108073",
+						"CSAFPID-112139",
+						"CSAFPID-115256",
+						"CSAFPID-115266",
+						"CSAFPID-185255"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108073",
+						"CSAFPID-112139",
+						"CSAFPID-115256",
+						"CSAFPID-115266",
+						"CSAFPID-185255"
+					]
+				}
+			],
+			"title": "Crafted URL Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2013-1151",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuc72408",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108072",
+					"CSAFPID-108074",
+					"CSAFPID-115247",
+					"CSAFPID-97260",
+					"CSAFPID-97261"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA Software",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "\n\r\nIKE Version 1 Denial of Service Vulnerability\r\nDisabling IKE version 1, if feasible, will mitigate this vulnerability. Note that disabling IKE version 1 will disable IPsec-based VPN tunnels (LAN-to-LAN and remote access) that are configured to use IKE version 1 for Security Association (SA) negotiation and establishment. However, if administrators use only SSL VPN (remote access only), it may be possible to disable IKE version 1 with no impact to the VPN solution. IKE version 1 can be disabled with the global configuration commands  no crypto isakmp enable  (Cisco ASA Software 8.3.x and earlier) or no crypto ikev1 enable  (Cisco ASA Software 8.4.x and later).\r\n\r\nIKE version 2 is not affected by this vulnerability, so migrating to IKE version 2 and disabling IKE version 1 will eliminate this vulnerability.\r\n\r\nCrafted URL Denial of Service Vulnerability\r\nDisabling AAA for network access control and HTTP(S) listening ports to authenticate network users, if feasible, will mitigate this vulnerability. HTTP(S) listening ports to authenticate network users can be disabled with the global configuration command no aaa authentication listener.\r\n\r\nDenial of Service During Validation of Crafted Certificates\r\nThere are no workarounds that mitigate this vulnerability.\r\n\r\nDNS Inspection Denial of Service Vulnerability\r\nDisabling DNS inspection, if feasible, will mitigate this vulnerability. The following commands will disable the DNS inspection that is configured by default: \r\n\r\n\r\nciscoasa(config)# policy-map global_policy\nciscoasa(config-pmap)# class inspection_default\nciscoasa(config-pmap-c)# no inspect dns\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108072",
+						"CSAFPID-108074",
+						"CSAFPID-115247",
+						"CSAFPID-97260",
+						"CSAFPID-97261"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108072",
+						"CSAFPID-108074",
+						"CSAFPID-115247",
+						"CSAFPID-97260",
+						"CSAFPID-97261"
+					]
+				}
+			],
+			"title": "Denial of Service During Validation of Crafted Certificates"
+		},
+		{
+			"cve": "CVE-2013-1152",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuc80080",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-188865",
+					"CSAFPID-188866"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA Software",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asa"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "\n\r\nIKE Version 1 Denial of Service Vulnerability\r\nDisabling IKE version 1, if feasible, will mitigate this vulnerability. Note that disabling IKE version 1 will disable IPsec-based VPN tunnels (LAN-to-LAN and remote access) that are configured to use IKE version 1 for Security Association (SA) negotiation and establishment. However, if administrators use only SSL VPN (remote access only), it may be possible to disable IKE version 1 with no impact to the VPN solution. IKE version 1 can be disabled with the global configuration commands  no crypto isakmp enable  (Cisco ASA Software 8.3.x and earlier) or no crypto ikev1 enable  (Cisco ASA Software 8.4.x and later).\r\n\r\nIKE version 2 is not affected by this vulnerability, so migrating to IKE version 2 and disabling IKE version 1 will eliminate this vulnerability.\r\n\r\nCrafted URL Denial of Service Vulnerability\r\nDisabling AAA for network access control and HTTP(S) listening ports to authenticate network users, if feasible, will mitigate this vulnerability. HTTP(S) listening ports to authenticate network users can be disabled with the global configuration command no aaa authentication listener.\r\n\r\nDenial of Service During Validation of Crafted Certificates\r\nThere are no workarounds that mitigate this vulnerability.\r\n\r\nDNS Inspection Denial of Service Vulnerability\r\nDisabling DNS inspection, if feasible, will mitigate this vulnerability. The following commands will disable the DNS inspection that is configured by default: \r\n\r\n\r\nciscoasa(config)# policy-map global_policy\nciscoasa(config-pmap)# class inspection_default\nciscoasa(config-pmap-c)# no inspect dns\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-188865",
+						"CSAFPID-188866"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-188865",
+						"CSAFPID-188866"
+					]
+				}
+			],
+			"title": "DNS Inspection Denial of Service Vulnerability"
+		}
+	]
+}

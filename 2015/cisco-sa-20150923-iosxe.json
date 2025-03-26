@@ -1,0 +1,748 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the processing of IPv4 packets that require Network Address Translation (NAT) and Multiprotocol Label Switching (MPLS) services of Cisco IOS XE Software for Cisco ASR 1000 Series, Cisco ISR 4300 Series, Cisco ISR 4400 Series, and Cisco Cloud Services 1000v Series Routers could allow an unauthenticated, remote attacker to cause a reload of the affected device.\n\r\n\n\r\nThe vulnerability is due to improper processing of IPv4 packets that require NAT and MPLS processing. An attacker could exploit this vulnerability by sending an IPv4 packet to be processed by a Cisco IOS XE device configured to perform NAT and MPLS services. A successful exploit could allow the attacker to cause a reload of the affected device.\n\r\nCisco has released software updates that address these vulnerabilities. There are no workarounds to mitigate this vulnerability.\n\r\n\n\r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150923-iosxe[\"https://tvce.cisco.com/security/AIMS/http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150923-iosxe\"]\n\r\n\n\r\nNote: The September 23, 2015, release of the Cisco IOS and IOS XE Software Security Advisory bundled publication includes three Cisco Security Advisories. All the advisories address vulnerabilities in Cisco IOS Software and Cisco IOS XE Software. Individual publication links are in Cisco Event Response: September 2015 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication at the following link:\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep15.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep15.html\"]\r\n\r\n\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS XE Software contains a vulnerability that could cause an affected device to reload when processing IPv4 packets that require NAT and MPLS services.\n\r\n\n\r\nThis vulnerability can be exploited only with transit IPv4 packets. Packets destined to an affected device or IPv6 packets cannot be used to trigger this vulnerability. NAT and MPLS services are not enabled by default.\n\r\n\n\r\nTo determine whether NAT has been enabled in the Cisco IOS XE Software configuration, the ip nat inside or ip nat outside commands must be present in different interfaces and at least one ip nat global configuration command must be present in the configuration. \n\r\n\n\r\nThe show running-config | include ip nat command can be used to determine whether NAT is present in the configuration, as illustrated in the following example of a vulnerable configuration:\r\n\r\nasr1000#show running-config | include ip nat\n ip nat inside\n ip nat outside\n ip nat pool test 192.168.0.1 192.168.0.254 netmask 255.255.255.0 \n ip nat outside source list 1 pool test\r\n\r\nIf the output is empty, the Cisco IOS XE Software release running on a given device is not vulnerable. If the output is not empty, NAT has been enabled on the Cisco IOS XE device.\n\r\n\n\r\n\r\nTo determine whether MPLS has been enabled in the Cisco IOS XE Software configuration, the mpls ip commands must be present in at least one interface.\n\r\n\n\r\nThe show running-config | include mpls ip command can be used to determine whether MPLS is present in the configuration, as illustrated in the following example of a vulnerable configuration:\n\r\n\r\nasr1000#show running-config | include mpls ip\n mpls ip\r\n\r\nIn addition, mpls ip configuration command must be present on the interface that has ip nat outside configured, and the ip nat inside configuration command must be present in the configuration of another interface.  The show running-config interface command can be used to determine the following:\n\r\n\r\n    Whether the mpls ip command is present on the same interface as the  ip nat outside command in the configuration \r\n    Whether the ip nat inside command is present in the configuration of another interface\r\n\r\nThe following example shows a vulnerable configuration:\n\r\n\r\nasr1000# show running-config interface\n !\n interface GigabitEthernet0/0\n  no shutdown\n  ip address 10.86.194.60 255.255.254.0\n  ip nat inside\n !\n interface GigabitEthernet0/1\n  no shutdown\n  ip address 10.10.4.200 255.255.0.0\n  ip nat outside\n  mpls ip\n !\r\n\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS Software is not affected by this vulnerability.\n\r\n\n\r\nCisco IOS XR Software is not affected by this vulnerability.\n\r\n\n\r\nCisco NX-OS Software is not affected by this vulnerability.\n\r\n\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.\n\r\n\n\r\n",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "A vulnerability in the processing of IPv4 packets that require Network Address Translation (NAT) and Multiprotocol Label Switching (MPLS) services of Cisco IOS XE Software for Cisco ASR 1000 Series, Cisco ISR 4300 Series, Cisco ISR 4400 Series, and Cisco Cloud Services 1000v Series Routers could allow an unauthenticated, remote attacker to cause a reload of the affected device.\n\r\n\n\r\nThe vulnerability is due to improper processing of IPv4 packets that require NAT and MPLS processing. An attacker could exploit this vulnerability by sending an IPv4 packet to be processed by a Cisco IOS XE device configured to perform NAT and MPLS services. A successful exploit could allow the attacker to cause a reload of the affected device.\n\r\n\n\r\nTo exploit this vulnerability, an IPv4 packet must arrive on interface configured with the ip nat inside command and be destined for outbound processing on an interface configured with the ip nat outside and mpls ip commands.\n\r\n\n\r\nThis vulnerability is documented in Cisco Bug ID CSCut96933[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCut96933\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only), and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2015-6282.\n\r\n\n\r\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds for this vulnerability.\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Alerts archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\nCisco IOS XE Software\r\nCisco IOS XE Software is affected by the vulnerability described in this advisory.\n\r\n\n\r\nFor a mapping of Cisco IOS XE Software releases to Cisco IOS Software releases, refer to Cisco IOS XE 2 Release Notes[\"http://www.cisco.com/c/en/us/td/docs/ios/ios_xe/2/release/notes/rnasr21/rnasr21_gen.html#wp3000032\"] and Cisco IOS XE 3S Release Notes[\"http://www.cisco.com/c/en/us/td/docs/ios/ios_xe/3/release/notes/asr1k_rn_3s_rel_notes/asr1k_rn_3s_sys_req.html#wp3069754\"].\n\r\n\n\r\n\r\n    \r\n        \r\n            Cisco IOS XE Software Release\r\n            First Fixed Release for this Advisory\r\n            First Fixed Release for\n\r\n            All Advisories in the\n\r\n            September 2015 Cisco IOS and IOS XE \n\r\n            Software Security Advisory \n\r\n            Bundled Publication\n\r\n            \r\n        \r\n        \r\n            2.x.x\r\n            Vulnerable, migrate to 3.10.6S or later.\n\r\n            \r\n            Vulnerable; migrate to 3.10.6S or later.\r\n        \r\n        \r\n            3.x.xS\r\n            Vulnerable, migrate to 3.10.6S or later.\n\r\n            \r\n            Vulnerable; migrate to 3.10.6S or later.\n\r\n            \r\n        \r\n        \r\n            3.10.xS\r\n            3.10.6S\r\n            3.10.6S\r\n        \r\n        \r\n            3.11.xS\r\n            Vulnerable, migrate to 3.13.3S or later.\r\n            Vulnerable; migrate to 3.13.3S or later.\r\n        \r\n        \r\n            3.12.xS\r\n            Vulnerable, migrate to 3.13.3S or later.\r\n            Vulnerable; migrate to 3.13.3S or later.\r\n        \r\n        \r\n            3.13.xS\r\n            3.13.3S\r\n            3.13.3S\r\n        \r\n        \r\n            3.14.xS\n\r\n            \r\n            Vulnerable, migrate to 3.15.1S or later.\r\n            Vulnerable; migrate to 3.15.1S or later.\r\n        \r\n        \r\n            3.15.xS\n\r\n            \r\n            3.15.1S\r\n            3.15.1S\r\n        \r\n        \r\n            3.16.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found during the resolution of a support case.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XE Software Network Address Translation Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150923-iosxe"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS XE Software Network Address Translation Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAlert.x?alertId=40939"
+			}
+		],
+		"title": "Cisco IOS XE Software Network Address Translation Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2015-09-23T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:47:30+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20150923-iosxe",
+			"initial_release_date": "2015-09-23T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2015-09-23T13:36:38+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.7.0S",
+										"product": {
+											"name": "3.7.0S",
+											"product_id": "CSAFPID-184480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1S",
+										"product": {
+											"name": "3.7.1S",
+											"product_id": "CSAFPID-184481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2S",
+										"product": {
+											"name": "3.7.2S",
+											"product_id": "CSAFPID-194730"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.3S",
+										"product": {
+											"name": "3.7.3S",
+											"product_id": "CSAFPID-194731"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.4S",
+										"product": {
+											"name": "3.7.4S",
+											"product_id": "CSAFPID-194732"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.5S",
+										"product": {
+											"name": "3.7.5S",
+											"product_id": "CSAFPID-202541"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.6S",
+										"product": {
+											"name": "3.7.6S",
+											"product_id": "CSAFPID-202542"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.7S",
+										"product": {
+											"name": "3.7.7S",
+											"product_id": "CSAFPID-206188"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2tS",
+										"product": {
+											"name": "3.7.2tS",
+											"product_id": "CSAFPID-213799"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.0bS",
+										"product": {
+											"name": "3.7.0bS",
+											"product_id": "CSAFPID-213955"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.7S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.8.0S",
+										"product": {
+											"name": "3.8.0S",
+											"product_id": "CSAFPID-194735"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.1S",
+										"product": {
+											"name": "3.8.1S",
+											"product_id": "CSAFPID-194736"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.2S",
+										"product": {
+											"name": "3.8.2S",
+											"product_id": "CSAFPID-194737"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.8S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.9.1S",
+										"product": {
+											"name": "3.9.1S",
+											"product_id": "CSAFPID-194842"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.0S",
+										"product": {
+											"name": "3.9.0S",
+											"product_id": "CSAFPID-194843"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.2S",
+										"product": {
+											"name": "3.9.2S",
+											"product_id": "CSAFPID-202558"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.9S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.10.0S",
+										"product": {
+											"name": "3.10.0S",
+											"product_id": "CSAFPID-198123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1S",
+										"product": {
+											"name": "3.10.1S",
+											"product_id": "CSAFPID-198124"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2S",
+										"product": {
+											"name": "3.10.2S",
+											"product_id": "CSAFPID-198125"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.3S",
+										"product": {
+											"name": "3.10.3S",
+											"product_id": "CSAFPID-202539"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.4S",
+										"product": {
+											"name": "3.10.4S",
+											"product_id": "CSAFPID-202540"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.5S",
+										"product": {
+											"name": "3.10.5S",
+											"product_id": "CSAFPID-206159"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2aS",
+										"product": {
+											"name": "3.10.2aS",
+											"product_id": "CSAFPID-213470"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2tS",
+										"product": {
+											"name": "3.10.2tS",
+											"product_id": "CSAFPID-213471"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.10S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.11.1S",
+										"product": {
+											"name": "3.11.1S",
+											"product_id": "CSAFPID-200768"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.2S",
+										"product": {
+											"name": "3.11.2S",
+											"product_id": "CSAFPID-200771"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.0S",
+										"product": {
+											"name": "3.11.0S",
+											"product_id": "CSAFPID-203353"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.3S",
+										"product": {
+											"name": "3.11.3S",
+											"product_id": "CSAFPID-206160"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.4S",
+										"product": {
+											"name": "3.11.4S",
+											"product_id": "CSAFPID-206190"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.11S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.12.0S",
+										"product": {
+											"name": "3.12.0S",
+											"product_id": "CSAFPID-200770"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.1S",
+										"product": {
+											"name": "3.12.1S",
+											"product_id": "CSAFPID-206161"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.2S",
+										"product": {
+											"name": "3.12.2S",
+											"product_id": "CSAFPID-206162"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.3S",
+										"product": {
+											"name": "3.12.3S",
+											"product_id": "CSAFPID-206176"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.0aS",
+										"product": {
+											"name": "3.12.0aS",
+											"product_id": "CSAFPID-213473"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.4S",
+										"product": {
+											"name": "3.12.4S",
+											"product_id": "CSAFPID-213474"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.12S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.13.0S",
+										"product": {
+											"name": "3.13.0S",
+											"product_id": "CSAFPID-201495"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.1S",
+										"product": {
+											"name": "3.13.1S",
+											"product_id": "CSAFPID-206174"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.2S",
+										"product": {
+											"name": "3.13.2S",
+											"product_id": "CSAFPID-206175"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.2aS",
+										"product": {
+											"name": "3.13.2aS",
+											"product_id": "CSAFPID-213661"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.0aS",
+										"product": {
+											"name": "3.13.0aS",
+											"product_id": "CSAFPID-213781"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.13S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.14.0S",
+										"product": {
+											"name": "3.14.0S",
+											"product_id": "CSAFPID-206178"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.14.1S",
+										"product": {
+											"name": "3.14.1S",
+											"product_id": "CSAFPID-206181"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.14.2S",
+										"product": {
+											"name": "3.14.2S",
+											"product_id": "CSAFPID-206191"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.14S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.15.0S",
+										"product": {
+											"name": "3.15.0S",
+											"product_id": "CSAFPID-206180"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.15S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.1.1",
+										"product": {
+											"name": "16.1.1",
+											"product_id": "CSAFPID-212436"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.1.2",
+										"product": {
+											"name": "16.1.2",
+											"product_id": "CSAFPID-213100"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.5.1",
+										"product": {
+											"name": "16.5.1",
+											"product_id": "CSAFPID-217259"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.5"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2015-6282",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCut96933",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-184480",
+					"CSAFPID-184481",
+					"CSAFPID-194730",
+					"CSAFPID-194731",
+					"CSAFPID-194732",
+					"CSAFPID-194735",
+					"CSAFPID-194736",
+					"CSAFPID-194737",
+					"CSAFPID-194842",
+					"CSAFPID-194843",
+					"CSAFPID-198123",
+					"CSAFPID-198124",
+					"CSAFPID-198125",
+					"CSAFPID-200768",
+					"CSAFPID-200770",
+					"CSAFPID-200771",
+					"CSAFPID-201495",
+					"CSAFPID-202539",
+					"CSAFPID-202540",
+					"CSAFPID-202541",
+					"CSAFPID-202542",
+					"CSAFPID-202558",
+					"CSAFPID-203353",
+					"CSAFPID-206159",
+					"CSAFPID-206160",
+					"CSAFPID-206161",
+					"CSAFPID-206162",
+					"CSAFPID-206174",
+					"CSAFPID-206175",
+					"CSAFPID-206176",
+					"CSAFPID-206178",
+					"CSAFPID-206180",
+					"CSAFPID-206181",
+					"CSAFPID-206188",
+					"CSAFPID-206190",
+					"CSAFPID-206191",
+					"CSAFPID-212436",
+					"CSAFPID-213100",
+					"CSAFPID-213470",
+					"CSAFPID-213471",
+					"CSAFPID-213473",
+					"CSAFPID-213474",
+					"CSAFPID-213661",
+					"CSAFPID-213781",
+					"CSAFPID-213799",
+					"CSAFPID-213955",
+					"CSAFPID-217259"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS XE Software Network Address Translation Denial of Service Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150923-iosxe"
+				}
+			],
+			"release_date": "2015-06-17T03:19:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There are no workarounds for this vulnerability.\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-194730",
+						"CSAFPID-194731",
+						"CSAFPID-194732",
+						"CSAFPID-194735",
+						"CSAFPID-194736",
+						"CSAFPID-194737",
+						"CSAFPID-194842",
+						"CSAFPID-194843",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-198125",
+						"CSAFPID-200768",
+						"CSAFPID-200770",
+						"CSAFPID-200771",
+						"CSAFPID-201495",
+						"CSAFPID-202539",
+						"CSAFPID-202540",
+						"CSAFPID-202541",
+						"CSAFPID-202542",
+						"CSAFPID-202558",
+						"CSAFPID-203353",
+						"CSAFPID-206159",
+						"CSAFPID-206160",
+						"CSAFPID-206161",
+						"CSAFPID-206162",
+						"CSAFPID-206174",
+						"CSAFPID-206175",
+						"CSAFPID-206176",
+						"CSAFPID-206178",
+						"CSAFPID-206180",
+						"CSAFPID-206181",
+						"CSAFPID-206188",
+						"CSAFPID-206190",
+						"CSAFPID-206191",
+						"CSAFPID-212436",
+						"CSAFPID-213100",
+						"CSAFPID-213470",
+						"CSAFPID-213471",
+						"CSAFPID-213473",
+						"CSAFPID-213474",
+						"CSAFPID-213661",
+						"CSAFPID-213781",
+						"CSAFPID-213799",
+						"CSAFPID-213955",
+						"CSAFPID-217259"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-194730",
+						"CSAFPID-194731",
+						"CSAFPID-194732",
+						"CSAFPID-194735",
+						"CSAFPID-194736",
+						"CSAFPID-194737",
+						"CSAFPID-194842",
+						"CSAFPID-194843",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-198125",
+						"CSAFPID-200768",
+						"CSAFPID-200770",
+						"CSAFPID-200771",
+						"CSAFPID-201495",
+						"CSAFPID-202539",
+						"CSAFPID-202540",
+						"CSAFPID-202541",
+						"CSAFPID-202542",
+						"CSAFPID-202558",
+						"CSAFPID-203353",
+						"CSAFPID-206159",
+						"CSAFPID-206160",
+						"CSAFPID-206161",
+						"CSAFPID-206162",
+						"CSAFPID-206174",
+						"CSAFPID-206175",
+						"CSAFPID-206176",
+						"CSAFPID-206178",
+						"CSAFPID-206180",
+						"CSAFPID-206181",
+						"CSAFPID-206188",
+						"CSAFPID-206190",
+						"CSAFPID-206191",
+						"CSAFPID-212436",
+						"CSAFPID-213100",
+						"CSAFPID-213470",
+						"CSAFPID-213471",
+						"CSAFPID-213473",
+						"CSAFPID-213474",
+						"CSAFPID-213661",
+						"CSAFPID-213781",
+						"CSAFPID-213799",
+						"CSAFPID-213955",
+						"CSAFPID-217259"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software Network Address Translation Denial of Service Vulnerability"
+		}
+	]
+}

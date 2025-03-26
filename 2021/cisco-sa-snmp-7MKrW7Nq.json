@@ -1,0 +1,183 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Local Packet Transport Services (LPTS) programming of the SNMP with the management plane protection feature of Cisco IOS XR Software could allow an unauthenticated, remote attacker to allow connections despite the management plane protection that is configured to deny access to the SNMP server of an affected device.\r\n\r\nThis vulnerability is due to incorrect LPTS programming when using SNMP with management plane protection. An attacker could exploit this vulnerability by connecting to an affected device using SNMP. A successful exploit could allow the attacker to connect to the device on the configured SNMP ports. Valid credentials are required to execute any of the SNMP requests.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco IOS XR Software releases later than Release 6.1.1 and earlier than releases 6.6.4, 6.7.2, 7.0.2, 7.0.12, 7.1.1, and 7.2.1.\r\n\r\nSee the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nA device is vulnerable if it is configured with either SNMPv2 or SNMPv3, if it is using management plane protection with the Out-of-Band Management Interface, and if a VRF is configured, as shown in the following example:\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR#show running-config control-plane\r\n<snip>\r\ncontrol-plane\r\nmanagement-plane\r\n  out-of-band\r\n   vrf MGMT\r\n   interface MgmtEth0/RSP0/CPU0/0\r\n    allow SNMP peer\r\n     address ipv4 X1.X2.X3.X4\r\n     address ipv4 R1.R2.R3.R4\r\n     address ipv4 S1.S2.S3.S4\r\n     address ipv4 V1.V2.V3.V4\r\n    !\r\n   !\r\n   interface MgmtEth0/RSP1/CPU0/0\r\n    !\r\n    allow SNMP peer\r\n     address ipv4 X1.X2.X3.X4\r\n     address ipv4 R1.R2.R3.R4\r\n     address ipv4 S1.S2.S3.S4\r\n     address ipv4 V1.V2.V3.V4\r\n!\r\n\r\nNote: No other management protocols that are supported by the management plane protection feature are affected.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "If the management plane protection for SNMP is configured before SNMP is configured on the device or if the SNMP process restarts, the LPTS bindings will no longer reflect the management plane protection configuration for SNMP. Access would then be permitted, as shown in the following example:\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR#show lpts bindings brief | include Mg0\r\nTue Feb 2 20:53:03.606 UTC\r\n0/RSP1/CPU0 UDP  LR IPV6 UDP    MGMT      Mg0/RSP0/CPU0/0 any,161 any\r\n0/RSP1/CPU0 UDP  LR IPV6 UDP    MGMT      Mg0/RSP1/CPU0/0 any,161 any\r\n0/RSP1/CPU0 UDP  LR IPV6 UDP    MGMT      Mg0/RSP0/CPU0/0 any,162 any\r\n0/RSP1/CPU0 UDP  LR IPV4 UDP    MGMT      Mg0/RSP0/CPU0/0 any,162 any\r\n0/RSP1/CPU0 UDP  LR IPV4 UDP    MGMT      Mg0/RSP0/CPU0/0 any,161 any\r\n0/RSP1/CPU0 UDP  LR IPV4 UDP    MGMT      Mg0/RSP1/CPU0/0 any,161 any\r\nRP/0/RSP1/CPU0:IOS-XR#",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "A temporary workaround is to remove and reapply the SNMP management plane protection configuration. Doing this will ensure that SNMP is configured first and the LPTS entries are correctly programmed. However, if the SNMP process restarts, the vulnerable LPTS entry state would reappear.\r\n\r\nAlternatively, apply an access control list (ACL) directly to the SNMP configuration.\r\n\r\nIf the device is configured for SNMPv2, administrators can apply an access control list (ACL) to the SNMP configuration, as shown in the following example:\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR#conf t\r\nRP/0/RSP1/CPU0:IOS-XR(config)#  RP/0/RSP1/CPU0:IOS-XR(config)#{ipv4 | ipv6} access-list allow_snmp permit udp host A.B.C.D any eq 161  RP/0/RSP1/CPU0:IOS-XR(config)#{ipv4 | ipv6} access-list allow_snmp permit udp host A.B.C.D any eq 162  RP/0/RSP1/CPU0:IOS-XR(config)#snmp-server community <community_string> RO allow_snmp  RP/0/RSP1/CPU0:IOS-XR(config)#commit  RP/0/RSP1/CPU0:IOS-XR(config)#  RP/0/RSP1/CPU0:IOS-XR#\r\n\r\nIf the device is configured for SNMPv3, administrators can apply an access control list (ACL) to the SNMP configuration either at group level or at user level as shown in the following examples:\r\n\r\nAdministrators can apply an access control list (ACL) to the SNMP configuration at user level as shown in the following example:\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR#conf t\r\nRP/0/RSP1/CPU0:IOS-XR(config)#  RP/0/RSP1/CPU0:IOS-XR(config)#{ipv4 | ipv6} access-list allow_snmp permit udp host A.B.C.D any eq 161  RP/0/RSP1/CPU0:IOS-XR(config)#{ipv4 | ipv6} access-list allow_snmp permit udp host A.B.C.D any eq 162\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR(config)#snmp-server user <username> <groupname> v3 {auth | noauth | priv}\r\n[read view] [write view] [notify view] allow_snmp\r\n\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR(config)#commit\r\nRP/0/RSP1/CPU0:IOS-XR(config\r\n\r\nAdministrators can apply an access control list (ACL) to the SNMP configuration at group level as shown in the following example:\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR#conf t\r\nRP/0/RSP1/CPU0:IOS-XR(config)#  RP/0/RSP1/CPU0:IOS-XR(config)#{ipv4 | ipv6} access-list allow_snmp permit udp host A.B.C.D any eq 161  RP/0/RSP1/CPU0:IOS-XR(config)#{ipv4 | ipv6} access-list allow_snmp permit udp host A.B.C.D any eq 162\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR(config)#snmp-server group <group_name> v3 {auth | noauth | priv} [read view] [write view] [notify view] allow_snmp\r\n\r\n\r\n\r\nRP/0/RSP1/CPU0:IOS-XR(config)#commit\r\nRP/0/RSP1/CPU0:IOS-XR(config)#  RP/0/RSP1/CPU0:IOS-XR#",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, Cisco IOS XR Software releases 6.6.4, 6.7.2, 7.0.2, 7.0.12, 7.1.1, and 7.2.1 and later contained the fix for this vulnerability.\r\n\r\nNote: Changes that are made by Cisco bug ID CSCvr95904 prevent this vulnerability from being exploited. As a result, the first fixed data is a combination of the first fix from both CSCvr95904 and CSCvt93184.\r\n\r\nCisco has also released software maintenance upgrades (SMUs) that address this vulnerability for the following Cisco IOS XR Software releases and platforms:\r\n        Cisco IOS XR Software Release  Platform  SMU Name          6.4.2  ASR9K-PX  asr9k-px-6.4.2.CSCvt93184      CRS-PX  hfr-px-6.4.2.CSCvt93184      6.6.3  NCS5500  ncs5500-6.6.3.CSCvt93184\r\nSee the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software SNMP Management Plane Protection ACL Bypass Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-snmp-7MKrW7Nq"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			}
+		],
+		"title": "Cisco IOS XR Software SNMP Management Plane Protection ACL Bypass Vulnerability",
+		"tracking": {
+			"current_release_date": "2021-02-08T20:12:08+00:00",
+			"generator": {
+				"date": "2024-05-10T22:59:28+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-snmp-7MKrW7Nq",
+			"initial_release_date": "2021-02-03T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2021-02-03T15:00:53+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2021-02-08T20:12:08+00:00",
+					"number": "1.1.0",
+					"summary": "Added SNMPv3 CLI information."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2021-1243",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvt93184"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.3,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software SNMP Management Plan Protection ACL Bypass Vulnerability"
+		}
+	]
+}

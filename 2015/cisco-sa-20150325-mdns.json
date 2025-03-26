@@ -1,0 +1,1047 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the multicast DNS (mDNS) gateway function of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to reload the vulnerable device.\n\r\n\n\r\nThe vulnerability is due to improper validation of mDNS packets. An attacker could exploit this vulnerability by sending malformed IP version 4 (IPv4) or IP version 6 (IPv6) packets on UDP port 5353. An exploit could allow the attacker to cause a denial of service (DoS) condition.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. This advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150325-mdns[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150325-mdns\"]wo\n\r\n\n\r\nNote: The March 25, 2015, Cisco IOS & XE Software Security Advisory bundled publication includes seven Cisco Security Advisories. The advisories address vulnerabilities in Cisco IOS Software and Cisco IOS XE Software. Individual publication links are in Cisco Event Response: Semiannual Cisco IOS & XE Software Security Advisory Bundled Publication at the following link:\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar15.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar15.html\"]\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "\n",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco devices that are running affected Cisco IOS Software or Cisco IOS XE Software are vulnerable. Cisco mDNS Gateway functionality is enabled by default on Cisco IOS Software and Cisco IOS XE Software. There is no specific configuration on the affected device needed to process mDNS packets.\n\r\n\n\r\nTo determine whether a Cisco IOS device or Cisco IOS XE device would process mDNS packets, log in to the device and issue either of the following command-line interface (CLI) commands: show ip socket, show udp, or show control-plane host open-ports. If the output shows any IP addresses listening on UDP port 5353, the device is vulnerable.\n\r\n\n\r\nThe following example shows a Cisco IOS device that is affected by this vulnerability. The device is vulnerable because the socket is open on UDP port 5353:\n\r\nRouter#show ip socket  \r\nProto Remote Port Local Port In Out Stat TTY OutputIF \r\n17 --listen-- 192.168.0.1 67 0 0 1 0 \r\n17 --listen-- 192.168.0.1 68 0 0 1 0 \r\n17 --listen-- 224.0.0.251 5353 0 0 1 0\r\nRouter#\r\n\r\nRouter#sho udp \r\nProto        Remote      Port      Local       Port  In Out  Stat TTY OutputIF\r\n17     224.0.0.251      5353 --any--          5353   0   0 1000021   0 \r\n17(v6) FF02::FB         5353 --any--          5353   0   0 1020021   0 \r\nRouter#\r\n\r\nRouter#sho control-plane host open-ports \r\nActive internet connections (servers and established)\r\nProt               Local Address             Foreign Address                  Service    State\r\n tcp                        *:22                         *:0               SSH-Server   LISTEN\r\n tcp                        *:23                         *:0                   Telnet   LISTEN\r\n udp                      *:5353               224.0.0.251:0         IOS host service   LISTEN\r\nRouter#\r\n\r\n\n\r\nNote: The behavior of Cisco IOS Software and Cisco IOS XE Software prior to the fix for Cisco bug ID CSCum51028 is to turn the mDNS functionality on by default. This behavior was changed in response to Cisco bug ID CSCum51028 and is now disabled by default. If the administrator wants to enable mDNS functionality, it must be manually configured on a device.\n\r\n\n\r\nOn Cisco IOS Software and Cisco IOS XE Software releases that have a fix for Cisco bug ID CSCum51028, mDNS Gateway functionality must be explicitly enabled by configuring the service-routing mdns-sd CLI global configuration command. On those releases, if the command service-routing mdns-sd is in the configuration, the device may be vulnerable.\n\r\n\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software. The image name displays in parentheses, followed by the Cisco IOS Software release number and release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.2(4)M5 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.2(4)M5, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\nCompiled Fri 13-Sep-13 16:44 by prod_rel_team\r\n!--- output truncated\r\n\r\nAdditional information about Cisco IOS Software release naming conventions is available in White Paper: Cisco IOS and NX-OS Software Reference Guide[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS XR Software is not affected by this vulnerability.\n\r\n\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Service Discovery Gateway (mDNS Gateway) is a Cisco IOS component that allows for controlled and secure access to services and devices across subnets. It listens to service announcements on all configured network segments and builds a cache of services and addresses.\n\r\n\n\r\nA vulnerability in the multicast DNS (mDNS) gateway function of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to reload the vulnerable device.\n\r\n\n\r\nThe vulnerability is due to improper validation of mDNS packets. An attacker could exploit this vulnerability by sending malformed IP version 4 (IPv4) or IP version 6 (IPv6) packets on UDP port 5353. An exploit could allow the attacker to cause a denial of service (DoS) condition.\n\r\n\n\r\nThis vulnerability can be exploited using either IPv4 or IPv6 packets. The vulnerability can be triggered by malformed packets destined for UDP port 5353 using the IPv4 or IPv6 unicast address of any interface configured on a device, the IPv4 multicast address 224.0.0.251, or the IPv6 multicast address FF02::FB.\n\r\n\n\r\nThis vulnerability can be triggered only by traffic destined to an affected device and cannot be exploited using traffic transiting an affected device.\n\r\n\n\r\nIn devices that meet the vulnerable configuration criteria, malformed UDP mDNS packets could trigger this vulnerability. An attacker with knowledge of the infrastructure could craft mDNS packets with set conditions to exploit this vulnerability. Successful exploitation of the vulnerability can result in a reload of the affected device.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCup70579[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCup70579\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2015-0650.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Access Control Lists\n\r\n\n\r\nOn Cisco IOS Software and Cisco IOS XE Software releases that do not have a fix for Cisco bug ID CSCum51028, there is currently no way to manually close the port or disable the service.\n\r\n\n\r\nOn those releases, a possible workaround consists of configuring an extended access control list (ACL) that can be created and applied to an interface to block traffic destined to UDP port 5353.\n\r\n\n\r\nBecause the mDNS feature in this vulnerability uses UDP as a transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses. In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger workaround than ACLs alone.\n\r\n\n\r\nThe following ACL example should be included as part of the deployed interface access list, which will help protect the device from traffic destined to UDP port 5353:\n\r\n!---\r\n!--- Deny IPv4 mDNS traffic to a device\r\n!--- \r\n\r\naccess-list 150 deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv4 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\naccess-list 150 permit ip any any  \r\n\r\n!---\r\n!--- Deny IPv6 mDNS traffic to a device\r\n!--- \n\r\nipv6 access-list v6_list\r\n  deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv6 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\npermit ipv6 any any  \r\n\r\n!--- Apply access list to all interfaces (only one example\r\n!--- shown)  \r\n\r\ninterface fastEthernet 2/0 \r\nip access-group 150 in\r\n  ipv6 traffic-filter v6_list in\r\n\r\n\r\n\n\r\nControl Plane Policing\n\r\n\n\r\nControl Plane Policing (CoPP) can be used to block untrusted UDP traffic to the device. Cisco IOS Software releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T support the CoPP feature. CoPP can be configured on a device to help protect the management and control planes and minimize the risk and effectiveness of direct infrastructure attacks by explicitly permitting only authorized traffic that is sent to infrastructure devices in accordance with existing security policies and configurations.\n\r\n\n\r\nThe following CoPP example should be included as part of the deployed CoPP, which will help protect the device from traffic destined to UDP port 5353:\n\r\n!---\r\n!--- Match IPv4 mDNS traffic with permit statement\r\n!--- \r\n\r\naccess-list 150 permit udp any any eq 5353  \r\n\r\n!--- Permit (police or drop)/Deny (allow) all other Layer 3 and \r\n!--- Layer 4 IPv4 traffic in accordance with existing security policies \r\n!--- and configurations for traffic that is authorized to be sent \r\n!--- to infrastructure devices \r\n!--- \r\n\r\naccess-list 150 deny ip any any  \r\n\r\n!--- Create a Class-Map for traffic to be policed by\r\n!--- the CoPP feature\r\n!---\r\n\r\nclass-map match-all drop-udp-class \r\nmatch access-group 150\r\n\r\n!--- Create a policy map that will be applied to the \r\n!--- control plane of the device.  \r\n\r\npolicy-map drop-udp-traffic class drop-udp-class drop  \r\n\r\n!--- Apply the policy map to the \r\n!--- control plane of the device  \r\n\r\ncontrol-plane service-policy \r\ninput drop-udp-traffic\r\n\r\n\n\r\nIn the preceding CoPP example, the access control list entries (ACE) that match the potential exploit packets with the permit action cause these packets to be discarded by the policy map drop function, while packets that match the deny action (not shown) are not affected by the policy map drop function. Note that the policy map syntax is different in the 12.2S and 12.0S Cisco IOS software trains:\n\r\npolicy-map drop-udp-traffic \r\n  class drop-udp-class \r\n  police 32000 1500 1500 conform-action drop exceed-action drop\r\n\r\n\n\r\nAdditional information about the configuration and use of the CoPP feature is in Control Plane Policing Implementation Best Practices and Control Plane Policing.\n\r\n\n\r\nOn Cisco IOS Software and Cisco IOS XE Software releases that contain a fix for Cisco bug ID CSCum51028, mDNS Gateway functionality can be disabled by configuring the no service-routing mdns-sd CLI global configuration command.\n\r\n\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the Cisco Applied Mitigation Bulletin companion document for this advisory, which is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/viewAMBAlert.x?alertId=37485[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=37485\"]",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Alerts archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\n\r\n\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\n\n\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n\r\n    \r\n        \r\n    \r\n    \r\n        Cisco IOS Software\r\n        Cisco provides a tool to help customers determine their exposure to vulnerabilities in Cisco IOS Software. The Cisco IOS Software Checker[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] allows customers to perform the following tasks:\r\n\r\n        \r\n            Initiate a search by selecting releases from the drop-down menu or uploading a file from a local system \r\n            Enter show version command output for the tool to parse \r\n            Create a customized search by including all previously published Cisco Security Advisories, a specific publication, or all advisories in the most recent bundled publication \r\n        \r\n        The tool identifies any Cisco Security Advisories that impact a queried software release and the earliest release that corrects all vulnerabilities in each Cisco Security Advisory (\"First Fixed\"). If applicable, the tool also returns the earliest possible release that corrects all vulnerabilities in all displayed advisories (\"Combined First Fixed\"). Please visit the Cisco IOS Software Checker[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] or enter a Cisco IOS Software release in the following field to determine whether the release is affected by any published Cisco IOS Software advisory. \r\n\r\n        (Example entry: 15.1(4)M2)\r\n        \r\n\r\n        \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n\r\n            \r\n            \r\n\r\n        \r\n    \r\n\n\r\n\n\r\nFor a mapping of Cisco IOS XE Software releases to Cisco IOS Software releases, refer to Cisco IOS XE 2 Release Notes[\"http://www.cisco.com/c/en/us/td/docs/ios/ios_xe/2/release/notes/rnasr21/rnasr21_gen.html#wp3000032\"], Cisco IOS XE 3S Release Notes[\"http://www.cisco.com/c/en/us/td/docs/ios/ios_xe/3/release/notes/asr1k_rn_3s_rel_notes/asr1k_rn_3s_sys_req.html#wp3069754\"], and Cisco IOS XE 3SG Release Notes[\"http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst4500/release/note/OL_24726.html#pgfId-2570252\"].\n\r\n\n\r\nCisco IOS XE Software\n\r\n\n\r\nCisco IOS XE Software is affected by the vulnerabilities described in this advisory.\n\r\n\n\r\n\n\r\n\r\n    \r\n        \r\n            Cisco IOS XE Software Release\r\n            First Fixed Release for this Advisory\r\n            First Fixed Release for All Advisories in the March 2015 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            2.5.x\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            2.6.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.1.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.1.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.2.xSE\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.1E or later.\r\n        \r\n        \r\n            3.2.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xXO\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.3.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.3.xSE\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.1E or later.\r\n        \r\n        \r\n            3.3.xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.1E or later.\r\n        \r\n        \r\n            3.3.xXO\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.1E or later.\r\n        \r\n        \r\n            3.3.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.4.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.4.xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.1E or later.\r\n        \r\n        \r\n            3.4.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.5.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.5.xE\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.1E or later.\r\n        \r\n        \r\n            3.6.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.6.xE\r\n            3.6.1E\r\n            3.6.2E\r\n        \r\n        \r\n            3.7.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.7.xE\r\n            Not vulnerable\r\n            3.7.1E\n\r\n            \r\n        \r\n        \r\n            3.8.xS\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.9.xS\r\n            Vulnerable; migrate to 3.10.4S or later.\r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.10.xS\r\n            3.10.4S\n\r\n            \r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.11.xS\r\n            3.11.3S\n\r\n            \r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.12.xS\r\n            3.12.2S\n\r\n            \r\n            Vulnerable; migrate to 3.12.3S or later.\r\n        \r\n        \r\n            3.13.xS\r\n            3.13.1S\n\r\n            \r\n            3.13.2S\n\r\n            \r\n        \r\n        \r\n            3.14.xS\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\r\n        \r\n        \r\n            3.15.xS\n\r\n            \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.\n\r\n\n\r\nThis vulnerability was found during the resolution of a support case.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "external",
+				"summary": "Identifying and Mitigating the Cisco IOS Software and IOS XE Software mDNS Gateway Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=37485"
+			},
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software and IOS XE Software mDNS Gateway Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150325-mdns"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Software and IOS XE Software mDNS Gateway Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAlert.x?alertId=37820"
+			}
+		],
+		"title": "Cisco IOS Software and IOS XE Software mDNS Gateway Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2016-01-14T17:22:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:27:23+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20150325-mdns",
+			"initial_release_date": "2015-03-25T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2015-03-25T15:42:47+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2015-03-25T21:26:59+00:00",
+					"number": "1.1.0",
+					"summary": "Updated the First Fixed Release for All Advisories in the March 2015 Cisco IOS Software Security Advisory Bundled Publication table."
+				},
+				{
+					"date": "2015-03-26T20:49:58+00:00",
+					"number": "1.2.0",
+					"summary": "Updated Workarounds Section"
+				},
+				{
+					"date": "2015-09-28T14:09:22+00:00",
+					"number": "1.3.0",
+					"summary": "Added Cisco IOS XE 3.6.0E as an affected release.  Added 3.6.2E as a first fixed for bundle wide for 3.6E since it became available after the bundle was published."
+				},
+				{
+					"date": "2016-01-14T17:04:07+00:00",
+					"number": "1.4.0",
+					"summary": "Updated Cisco IOS Checker Software Checker form to query all previously published Cisco IOS Software Security Advisories."
+				}
+			],
+			"status": "final",
+			"version": "1.4.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY",
+										"product": {
+											"name": "15.1(2)SY",
+											"product_id": "CSAFPID-184932"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY1",
+										"product": {
+											"name": "15.1(2)SY1",
+											"product_id": "CSAFPID-188061"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY2",
+										"product": {
+											"name": "15.1(2)SY2",
+											"product_id": "CSAFPID-189219"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY3",
+										"product": {
+											"name": "15.1(2)SY3",
+											"product_id": "CSAFPID-198059"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S",
+										"product": {
+											"name": "15.3(3)S",
+											"product_id": "CSAFPID-117783"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)S2",
+										"product": {
+											"name": "15.3(2)S2",
+											"product_id": "CSAFPID-191331"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S1",
+										"product": {
+											"name": "15.3(3)S1",
+											"product_id": "CSAFPID-193406"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S2",
+										"product": {
+											"name": "15.3(3)S2",
+											"product_id": "CSAFPID-193407"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S3",
+										"product": {
+											"name": "15.3(3)S3",
+											"product_id": "CSAFPID-193408"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S1a",
+										"product": {
+											"name": "15.3(3)S1a",
+											"product_id": "CSAFPID-197457"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S2a",
+										"product": {
+											"name": "15.3(3)S2a",
+											"product_id": "CSAFPID-198066"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(1)T",
+										"product": {
+											"name": "15.4(1)T",
+											"product_id": "CSAFPID-115981"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(2)T",
+										"product": {
+											"name": "15.4(2)T",
+											"product_id": "CSAFPID-191997"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)T2",
+										"product": {
+											"name": "15.4(1)T2",
+											"product_id": "CSAFPID-196114"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)T1",
+										"product": {
+											"name": "15.4(1)T1",
+											"product_id": "CSAFPID-196255"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(2)T1",
+										"product": {
+											"name": "15.4(2)T1",
+											"product_id": "CSAFPID-201189"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E",
+										"product": {
+											"name": "15.2(1)E",
+											"product_id": "CSAFPID-183811"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)E",
+										"product": {
+											"name": "15.2(2)E",
+											"product_id": "CSAFPID-187057"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E1",
+										"product": {
+											"name": "15.2(1)E1",
+											"product_id": "CSAFPID-195469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E2",
+										"product": {
+											"name": "15.2(1)E2",
+											"product_id": "CSAFPID-198060"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E3",
+										"product": {
+											"name": "15.2(1)E3",
+											"product_id": "CSAFPID-200488"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JB1",
+										"product": {
+											"name": "15.2(2)JB1",
+											"product_id": "CSAFPID-187085"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(1)S",
+										"product": {
+											"name": "15.4(1)S",
+											"product_id": "CSAFPID-187147"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(3)S",
+										"product": {
+											"name": "15.4(3)S",
+											"product_id": "CSAFPID-193544"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)S1",
+										"product": {
+											"name": "15.4(1)S1",
+											"product_id": "CSAFPID-197474"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)S2",
+										"product": {
+											"name": "15.4(1)S2",
+											"product_id": "CSAFPID-198067"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(2)S1",
+										"product": {
+											"name": "15.4(2)S1",
+											"product_id": "CSAFPID-200485"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(3)M",
+										"product": {
+											"name": "15.4(3)M",
+											"product_id": "CSAFPID-193350"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(3)M1",
+										"product": {
+											"name": "15.4(3)M1",
+											"product_id": "CSAFPID-201713"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(3)M2",
+										"product": {
+											"name": "15.4(3)M2",
+											"product_id": "CSAFPID-204104"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(2)SN",
+										"product": {
+											"name": "15.4(2)SN",
+											"product_id": "CSAFPID-198309"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(2)SN1",
+										"product": {
+											"name": "15.4(2)SN1",
+											"product_id": "CSAFPID-198528"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(3)SN1",
+										"product": {
+											"name": "15.4(3)SN1",
+											"product_id": "CSAFPID-204107"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4SN"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JN",
+										"product": {
+											"name": "15.3(3)JN",
+											"product_id": "CSAFPID-200492"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JN"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(25e)JAP1m",
+										"product": {
+											"name": "12.4(25e)JAP1m",
+											"product_id": "CSAFPID-204819"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4JAP"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JA1n",
+										"product": {
+											"name": "15.3(3)JA1n",
+											"product_id": "CSAFPID-204310"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JNB",
+										"product": {
+											"name": "15.3(3)JNB",
+											"product_id": "CSAFPID-205723"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JNB"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0SE",
+										"product": {
+											"name": "3.3.0SE",
+											"product_id": "CSAFPID-196218"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.1SE",
+										"product": {
+											"name": "3.3.1SE",
+											"product_id": "CSAFPID-196925"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.2SE",
+										"product": {
+											"name": "3.3.2SE",
+											"product_id": "CSAFPID-206200"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.3SE",
+										"product": {
+											"name": "3.3.3SE",
+											"product_id": "CSAFPID-206201"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3SE"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0XO",
+										"product": {
+											"name": "3.3.0XO",
+											"product_id": "CSAFPID-196220"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.1XO",
+										"product": {
+											"name": "3.3.1XO",
+											"product_id": "CSAFPID-206163"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.2XO",
+										"product": {
+											"name": "3.3.2XO",
+											"product_id": "CSAFPID-206164"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3XO"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.5.0E",
+										"product": {
+											"name": "3.5.0E",
+											"product_id": "CSAFPID-197145"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.1E",
+										"product": {
+											"name": "3.5.1E",
+											"product_id": "CSAFPID-206168"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.2E",
+										"product": {
+											"name": "3.5.2E",
+											"product_id": "CSAFPID-206169"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.3E",
+										"product": {
+											"name": "3.5.3E",
+											"product_id": "CSAFPID-206170"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.5E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.10.0S",
+										"product": {
+											"name": "3.10.0S",
+											"product_id": "CSAFPID-198123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1S",
+										"product": {
+											"name": "3.10.1S",
+											"product_id": "CSAFPID-198124"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2S",
+										"product": {
+											"name": "3.10.2S",
+											"product_id": "CSAFPID-198125"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.3S",
+										"product": {
+											"name": "3.10.3S",
+											"product_id": "CSAFPID-202539"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1xcS",
+										"product": {
+											"name": "3.10.1xcS",
+											"product_id": "CSAFPID-213469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2aS",
+										"product": {
+											"name": "3.10.2aS",
+											"product_id": "CSAFPID-213470"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2tS",
+										"product": {
+											"name": "3.10.2tS",
+											"product_id": "CSAFPID-213471"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1xbS",
+										"product": {
+											"name": "3.10.1xbS",
+											"product_id": "CSAFPID-213642"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.10S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.11.1S",
+										"product": {
+											"name": "3.11.1S",
+											"product_id": "CSAFPID-200768"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.2S",
+										"product": {
+											"name": "3.11.2S",
+											"product_id": "CSAFPID-200771"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.0S",
+										"product": {
+											"name": "3.11.0S",
+											"product_id": "CSAFPID-203353"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.11S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.12.0S",
+										"product": {
+											"name": "3.12.0S",
+											"product_id": "CSAFPID-200770"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.1S",
+										"product": {
+											"name": "3.12.1S",
+											"product_id": "CSAFPID-206161"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.0aS",
+										"product": {
+											"name": "3.12.0aS",
+											"product_id": "CSAFPID-213473"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.12S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.13.0S",
+										"product": {
+											"name": "3.13.0S",
+											"product_id": "CSAFPID-201495"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.0aS",
+										"product": {
+											"name": "3.13.0aS",
+											"product_id": "CSAFPID-213781"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.13S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.6.0E",
+										"product": {
+											"name": "3.6.0E",
+											"product_id": "CSAFPID-206172"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.0aE",
+										"product": {
+											"name": "3.6.0aE",
+											"product_id": "CSAFPID-210073"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.6E"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2015-0650",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCup70579",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-115981",
+					"CSAFPID-117783",
+					"CSAFPID-183811",
+					"CSAFPID-184932",
+					"CSAFPID-187057",
+					"CSAFPID-187085",
+					"CSAFPID-187147",
+					"CSAFPID-188061",
+					"CSAFPID-189219",
+					"CSAFPID-191331",
+					"CSAFPID-191997",
+					"CSAFPID-193350",
+					"CSAFPID-193406",
+					"CSAFPID-193407",
+					"CSAFPID-193408",
+					"CSAFPID-193544",
+					"CSAFPID-195469",
+					"CSAFPID-196114",
+					"CSAFPID-196255",
+					"CSAFPID-197457",
+					"CSAFPID-197474",
+					"CSAFPID-198059",
+					"CSAFPID-198060",
+					"CSAFPID-198066",
+					"CSAFPID-198067",
+					"CSAFPID-198309",
+					"CSAFPID-198528",
+					"CSAFPID-200485",
+					"CSAFPID-200488",
+					"CSAFPID-200492",
+					"CSAFPID-201189",
+					"CSAFPID-201713",
+					"CSAFPID-204104",
+					"CSAFPID-204107",
+					"CSAFPID-204310",
+					"CSAFPID-204819",
+					"CSAFPID-205723",
+					"CSAFPID-196218",
+					"CSAFPID-196220",
+					"CSAFPID-196925",
+					"CSAFPID-197145",
+					"CSAFPID-198123",
+					"CSAFPID-198124",
+					"CSAFPID-198125",
+					"CSAFPID-200768",
+					"CSAFPID-200770",
+					"CSAFPID-200771",
+					"CSAFPID-201495",
+					"CSAFPID-202539",
+					"CSAFPID-203353",
+					"CSAFPID-206161",
+					"CSAFPID-206163",
+					"CSAFPID-206164",
+					"CSAFPID-206168",
+					"CSAFPID-206169",
+					"CSAFPID-206170",
+					"CSAFPID-206172",
+					"CSAFPID-206200",
+					"CSAFPID-206201",
+					"CSAFPID-210073",
+					"CSAFPID-213469",
+					"CSAFPID-213470",
+					"CSAFPID-213471",
+					"CSAFPID-213473",
+					"CSAFPID-213642",
+					"CSAFPID-213781"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software and IOS XE Software mDNS Gateway Denial of Service Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150325-mdns"
+				}
+			],
+			"release_date": "2015-03-25T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Access Control Lists\n\r\n\n\r\nOn Cisco IOS Software and Cisco IOS XE Software releases that do not have a fix for Cisco bug ID CSCum51028, there is currently no way to manually close the port or disable the service.\n\r\n\n\r\nOn those releases, a possible workaround consists of configuring an extended access control list (ACL) that can be created and applied to an interface to block traffic destined to UDP port 5353.\n\r\n\n\r\nBecause the mDNS feature in this vulnerability uses UDP as a transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses. In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger workaround than ACLs alone.\n\r\n\n\r\nThe following ACL example should be included as part of the deployed interface access list, which will help protect the device from traffic destined to UDP port 5353:\n\r\n!---\r\n!--- Deny IPv4 mDNS traffic to a device\r\n!--- \r\n\r\naccess-list 150 deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv4 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\naccess-list 150 permit ip any any  \r\n\r\n!---\r\n!--- Deny IPv6 mDNS traffic to a device\r\n!--- \n\r\nipv6 access-list v6_list\r\n  deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv6 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\npermit ipv6 any any  \r\n\r\n!--- Apply access list to all interfaces (only one example\r\n!--- shown)  \r\n\r\ninterface fastEthernet 2/0 \r\nip access-group 150 in\r\n  ipv6 traffic-filter v6_list in\r\n\r\n\r\n\n\r\nControl Plane Policing\n\r\n\n\r\nControl Plane Policing (CoPP) can be used to block untrusted UDP traffic to the device. Cisco IOS Software releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T support the CoPP feature. CoPP can be configured on a device to help protect the management and control planes and minimize the risk and effectiveness of direct infrastructure attacks by explicitly permitting only authorized traffic that is sent to infrastructure devices in accordance with existing security policies and configurations.\n\r\n\n\r\nThe following CoPP example should be included as part of the deployed CoPP, which will help protect the device from traffic destined to UDP port 5353:\n\r\n!---\r\n!--- Match IPv4 mDNS traffic with permit statement\r\n!--- \r\n\r\naccess-list 150 permit udp any any eq 5353  \r\n\r\n!--- Permit (police or drop)/Deny (allow) all other Layer 3 and \r\n!--- Layer 4 IPv4 traffic in accordance with existing security policies \r\n!--- and configurations for traffic that is authorized to be sent \r\n!--- to infrastructure devices \r\n!--- \r\n\r\naccess-list 150 deny ip any any  \r\n\r\n!--- Create a Class-Map for traffic to be policed by\r\n!--- the CoPP feature\r\n!---\r\n\r\nclass-map match-all drop-udp-class \r\nmatch access-group 150\r\n\r\n!--- Create a policy map that will be applied to the \r\n!--- control plane of the device.  \r\n\r\npolicy-map drop-udp-traffic class drop-udp-class drop  \r\n\r\n!--- Apply the policy map to the \r\n!--- control plane of the device  \r\n\r\ncontrol-plane service-policy \r\ninput drop-udp-traffic\r\n\r\n\n\r\nIn the preceding CoPP example, the access control list entries (ACE) that match the potential exploit packets with the permit action cause these packets to be discarded by the policy map drop function, while packets that match the deny action (not shown) are not affected by the policy map drop function. Note that the policy map syntax is different in the 12.2S and 12.0S Cisco IOS software trains:\n\r\npolicy-map drop-udp-traffic \r\n  class drop-udp-class \r\n  police 32000 1500 1500 conform-action drop exceed-action drop\r\n\r\n\n\r\nAdditional information about the configuration and use of the CoPP feature is in Control Plane Policing Implementation Best Practices and Control Plane Policing.\n\r\n\n\r\nOn Cisco IOS Software and Cisco IOS XE Software releases that contain a fix for Cisco bug ID CSCum51028, mDNS Gateway functionality can be disabled by configuring the no service-routing mdns-sd CLI global configuration command.\n\r\n\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the Cisco Applied Mitigation Bulletin companion document for this advisory, which is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/viewAMBAlert.x?alertId=37485[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=37485\"]"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-115981",
+						"CSAFPID-117783",
+						"CSAFPID-183811",
+						"CSAFPID-184932",
+						"CSAFPID-187057",
+						"CSAFPID-187085",
+						"CSAFPID-187147",
+						"CSAFPID-188061",
+						"CSAFPID-189219",
+						"CSAFPID-191331",
+						"CSAFPID-191997",
+						"CSAFPID-193350",
+						"CSAFPID-193406",
+						"CSAFPID-193407",
+						"CSAFPID-193408",
+						"CSAFPID-193544",
+						"CSAFPID-195469",
+						"CSAFPID-196114",
+						"CSAFPID-196255",
+						"CSAFPID-197457",
+						"CSAFPID-197474",
+						"CSAFPID-198059",
+						"CSAFPID-198060",
+						"CSAFPID-198066",
+						"CSAFPID-198067",
+						"CSAFPID-198309",
+						"CSAFPID-198528",
+						"CSAFPID-200485",
+						"CSAFPID-200488",
+						"CSAFPID-200492",
+						"CSAFPID-201189",
+						"CSAFPID-201713",
+						"CSAFPID-204104",
+						"CSAFPID-204107",
+						"CSAFPID-204310",
+						"CSAFPID-204819",
+						"CSAFPID-205723",
+						"CSAFPID-196218",
+						"CSAFPID-196220",
+						"CSAFPID-196925",
+						"CSAFPID-197145",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-198125",
+						"CSAFPID-200768",
+						"CSAFPID-200770",
+						"CSAFPID-200771",
+						"CSAFPID-201495",
+						"CSAFPID-202539",
+						"CSAFPID-203353",
+						"CSAFPID-206161",
+						"CSAFPID-206163",
+						"CSAFPID-206164",
+						"CSAFPID-206168",
+						"CSAFPID-206169",
+						"CSAFPID-206170",
+						"CSAFPID-206172",
+						"CSAFPID-206200",
+						"CSAFPID-206201",
+						"CSAFPID-210073",
+						"CSAFPID-213469",
+						"CSAFPID-213470",
+						"CSAFPID-213471",
+						"CSAFPID-213473",
+						"CSAFPID-213642",
+						"CSAFPID-213781"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-115981",
+						"CSAFPID-117783",
+						"CSAFPID-183811",
+						"CSAFPID-184932",
+						"CSAFPID-187057",
+						"CSAFPID-187085",
+						"CSAFPID-187147",
+						"CSAFPID-188061",
+						"CSAFPID-189219",
+						"CSAFPID-191331",
+						"CSAFPID-191997",
+						"CSAFPID-193350",
+						"CSAFPID-193406",
+						"CSAFPID-193407",
+						"CSAFPID-193408",
+						"CSAFPID-193544",
+						"CSAFPID-195469",
+						"CSAFPID-196114",
+						"CSAFPID-196255",
+						"CSAFPID-197457",
+						"CSAFPID-197474",
+						"CSAFPID-198059",
+						"CSAFPID-198060",
+						"CSAFPID-198066",
+						"CSAFPID-198067",
+						"CSAFPID-198309",
+						"CSAFPID-198528",
+						"CSAFPID-200485",
+						"CSAFPID-200488",
+						"CSAFPID-200492",
+						"CSAFPID-201189",
+						"CSAFPID-201713",
+						"CSAFPID-204104",
+						"CSAFPID-204107",
+						"CSAFPID-204310",
+						"CSAFPID-204819",
+						"CSAFPID-205723",
+						"CSAFPID-196218",
+						"CSAFPID-196220",
+						"CSAFPID-196925",
+						"CSAFPID-197145",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-198125",
+						"CSAFPID-200768",
+						"CSAFPID-200770",
+						"CSAFPID-200771",
+						"CSAFPID-201495",
+						"CSAFPID-202539",
+						"CSAFPID-203353",
+						"CSAFPID-206161",
+						"CSAFPID-206163",
+						"CSAFPID-206164",
+						"CSAFPID-206168",
+						"CSAFPID-206169",
+						"CSAFPID-206170",
+						"CSAFPID-206172",
+						"CSAFPID-206200",
+						"CSAFPID-206201",
+						"CSAFPID-210073",
+						"CSAFPID-213469",
+						"CSAFPID-213470",
+						"CSAFPID-213471",
+						"CSAFPID-213473",
+						"CSAFPID-213642",
+						"CSAFPID-213781"
+					]
+				}
+			],
+			"title": "Cisco IOS Software and IOS XE Software mDNS Gateway Denial of Service Vulnerability"
+		}
+	]
+}

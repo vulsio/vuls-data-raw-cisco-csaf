@@ -1,0 +1,462 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the interaction of SIP and Snort 3 for Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to cause the Snort 3 detection engine to restart.\r\n\r\nThis vulnerability is due to a lack of error-checking when SIP bidirectional flows are being inspected by Snort 3. An attacker could exploit this vulnerability by sending a stream of crafted SIP traffic through an interface on the targeted device. A successful exploit could allow the attacker to trigger a restart of the Snort 3 process, resulting in a denial of service (DoS) condition.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the November 2022 release of the Cisco ASA, FTD, and FMC Security Advisory Bundled publication. For a complete list of the advisories and links to them, see Cisco Event Response: November 2022 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74838\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco FTD Software if it was running Release 7.2.0 or 7.2.0.1 and had the Snort 3 detection engine configured with an SIP inspection policy.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n    Determine Cisco FTD Software Configuration\r\nOn new installations of Cisco FTD Software releases 7.0.0 and later, Snort 3 is running by default. On devices that were running Cisco FTD Software Release 6.7.0 or earlier and were upgraded to Release 7.0.0 or later, Snort 2 is running by default.\r\n  Determine Cisco FTD Software Configuration Using the FTD Software CLI\r\nTo determine whether Snort 3 is configured on a device that is running Cisco FTD Software, log in to the Cisco FTD Software CLI and use the show snort3 status command. If the command produces the following output, the device is running Snort 3 and is affected by this vulnerability:\r\n\r\n\r\nshow snort3 status\r\nCurrently running Snort 3\r\n  Determine Cisco FTD Software Configuration for Cisco Firepower Management Center Software-Managed Devices\r\nTo determine whether Snort 3 is configured on a device that is managed by Cisco Firepower Management Center (FMC) Software, complete the following steps:\r\n\r\nLog in to the Cisco FMC Software web interface.\r\nFrom the Devices menu, choose Device Management.\r\nChoose the appropriate Cisco FTD device.\r\nClick the Edit pencil icon.\r\nChoose the Device tab and look in the Inspection Engine area.\r\nIf Snort 2 is listed, the device is not affected by this vulnerability.\r\nIf Snort 3 is listed, the device is affected by this vulnerability.\r\n\r\n  Determine Cisco FTD Software Configuration for Cisco Firepower Device Manager Software-Managed Devices\r\nTo determine whether Snort 3 is configured on a device that is managed by Cisco Firepower Device Manager (FDM) Software, complete the following steps:\r\n\r\nLog in to the Cisco FTD Software web interface.\r\nFrom the main menu, choose Policies.\r\nChoose the Intrusion tab.\r\nLook for the Inspection Engine version. The version will start with either a 2 for Snort 2 or a 3 for Snort 3.\r\nIf the device is running a Snort 2 version, it is not affected by this vulnerability.\r\nIf the device is running a Snort 3 version, it is affected by this vulnerability.\r\n\r\n  Determine Cisco FTD Software Configuration for Cisco Defense Orchestrator-Managed Devices\r\nTo determine whether Snort 3 is configured on a device that is managed by Cisco Defense Orchestrator, complete the following steps:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Inventory menu, choose the appropriate Cisco FTD device.\r\nIn the Device Details area, look for Snort Version. The version will start with either a 2 for Snort 2 or a 3 for Snort 3.\r\nIf the device is running a Snort 2 version, it is not affected by this vulnerability.\r\nIf the device is running a Snort 3 version, it is affected by this vulnerability.\r\n\r\n    Determine Cisco FTD Software SIP Configuration\r\nTo determine whether SIP inspection is configured on Cisco FTD Software, run the show service-policy | include sip command in the CLI. The device is considered vulnerable if Snort 3 is configured as described above and if the output includes Inspect: sip, as shown in the following example:\r\n\r\n\r\ndevice# show service-policy | include sip\r\nInspect: sip , packet 2, lock fail 0, drop 0, reset-drop 0, 5-min-pkt-rate 0 pkts/sec, v6-fail-close 0 sctp-drop-override 0\r\n\r\nNote: SIP inspection is enabled by default on Cisco FTD Software. For detailed information about the default settings for application inspection policies, see the Cisco ASA Series Firewall CLI Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/security/asa/asa99/configuration/firewall/asa-99-firewall-config/inspect-service-policy.html#ID-2094-0000026e\"].",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following products:\r\n\r\nCisco Adaptive Security Appliance (ASA) Software\r\nCisco Firepower Management Center (FMC) Software\r\nOpen Source Snort 2\r\nOpen Source Snort 3",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The following Cisco FTD Software Snort 3 configuration parameters govern how traffic is handled if the Snort 3 process restarts, which could change how SIP traffic is handled during an exploit of this vulnerability.\r\n\r\nSnort Fail Open\r\nsnort preserve-connection\r\n\r\nFor additional information, see the Firepower Management Center Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/670/configuration/guide/fpmc-config-guide-v67/policy_management.html#concept_uc1_gtq_ty\"].",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n        Cisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number—for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n      Only this advisory  All Critical and High advisories  All advisories    Cisco ASA Software  Cisco FMC Software  Cisco FTD Software    Any Platform  3000 Series Industrial Security Appliances (ISA)  ASA 5500-X Series Firewalls  ASA Service Module  Adaptive Security Virtual Appliance (ASAv)  Firepower 1000 Series  Firepower 2100 Series  Firepower 4100 Series  Firepower 9000 Series  Firepower NGFW Virtual  Secure Firewall 3100 Series  Firepower Management Center Appliances\r\n\r\n\r\n\r\n\r\n\r\nFor instructions on upgrading your FTD device, see Cisco Firepower Management Center Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html\"].\r\n\r\n     Additional Resources\r\nFor help determining the best Cisco ASA, FTD, or FMC Software release, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\nCisco ASA Compatibility [\"https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html\"]\r\nCisco Secure Firewall ASA Upgrade Guide [\"(https:/www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.htmlx\"]\r\nCisco Secure Firewall Threat Defense Compatibility Guide [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html\"]",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firepower Threat Defense Software SIP and Snort 3 Detection Engine Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ftdsnort3sip-dos-A4cHeArC"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: November 2022 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74838"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;ASA Series Firewall CLI Configuration Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/asa99/configuration/firewall/asa-99-firewall-config/inspect-service-policy.html#ID-2094-0000026e"
+			},
+			{
+				"category": "external",
+				"summary": "Firepower Management Center Configuration Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/670/configuration/guide/fpmc-config-guide-v67/policy_management.html#concept_uc1_gtq_ty"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Firepower Management Center Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;ASA Compatibility",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Secure Firewall Threat Defense Compatibility Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html"
+			}
+		],
+		"title": "Cisco Firepower Threat Defense Software SIP and Snort 3 Detection Engine Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2022-11-09T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:20:32+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-ftdsnort3sip-dos-A4cHeArC",
+			"initial_release_date": "2022-11-09T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2022-11-09T15:58:29+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2.0",
+										"product": {
+											"name": "7.2.0",
+											"product_id": "CSAFPID-287081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.0.1",
+										"product": {
+											"name": "7.2.0.1",
+											"product_id": "CSAFPID-290469"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 4100 Series",
+						"product": {
+							"name": "Cisco Firepower 4100 Series",
+							"product_id": "CSAFPID-277441"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall Threat Defense Virtual",
+						"product": {
+							"name": "Cisco Secure Firewall Threat Defense Virtual",
+							"product_id": "CSAFPID-277464"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287081:277392"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-287081:277393"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287081:277438"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-287081:277440"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-287081:277441"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-287081:277464"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-287081:286865"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290469:277392"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-290469:277393"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290469:277438"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-290469:277440"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-290469:277441"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-290469:277464"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290469:286865"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-286865"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2022-20950",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwb99509"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-287081:277392",
+					"CSAFPID-287081:277393",
+					"CSAFPID-287081:277438",
+					"CSAFPID-287081:277440",
+					"CSAFPID-287081:277441",
+					"CSAFPID-287081:277464",
+					"CSAFPID-287081:286865",
+					"CSAFPID-290469:277392",
+					"CSAFPID-290469:277393",
+					"CSAFPID-290469:277438",
+					"CSAFPID-290469:277440",
+					"CSAFPID-290469:277441",
+					"CSAFPID-290469:277464",
+					"CSAFPID-290469:286865"
+				]
+			},
+			"release_date": "2022-11-09T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:277440",
+						"CSAFPID-287081:277441",
+						"CSAFPID-287081:277464",
+						"CSAFPID-287081:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:277440",
+						"CSAFPID-290469:277441",
+						"CSAFPID-290469:277464",
+						"CSAFPID-290469:286865"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:L",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277393",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:277440",
+						"CSAFPID-287081:277441",
+						"CSAFPID-287081:277464",
+						"CSAFPID-287081:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277393",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:277440",
+						"CSAFPID-290469:277441",
+						"CSAFPID-290469:277464",
+						"CSAFPID-290469:286865"
+					]
+				}
+			],
+			"title": "Cisco Firepower Threat Defense Software SIP and Snort 3 Detection Engine Denial of Service Vulnerability"
+		}
+	]
+}

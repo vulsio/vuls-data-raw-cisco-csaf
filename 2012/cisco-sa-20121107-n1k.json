@@ -1,0 +1,73 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) would like to notify customers of an issue that may impact their network security posture when upgrading the Cisco Nexus 1000V Series Switches to Software Release 4.2(1)SV1(5.2) with deployments that have Cisco Virtual Security Gateway (VSG) integration. This issue will manifest itself when administrators perform an in-service software upgrade to Software Release 4.2(1)SV1(5.2) from Software Release 4.2(1)SV1(5.1a) or earlier.\r\n\r\nAfter the software upgrade, a bug in Software Release 4.2(1)SV1(5.2) could cause all the virtual Ethernet ports on the Virtual Ethernet Modules (VEM) of the Cisco Nexus 1000V Series Switch to stay in No-Policy pass-through mode because a valid VSG license is not actively installed. As a result, the VEMs no longer use a configured Cisco VSG; therefore, the virtual machines (VM) are not firewalled and traffic is not inspected by the VSG.\r\n\r\nThis software bug is documented in Cisco Bug ID CSCud01427 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCud01427\"] (registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and a software bulletin for Software Release 4.2(1)SV1(5.2) is in the process of being published.\r\n\r\nAdditional Information\r\nProblem Symptoms\r\n\r\nThe VEM is in unlicensed mode for VSG, while the Virtual Supervisor Module (VSM) of Cisco Nexus 1000V continues to show it licensed.\r\n\r\nConditions\r\n\r\nThis issue affects deployments that have Cisco VSG integration with Cisco Nexus 1000V Series Switches. This issue occurs after upgrading the VSM of Cisco Nexus 1000V Series Switches to Software Release 4.2(1)SV1(5.2) from Software Release 4.2(1)SV1(5.1a) or earlier.\r\n\r\nAfter an upgrade, the device can enter a state whereby it has active VEM ports but a license is not installed for the VSG, even when the device is configured with permanent VSG licenses. When this occurs, all the virtual Ethernet ports on the VEM that correspond to the VMs are kept in pass-through mode, with traffic not being analyzed by the VSG and hence any policies configured on the VSG are not enforced.\r\n\r\nThis bug is independent of VSM-to-VEM communication (whether in Layer 2 or Layer 3 mode).\r\n\r\nIdentification\r\n\r\nIf the workaround as described below is followed, then this issue will not be seen, and the licenses will be correctly installed.\r\n\r\nAfter the upgrade to Software Release 4.2(1)SV1(5.2) has been performed, this issue can be verified from the command-line interface by issuing the command-line interface (CLI) command show vsn detail. In the following example, the VSN-STATE indicates No-License:\r\nnexus1K# show vsn detail\r\n#VSN  VLAN: -, IP-ADDR: 192.168.0.1\r\nMODULE       VSN-MAC-ADDR  FAIL-MODE   VSN-STATE\r\n3                  -      Close  No-License\r\n4                  -      Close  No-License\r\n  Workaround\r\n\r\nWhen upgrading a Cisco Nexus 1000V Series Switch to Software Release 4.2(1)SV1(5.2), the administrator should perform these additional steps:\r\n      After the VSM upgrade is complete, but before the VEM upgrade is initiated, use the system switchover command to initiate a manual switchover. After the switchover, the CLI session will exit.      Login to the VSM and use the show redundancy status CLI command to verify the switchover was successful.\r\n  After the VSM and VEM has been upgraded, use the show vsn detail command to validate the licenses were properly installed. The VSN-STATE should be Up. If the VSM and VEM were upgraded successfully and the licenses were properly installed, then this issue will not be observed.\r\n\r\nOfficial Fix\r\n\r\nCisco will release Software Release 4.2(1)SV1(5.2a) and this response will be updated when a confirmed release date is available.\r\n\r\nCisco Security Procedures\r\nComplete information on reporting security vulnerabilities in Cisco  products, obtaining assistance with security incidents, and registering to  receive security information from Cisco, is available on Cisco's worldwide  website at  http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"].  This includes instructions for press inquiries regarding Cisco security  notices. All Cisco security advisories are available at  http://www.cisco.com/go/psirt [\"http://www.cisco.com/go/psirt\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME. CISCO EXPECTS TO UPDATE THIS DOCUMENT AS NEW INFORMATION BECOMES AVAILABLE.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Nexus 1000V Series Switch Software Release 4.2(1)SV1(5.2) Virtual Security Gateway Bypass Issue",
+				"url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121107-n1k"
+			}
+		],
+		"title": "Cisco Nexus 1000V Series Switch Software Release 4.2(1)SV1(5.2) Virtual Security Gateway Bypass Issue",
+		"tracking": {
+			"current_release_date": "2012-11-07T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T02:17:54+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20121107-n1k",
+			"initial_release_date": "2012-11-07T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2012-11-07T15:42:48+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "interim",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {},
+	"vulnerabilities": [
+		{
+			"product_status": {},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco Nexus 1000V Series Switch Software Release 4.2(1)SV1(5.2) Virtual Security Gateway Bypass Issue",
+					"url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121107-n1k"
+				}
+			],
+			"release_date": "2012-11-07T05:25:00+00:00",
+			"title": "Cisco Nexus 1000V Series Switch Software Release 4.2(1)SV1(5.2) Virtual Security Gateway Bypass Issue"
+		}
+	]
+}

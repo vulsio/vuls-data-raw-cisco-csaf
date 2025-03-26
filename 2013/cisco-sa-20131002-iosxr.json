@@ -1,0 +1,170 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco IOS XR Software version 4.3.1 contains a vulnerability that could result in complete packet memory exhaustion.  Successful exploitation could render critical services on the affected device unable to allocate packets resulting in a denial of service (DoS) condition.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. \n\r\n\n\r\nWorkarounds that mitigate this vulnerability are available.\n\r\n\n\r\nThis advisory is available at the following link: http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20131002-iosxr[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20131002-iosxr\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco IOS XR Software version 4.3.1 installed on any supported hardware device.\n\r\n\n\r\nIf a UDP listening service is enabled on the device, it is vulnerable. Typical configurations that use UDP services (and their default UDP port numbers) are as follows:\n\r\n\r\n    Simple Network Management Protocol (SNMP) - UDP Ports 161 and 162\r\n    Network Time Protocol (NTP) - UDP port 123\r\n    Label Distribution Protocol (LDP) - UDP port 646\r\n    Syslog - UDP port 514\r\n\r\nTo determine potential features configured on the Cisco IOS XR device that use UDP as a transport mechanism, administrators can log in to the device and issue the show udp brief command-line interface (CLI) command.  The local address port numbers are important.  The local address port numbers are indicated by the final set of numbers in the Local Address column.  For example :::123 and 0.0.0.0:123 specify the NTP feature.  The following example shows a vulnerable device configured, with NTP, SNMP, Syslog and LDP:\n\r\n\r\n\r\nRP/0/0/CPU0:example#show udp brief\nTue Aug 27 08:57:56.255 PST\n   PCB     VRF-ID     Recv-Q Send-Q  Local Address          Foreign Address\n0x500f87c4 0x60000000      0      0  :::123                 :::0                  \n0x500f9af8 0x00000000      0      0  :::123                 :::0                  \n0x500fc28c 0x60000000      0      0  :::161                 :::0                  \n0x500fc074 0x00000000      0      0  :::161                 :::0                  \n0x500fc88c 0x60000000      0      0  :::162                 :::0                  \n0x500fc5fc 0x00000000      0      0  :::162                 :::0                  \n0x500f8404 0x60000000      0      0  0.0.0.0:514            0.0.0.0:0             \n0x500fa4d8 0x60000000      0      0  0.0.0.0:123            0.0.0.0:0             \n0x500fa338 0x00000000      0      0  0.0.0.0:123            0.0.0.0:0             \n0x500fce3c 0x60000000      0      0  0.0.0.0:646            0.0.0.0:0             \n0x500f9c98 0x60000000      0      0  0.0.0.0:161            0.0.0.0:0             \n0x500fb360 0x00000000      0      0  0.0.0.0:161            0.0.0.0:0             \n0x500fbbbc 0x60000000      0      0  0.0.0.0:162            0.0.0.0:0             \n0x500fa184 0x00000000      0      0  0.0.0.0:162            0.0.0.0:0             \n0x500f8f10 0x00000000      0      0  0.0.0.0:0              0.0.0.0:0             \nRP/0/0/CPU0:example#\r\nTo determine the version of Cisco IOS XR Software installed on a Cisco device, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS XR Software by displaying text similar to \"Cisco IOS XR Software\". The software version is displayed after the text \"Cisco IOS XR Software\".\n\r\n\n\r\nThe following example identifies a Cisco 12000 series device with Cisco IOS XR Software version 4.3.1 installed:\n\r\n\r\nRP/0/0/CPU0:example#show version brief\nTue Aug 27 09:07:39.614 PST\n\nCisco IOS XR Software, Version 4.3.1[Default]\nCopyright (c) 2013 by Cisco Systems, Inc.\n\nROM: System Bootstrap, Version 12.00(20090302:133850) [rtauro-sw30346-33S 1.23dev(0.36)] DEVELOPMENT SOFTWARE\nCopyright (c) 1994-2009 by cisco Systems,  Inc.\n\n\r\nAdditional information about Cisco IOS XR Software release naming conventions is available in White Paper: Cisco IOS Reference Guide[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html#9\"].\n\r\n\n\r\nAdditional information about Cisco IOS XR Software time-based release model is available in White Paper: Guidelines for Cisco IOS XR Software[\"http://www.cisco.com/en/US/prod/collateral/iosswrel/ps8803/ps5845/product_bulletin_c25-478699.html\"].\n\r\n\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS XR Software Memory Exhaustion Vulnerability.\n\r\n\n\r\nA vulnerability in the UDP process of Cisco IOS XR Software version 4.3.1 could allow an unauthenticated, remote attacker to cause the UDP process to consume all available packet memory.\n\r\n\n\r\nThe vulnerability is due to the failure of the device to release memory of allocated UDP packets when the packet queues are full. An attacker could exploit this vulnerability by potentially sending traffic to listening UDP services on the affected device. An exploit could allow the attacker to cause the device to exhaust all available memory, causing the device to be unable to allocate memory for packets sent to it.\n\r\n\n\r\nThis vulnerability has been documented in Cisco Bug ID CSCue69413[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCue69413\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2013-5503.\n\r\n\n\r\nThis vulnerability is triggered under certain conditions with either normal or malformed traffic directed at listening UDP services on the affected device.  Transit traffic will not trigger this vulnerability.  This vulnerability can be exploited using either IP version 4 (IPv4) or IP version 6 (IPv6) traffic.\n\r\n\n\r\nThe device will issue a warning message when the vulnerability is being exploited:\n\r\n\r\n%PKT_INFRA-PAKWATCH-4-DEPLETION_WARNING : Depletion level  percent for resource PAK FSV\r\n\r\nAdministrators are advised to log into the device and issue the CLI command show packet-memory summary.  If the output indicates the UDP process is holding most of the memory (as indicated by the percentage column) this could be an indication that the device is being exploited by the vulnerability described in this advisory.  The following example depicts a device that has been exploited:\n\r\n      RP/0/0/CPU0:example#show packet-memory summary\r\n      Wed Aug 28 07:53:21.667 PST \n         ProcId   JobId Count  Percentage Process\r\n      739020993     403 17992     100.00% pkg/bin/udp\r\n      RP/0/0/CPU0:example#",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Infrastructure Access Control Lists and Unicast Reverse Path Forwarding\r\nWarning: Because this vulnerability is exploited via UDP transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses.  In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger mitigation than iACLs alone.\n\r\n\n\r\nAlthough it is often difficult to block traffic that transits a network, it is possible to identify traffic that should never be allowed to target infrastructure devices and block that traffic at the border of networks. Infrastructure ACLs (iACLs) are a network security best practice and should be considered as a long-term addition to good network security as well as a workaround for this specific vulnerability. \n\r\n\n\r\nThe iACL example below shows how to identify listening UDP services on the device and an appropriate iACL which should be included as part of the deployed infrastructure access-list.  This will help protect all devices with IP addresses in the infrastructure IP address range:\r\n\r\n\r\nRP/0/0/CPU0:example#show udp brief\r\nTue Aug 27 08:57:56.255 PST\r\n   PCB     VRF-ID     Recv-Q Send-Q  Local Address          Foreign Address\r\n0x500f87c4 0x60000000      0      0  :::123                 :::0                  \r\n0x500f9af8 0x00000000      0      0  :::123                 :::0                  \r\n0x500fc28c 0x60000000      0      0  :::161                 :::0                  \r\n0x500fc074 0x00000000      0      0  :::161                 :::0                  \r\n0x500fc88c 0x60000000      0      0  :::162                 :::0                  \r\n0x500fc5fc 0x00000000      0      0  :::162                 :::0                  \r\n0x500f8404 0x60000000      0      0  0.0.0.0:514            0.0.0.0:0             \r\n0x500fa4d8 0x60000000      0      0  0.0.0.0:123            0.0.0.0:0             \r\n0x500fa338 0x00000000      0      0  0.0.0.0:123            0.0.0.0:0             \r\n0x500fce3c 0x60000000      0      0  0.0.0.0:646            0.0.0.0:0             \r\n0x500f9c98 0x60000000      0      0  0.0.0.0:161            0.0.0.0:0             \r\n0x500fb360 0x00000000      0      0  0.0.0.0:161            0.0.0.0:0             \r\n0x500fbbbc 0x60000000      0      0  0.0.0.0:162            0.0.0.0:0             \r\n0x500fa184 0x00000000      0      0  0.0.0.0:162            0.0.0.0:0             \r\n0x500f8f10 0x00000000      0      0  0.0.0.0:0              0.0.0.0:0     \r\nRP/0/0/CPU0:example#\r\nRP/0/0/CPU0:example#configure term\r\nipv4 access-list ACL-INFRASTRUCTURE-IN\r\n !\r\n ! Permit trusted sources to the local IP infrastructure address space\r\n !\r\n  10 permit udp host \"trusted-ntp-peer\" host \"local-ip-address\" eq 123\r\n  20 permit udp host \"trusted-snmp-peer\" host \"local-ip-address\" range 161 162\r\n  30 permit udp host \"trusted-syslog-server\" any eq 514\r\n  40 permit udp host \"trusted-ldp-peer\" any eq 646\r\n  !\r\n  ! Deny all other IP traffic to any network device\r\n  !\r\n  50 Deny ipv4 any \"infrastructure-address-space\" \"mask\"\r\n  ! Permit transit traffic\r\n  !\r\n  60 permit ipv4 any any\r\n\r\n\r\nAfter the ACL is created, it must be applied to all interfaces that face non infrastructure devices, including interfaces that connect to other organizations, remote access segments, user segments, and segments in data centers.\r\nThe white paper entitled Cisco Guide to Harden Cisco IOS XR Devices[\"http://www.cisco.com/web/about/security/intelligence/CiscoIOSXR.html#19\"], presents guidelines and recommended deployment techniques for infrastructure protection access lists.\n\r\n\n\r\n\r\n\r\nIdentification and Recovery\r\nIf an administrator suspects a device is being exploited, the following these steps will assist in recovery:\n\r\n\r\n    Determine whether the packet memory is consumed by UDP process by using the show packet-memory summary command:\r\n          RP/0/0/CPU0:example#show packet-memory summary\r\n      Wed Aug 28 07:53:21.667 PST \n         ProcId   JobId Count  Percentage Process\r\n      739020993     405 17992     100.00% pkg/bin/udp\r\n      RP/0/0/CPU0:example#\r\n    Try to identify the incoming traffic input interface using the show packet-memory inuse command.\r\n    The following example identifies the incoming interface as FastEthernet 0/1/0/4 \n\r\n    (Match UDP process Job Id number and looking for high interface counts):\r\n    \n\r\n    \r\n    RP/0/0/CPU0:example#show packet-memory inuse\nWed Aug 28 07:58:16.556 PST\nDisplay inuse packets:\n\nPakhandle   Job Id Ifinput      Ifoutput     dll/pc      \n0xe3127e68  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3128030  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe31283c0  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3128588  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3128750  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3128918  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3129200  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3129590  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3129ae8  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3129cb0  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3129e78  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312a598  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312a760  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312aaf0  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312acb8  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312ae80  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312b5a0  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312b930  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312c3e0  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312c5a8  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n --More-- \n\r\n    \r\n    The quickest way to stablize the router would be to shut down the incoming interface where the attack is sourced.  \r\n    \n\r\n    Restart the UDP process:\r\n    \r\n    RP/0/0/CPU0:example#admin\nWed Aug 28 08:41:20.435 PST\nRP/0/0/CPU0:example(admin)#process restart 405\r\n\r\n    \r\n    Apply the appropriate SMU or upgrade the device to Cisco IOS XR version 4.3.2 or later.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices in the network are available in the Cisco Applied Intelligence companion document for this advisory: http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=30921[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=30921\"]",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\n\n\r\nThis vulnerability is fixed in Cisco IOS XR Software version 4.3.2 and later.  For devices running Cisco IOS XR Software version 4.3.1, the following SMUs are available:\r\n\r\n\r\n    \r\n        \r\n            Cisco IOS XR Platform \n\r\n            \r\n            SMU ID\n\r\n            \r\n            SMU Name \n\r\n            \r\n        \r\n        \r\n            XR12000\r\n            AA07643\n\r\n            \r\n            c12k-4.3.1.CSCue69413[\"http://software.cisco.com/download/release.html?mdfid=279879106&flowid=2131&softwareid=280867577&release=4.3.1&relind=AVAILABLE&rellifecycle=&reltype=latest\"]\n\r\n            \r\n        \r\n        \r\n            ASR9K-PX\n\r\n            \r\n            AA07645\n\r\n            \r\n            asr9k-px-4.3.1.CSCue69413[\"http://software.cisco.com/download/release.html?mdfid=282414851&flowid=2137&softwareid=280867577&release=4.3.1&relind=AVAILABLE&rellifecycle=&reltype=latest\"]\r\n        \r\n        \r\n            CRS-PX\r\n            AA07647\n\r\n            \r\n            hfr-px-4.3.1.CSCue69413[\"http://software.cisco.com/download/release.html?mdfid=279506669&flowid=1930&softwareid=280867577&release=4.3.1&relind=AVAILABLE&rellifecycle=&reltype=latest\"]\r\n        \r\n    \r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was discovered during internal security testing.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "external",
+				"summary": "Identifying and Mitigating Exploitation of the Cisco IOS XR Software Memory Exhaustion Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=30921"
+			},
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Memory Exhaustion Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20131002-iosxr"
+			}
+		],
+		"title": "Cisco IOS XR Software Memory Exhaustion Vulnerability",
+		"tracking": {
+			"current_release_date": "2013-10-02T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:23:44+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20131002-iosxr",
+			"initial_release_date": "2013-10-02T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-10-02T13:40:06+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2013-5503",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCue69413",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS XR Software Memory Exhaustion Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20131002-iosxr"
+				}
+			],
+			"release_date": "2013-10-02T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Infrastructure Access Control Lists and Unicast Reverse Path Forwarding\r\nWarning: Because this vulnerability is exploited via UDP transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses.  In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger mitigation than iACLs alone.\n\r\n\n\r\nAlthough it is often difficult to block traffic that transits a network, it is possible to identify traffic that should never be allowed to target infrastructure devices and block that traffic at the border of networks. Infrastructure ACLs (iACLs) are a network security best practice and should be considered as a long-term addition to good network security as well as a workaround for this specific vulnerability. \n\r\n\n\r\nThe iACL example below shows how to identify listening UDP services on the device and an appropriate iACL which should be included as part of the deployed infrastructure access-list.  This will help protect all devices with IP addresses in the infrastructure IP address range:\r\n\r\n\r\nRP/0/0/CPU0:example#show udp brief\r\nTue Aug 27 08:57:56.255 PST\r\n   PCB     VRF-ID     Recv-Q Send-Q  Local Address          Foreign Address\r\n0x500f87c4 0x60000000      0      0  :::123                 :::0                  \r\n0x500f9af8 0x00000000      0      0  :::123                 :::0                  \r\n0x500fc28c 0x60000000      0      0  :::161                 :::0                  \r\n0x500fc074 0x00000000      0      0  :::161                 :::0                  \r\n0x500fc88c 0x60000000      0      0  :::162                 :::0                  \r\n0x500fc5fc 0x00000000      0      0  :::162                 :::0                  \r\n0x500f8404 0x60000000      0      0  0.0.0.0:514            0.0.0.0:0             \r\n0x500fa4d8 0x60000000      0      0  0.0.0.0:123            0.0.0.0:0             \r\n0x500fa338 0x00000000      0      0  0.0.0.0:123            0.0.0.0:0             \r\n0x500fce3c 0x60000000      0      0  0.0.0.0:646            0.0.0.0:0             \r\n0x500f9c98 0x60000000      0      0  0.0.0.0:161            0.0.0.0:0             \r\n0x500fb360 0x00000000      0      0  0.0.0.0:161            0.0.0.0:0             \r\n0x500fbbbc 0x60000000      0      0  0.0.0.0:162            0.0.0.0:0             \r\n0x500fa184 0x00000000      0      0  0.0.0.0:162            0.0.0.0:0             \r\n0x500f8f10 0x00000000      0      0  0.0.0.0:0              0.0.0.0:0     \r\nRP/0/0/CPU0:example#\r\nRP/0/0/CPU0:example#configure term\r\nipv4 access-list ACL-INFRASTRUCTURE-IN\r\n !\r\n ! Permit trusted sources to the local IP infrastructure address space\r\n !\r\n  10 permit udp host \"trusted-ntp-peer\" host \"local-ip-address\" eq 123\r\n  20 permit udp host \"trusted-snmp-peer\" host \"local-ip-address\" range 161 162\r\n  30 permit udp host \"trusted-syslog-server\" any eq 514\r\n  40 permit udp host \"trusted-ldp-peer\" any eq 646\r\n  !\r\n  ! Deny all other IP traffic to any network device\r\n  !\r\n  50 Deny ipv4 any \"infrastructure-address-space\" \"mask\"\r\n  ! Permit transit traffic\r\n  !\r\n  60 permit ipv4 any any\r\n\r\n\r\nAfter the ACL is created, it must be applied to all interfaces that face non infrastructure devices, including interfaces that connect to other organizations, remote access segments, user segments, and segments in data centers.\r\nThe white paper entitled Cisco Guide to Harden Cisco IOS XR Devices[\"http://www.cisco.com/web/about/security/intelligence/CiscoIOSXR.html#19\"], presents guidelines and recommended deployment techniques for infrastructure protection access lists.\n\r\n\n\r\n\r\n\r\nIdentification and Recovery\r\nIf an administrator suspects a device is being exploited, the following these steps will assist in recovery:\n\r\n\r\n    Determine whether the packet memory is consumed by UDP process by using the show packet-memory summary command:\r\n          RP/0/0/CPU0:example#show packet-memory summary\r\n      Wed Aug 28 07:53:21.667 PST \n         ProcId   JobId Count  Percentage Process\r\n      739020993     405 17992     100.00% pkg/bin/udp\r\n      RP/0/0/CPU0:example#\r\n    Try to identify the incoming traffic input interface using the show packet-memory inuse command.\r\n    The following example identifies the incoming interface as FastEthernet 0/1/0/4 \n\r\n    (Match UDP process Job Id number and looking for high interface counts):\r\n    \n\r\n    \r\n    RP/0/0/CPU0:example#show packet-memory inuse\nWed Aug 28 07:58:16.556 PST\nDisplay inuse packets:\n\nPakhandle   Job Id Ifinput      Ifoutput     dll/pc      \n0xe3127e68  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3128030  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe31283c0  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3128588  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3128750  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3128918  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3129200  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3129590  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3129ae8  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe3129cb0  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe3129e78  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312a598  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312a760  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312aaf0  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312acb8  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312ae80  57     NULLIFHNDL   NULLIFHNDL   0x00000000\n0xe312b5a0  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312b930  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312c3e0  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n0xe312c5a8  405    FastEthernet0/1/0/4NULLIFHNDL   0x4d612904\n --More-- \n\r\n    \r\n    The quickest way to stablize the router would be to shut down the incoming interface where the attack is sourced.  \r\n    \n\r\n    Restart the UDP process:\r\n    \r\n    RP/0/0/CPU0:example#admin\nWed Aug 28 08:41:20.435 PST\nRP/0/0/CPU0:example(admin)#process restart 405\r\n\r\n    \r\n    Apply the appropriate SMU or upgrade the device to Cisco IOS XR version 4.3.2 or later.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices in the network are available in the Cisco Applied Intelligence companion document for this advisory: http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=30921[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=30921\"]"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Memory Exhaustion Vulnerability."
+		}
+	]
+}

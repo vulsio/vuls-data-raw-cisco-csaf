@@ -1,0 +1,189 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the UDP forwarding code of Cisco IOS XR Software could allow an unauthenticated, adjacent attacker to bypass configured management plane protection policies and access the Simple Network Management Plane (SNMP) server of an affected device.\r\n\r\nThis vulnerability is due to incorrect UDP forwarding programming when using SNMP with management plane protection. An attacker could exploit this vulnerability by attempting to perform an SNMP operation using broadcast as the destination address that could be processed by an affected device that is configured with an SNMP server. A successful exploit could allow the attacker to communicate to the device on the configured SNMP ports. Although an unauthenticated attacker could send UDP datagrams to the configured SNMP port, only an authenticated user can retrieve or modify data using SNMP requests.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the March 2024 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: March 2024 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75299\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco devices if they were running a vulnerable release of Cisco IOS XR Software and had management plane protection configured with the SNMP server enabled.\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nDetermine Whether Management Plane Protection is Configured\r\n\r\nTo determine whether management plane protection is configured, enter the command show running-config control-plane management-plane. If the command returns output, management plane protection is configured, as shown in the following example:\r\n\r\n\r\nRouter# show running-config control-plane management-plane\r\n!\r\ncontrol-plane\r\n management-plane\r\n  inband\r\n   interface all\r\n  allow SSH\r\n   !\r\n  !\r\n !\r\n!\r\nRouter#\r\n\r\nDetermine Whether SNMP Server is Configured\r\n\r\nTo determine whether the SNMP server is configured, enter the command show running-config snmp. The device can be configured with either SNMPv2c or SNMPv3. If the command returns output, SNMP server is configured, as shown in the following example:\r\nRouter# show running-config snmp-server\r\n!\r\nsnmp-server community example RO\r\n!\r\nRouter#",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability could allow an attacker to bypass protections that are provided by an access control list (ACL) that is applied on an affected device. The overall impact of exploitation is organization-specific because it depends on the importance of the assets that the ACL was supposed to protect. Customers should evaluate how exploitation of this vulnerability would impact their network and proceed according to their own vulnerability-handling and remediation processes.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability.\r\n\r\nDisable UDP forwarding\r\n\r\nUDP forwarding is enabled by default for DNS, TFTP, TACACS, IEN 116 Name Service, NetBIOS Name Service (NBNS), and NetBIOS Datagram Service (NBDS) protocols. UDP forwarding is not enabled by default for other UDP protocols.\r\n\r\nIf UDP forwarding is not required, a workaround is to disable UDP forwarding globally by using the forward-protocol udp disable command as shown in the following example:\r\n\r\n\r\nRP/0/RSP0/CPU0:ios#configure terminal\r\nRP/0/RSP0/CPU0:ios(config)#forward-protocol udp disable\r\nRP/0/RSP0/CPU0:ios(config)#commit\r\n\r\nNote: If UDP broadcast forwarding is required for any default protocol or if UDP broadcast forwarding has been configured with the forward-protocol udp <port number> command, this workaround cannot be used.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, the release information in the following table was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nThe left column lists Cisco software releases, and the right column indicates whether a release was affected by the vulnerability described in this advisory and which release included the fix for this vulnerability.\r\n\r\n        Cisco IOS XR Software Release  First Fixed Release          7.11 and earlier  Migrate to a fixed release.      24.1  24.1.1\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.\r\n\r\nCisco has not released SMUs to address this vulnerability.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software SNMP Management Plane Protection ACL Bypass Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-snmp-uhv6ZDeF"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: March 2024 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75299"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software SNMP Management Plane Protection ACL Bypass Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-03-13T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:29:25+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-snmp-uhv6ZDeF",
+			"initial_release_date": "2024-03-13T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-03-13T15:56:41+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20319",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwh31469"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2024-03-13T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 4.3,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software SNMP Management Plane Protection ACL Bypass Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,2937 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found by Sanmith Prakash of Cisco during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in ICMPv6 inspection when configured with the Snort 2 detection engine for Cisco Firepower Threat Defense (FTD) Software or Cisco FirePOWER Services could allow an unauthenticated, remote attacker to cause the CPU of an affected device to spike to 100 percent, which could stop all traffic processing and result in a denial of service (DoS) condition. FTD management traffic is not affected by this vulnerability.\r\n\r\nThis vulnerability is due to improper error checking when parsing fields within the ICMPv6 header. An attacker could exploit this vulnerability by sending a crafted ICMPv6 packet through an affected device. A successful exploit could allow the attacker to cause the device to exhaust CPU resources and stop processing traffic, resulting in a DoS condition.\r\n\r\nNote: To recover from the DoS condition, the Snort 2 Detection Engine, the Cisco FTD device, or the Cisco FirePOWER Services device may need to be restarted. For more information, see the Details [\"#details\"] section of this advisory.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the November 2023 release of the Cisco ASA, FTD, and FMC Security Advisory Bundled publication. For a complete list of the advisories and links to them, see Cisco Event Response: November 2023 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74985\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects the following Cisco products if they were running a vulnerable release of Cisco software and were configured with a network discovery policy that enables both host and application detection and invokes the Snort 2 Detection Engine:\r\n\r\nFirePOWER Services - All platforms\r\nFirepower Threat Defense (FTD) Software - All platforms\r\n\r\nBy default, the network discovery policy is configured for application detection only. For this vulnerability to be exploited, Snort 2 must be active.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n\r\nDetermine the Network Discovery Policy Configuration\r\n\r\nTo determine whether the network discovery policy is configured for host and application detection, choose Policies > Network Discovery and review the document Host and Application Detection Fundamentals [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/70/configuration/guide/fpmc-config-guide-v70/introduction_to_network_discovery_and_identity.html#concept_B9C9F7BF250847D6A4FB888CB738EA17\"].\r\n\r\nDetermine the Snort 2 Status\r\n\r\nTo determine whether Snort 2 is running, see Determine the Active Snort Version that Runs on Firepower Threat Defense (FTD) [\"https://www.cisco.com/c/en/us/support/docs/security/secure-firewall-threat-defense/220415-determine-the-active-snort-version-that.html\"].",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nAdaptive Security Appliance (ASA) Software\r\nFirepower Management Center (FMC) Software\r\nOpen Source Snort 2\r\nOpen Source Snort 3",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability can cause the Snort 2 Detection Engine to exhaust CPU resources. There are two ways to recover from the DoS condition:\r\n\r\nRestart the Cisco FTD or Cisco FirePOWER Services device.\r\nRestart the Snort 2 Detection Engine.\r\n\r\nRestart the Snort 2 Detection Engine\r\n\r\nTo restart the Snort 2 Detection Engine, use the expert mode CLI command pmtool RestartByType de, as shown in the following example:\r\n\r\n\r\n> expert\r\nadmin@ftd:/ngfw/Volume/home/admin$ pmtool RestartByType de\r\n\r\nThis is a disruptive action, so Cisco recommends determining if exploitation is occurring before restarting. For further assistance, contact the Cisco Technical Assistance Center (TAC).",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability can exhaust CPU resources.\r\n\r\nCheck for High CPU Usage of the Snort 2 Detection Engine\r\n\r\nIf the Cisco FTD or Cisco FirePOWER Services device is managed by Cisco FMC or Cisco Firepower Device Management (FDM), the management station may alert about the high CPU usage. To monitor CPU usage, use the expert mode CLI command top, as shown in the following example:\r\n\r\n\r\n> expert\r\nadmin@ftd:/ngfw/Volume/home/admin$ top -p `pidof snort | sed -e \"s/ /,/g\"`\r\ntop - 08:03:28 up 6 days, 23:21,  2 users,  load average: 4.20, 3.19, 3.06\r\nTasks:   1 total,   1 running,   0 sleeping,   0 stopped,   0 zombie\r\n%Cpu(s): 99.7 us, 1.6 sy, 0.1 ni, 62.6 id, 0.0 wa, 0.0 hi, 0.0 si, 0.0 st\r\nMiB Mem :   7899.7 total,   1483.3 free,   5743.5 used,    672.9 buff/cache\r\nMiB Swap:   9461.2 total,   8276.2 free,   1185.0 used.   1517.3 avail Mem\r\n\r\nPID       USER    PR   NI    VIRT         RES          SHR      S   %CPU   %MEM     TIME+       COMMAND\r\n59156     root    1    -19   3359960      868608       35488    R   99.7  10.7     35:08.57    snort\r\n\r\nNote: There can be one or more Snort instances that are active on a Cisco FTD or a Cisco FirePOWER Services device.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu\"] that address the vulnerability described in this advisory. Customers with service contracts that entitle them to regular software updates should obtain security fixes through their usual update channels.\r\n\r\nCustomers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nThe Cisco Support and Downloads page [\"https://www.cisco.com/c/en/us/support/index.html\"] on Cisco.com provides information about licensing and downloads. This page can also display customer device support coverage for customers who use the My Devices tool.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n  Customers Without Service Contracts\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n      Cisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number—for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n      Only this advisory  All Critical and High advisories  All advisories    Cisco ASA Software  Cisco FMC Software  Cisco FTD Software    Any Platform  3000 Series Industrial Security Appliances (ISA)  ASA 5500-X Series Firewalls  ASA Service Module  Adaptive Security Virtual Appliance (ASAv)  Firepower 1000 Series  Firepower 2100 Series  Firepower 4100 Series  Firepower 9000 Series  Firepower NGFW Virtual  Secure Firewall 3100 Series  Firepower Management Center Appliances\r\n\r\n\r\n\r\n\r\n\r\nFor instructions on upgrading your FTD device, see Cisco Firepower Management Center Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html\"].\r\n\r\n   Additional Resources\r\nFor help determining the best Cisco ASA, FTD, or FMC Software release, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\nCisco ASA Compatibility [\"https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html\"]\r\nCisco Secure Firewall ASA Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html\"]\r\nCisco Secure Firewall Threat Defense Compatibility Guide [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html\"]",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found by Sanmith Prakash of Cisco during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firepower Threat Defense Software and Cisco FirePOWER Services ICMPv6 with Snort 2 Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ftd-icmpv6-dos-4eMkLuN"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: November 2023 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74985"
+			},
+			{
+				"category": "external",
+				"summary": "Host and Application Detection Fundamentals",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/70/configuration/guide/fpmc-config-guide-v70/introduction_to_network_discovery_and_identity.html#concept_B9C9F7BF250847D6A4FB888CB738EA17"
+			},
+			{
+				"category": "external",
+				"summary": "Determine the Active Snort Version that Runs on Firepower Threat Defense (FTD)",
+				"url": "https://www.cisco.com/c/en/us/support/docs/security/secure-firewall-threat-defense/220415-determine-the-active-snort-version-that.html"
+			},
+			{
+				"category": "external",
+				"summary": "free software updates",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Support and Downloads page",
+				"url": "https://www.cisco.com/c/en/us/support/index.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Firepower Management Center Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco ASA Compatibility",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall ASA Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall Threat Defense Compatibility Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Firepower Threat Defense Software and Cisco FirePOWER Services ICMPv6 with Snort 2 Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2023-11-16T21:10:27+00:00",
+			"generator": {
+				"date": "2023-11-17T06:05:04+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-ftd-icmpv6-dos-4eMkLuN",
+			"initial_release_date": "2023-11-01T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-11-01T16:00:16+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2023-11-16T21:10:27+00:00",
+					"number": "1.1.0",
+					"summary": "Updated to include Cisco FirePOWER Services as vulnerable."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.2.3",
+										"product": {
+											"name": "6.2.3",
+											"product_id": "CSAFPID-233334"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.1",
+										"product": {
+											"name": "6.2.3.1",
+											"product_id": "CSAFPID-245396"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.2",
+										"product": {
+											"name": "6.2.3.2",
+											"product_id": "CSAFPID-245397"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.3",
+										"product": {
+											"name": "6.2.3.3",
+											"product_id": "CSAFPID-245398"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.4",
+										"product": {
+											"name": "6.2.3.4",
+											"product_id": "CSAFPID-247893"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.5",
+										"product": {
+											"name": "6.2.3.5",
+											"product_id": "CSAFPID-247894"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.6",
+										"product": {
+											"name": "6.2.3.6",
+											"product_id": "CSAFPID-248816"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.7",
+										"product": {
+											"name": "6.2.3.7",
+											"product_id": "CSAFPID-251756"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.8",
+										"product": {
+											"name": "6.2.3.8",
+											"product_id": "CSAFPID-251757"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.10",
+										"product": {
+											"name": "6.2.3.10",
+											"product_id": "CSAFPID-258063"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.11",
+										"product": {
+											"name": "6.2.3.11",
+											"product_id": "CSAFPID-258064"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.9",
+										"product": {
+											"name": "6.2.3.9",
+											"product_id": "CSAFPID-258915"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.12",
+										"product": {
+											"name": "6.2.3.12",
+											"product_id": "CSAFPID-265011"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.13",
+										"product": {
+											"name": "6.2.3.13",
+											"product_id": "CSAFPID-267675"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.14",
+										"product": {
+											"name": "6.2.3.14",
+											"product_id": "CSAFPID-267676"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.15",
+										"product": {
+											"name": "6.2.3.15",
+											"product_id": "CSAFPID-275475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.16",
+										"product": {
+											"name": "6.2.3.16",
+											"product_id": "CSAFPID-278503"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.17",
+										"product": {
+											"name": "6.2.3.17",
+											"product_id": "CSAFPID-284172"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.18",
+										"product": {
+											"name": "6.2.3.18",
+											"product_id": "CSAFPID-286536"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.6.0",
+										"product": {
+											"name": "6.6.0",
+											"product_id": "CSAFPID-225862"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.0.1",
+										"product": {
+											"name": "6.6.0.1",
+											"product_id": "CSAFPID-278885"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.1",
+										"product": {
+											"name": "6.6.1",
+											"product_id": "CSAFPID-280013"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.3",
+										"product": {
+											"name": "6.6.3",
+											"product_id": "CSAFPID-281981"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.4",
+										"product": {
+											"name": "6.6.4",
+											"product_id": "CSAFPID-282174"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.5",
+										"product": {
+											"name": "6.6.5",
+											"product_id": "CSAFPID-284314"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.5.1",
+										"product": {
+											"name": "6.6.5.1",
+											"product_id": "CSAFPID-286093"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.5.2",
+										"product": {
+											"name": "6.6.5.2",
+											"product_id": "CSAFPID-286580"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.7",
+										"product": {
+											"name": "6.6.7",
+											"product_id": "CSAFPID-287202"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.6.7.1",
+										"product": {
+											"name": "6.6.7.1",
+											"product_id": "CSAFPID-292740"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.6"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.4.0",
+										"product": {
+											"name": "6.4.0",
+											"product_id": "CSAFPID-265014"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.1",
+										"product": {
+											"name": "6.4.0.1",
+											"product_id": "CSAFPID-265015"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.3",
+										"product": {
+											"name": "6.4.0.3",
+											"product_id": "CSAFPID-265950"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.2",
+										"product": {
+											"name": "6.4.0.2",
+											"product_id": "CSAFPID-268602"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.4",
+										"product": {
+											"name": "6.4.0.4",
+											"product_id": "CSAFPID-276372"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.5",
+										"product": {
+											"name": "6.4.0.5",
+											"product_id": "CSAFPID-276373"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.6",
+										"product": {
+											"name": "6.4.0.6",
+											"product_id": "CSAFPID-276933"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.7",
+										"product": {
+											"name": "6.4.0.7",
+											"product_id": "CSAFPID-276934"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.8",
+										"product": {
+											"name": "6.4.0.8",
+											"product_id": "CSAFPID-276935"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.9",
+										"product": {
+											"name": "6.4.0.9",
+											"product_id": "CSAFPID-278397"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.10",
+										"product": {
+											"name": "6.4.0.10",
+											"product_id": "CSAFPID-280662"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.11",
+										"product": {
+											"name": "6.4.0.11",
+											"product_id": "CSAFPID-280999"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.12",
+										"product": {
+											"name": "6.4.0.12",
+											"product_id": "CSAFPID-282609"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.13",
+										"product": {
+											"name": "6.4.0.13",
+											"product_id": "CSAFPID-286092"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.14",
+										"product": {
+											"name": "6.4.0.14",
+											"product_id": "CSAFPID-286537"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.15",
+										"product": {
+											"name": "6.4.0.15",
+											"product_id": "CSAFPID-287041"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.16",
+										"product": {
+											"name": "6.4.0.16",
+											"product_id": "CSAFPID-290665"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.4.0.17",
+										"product": {
+											"name": "6.4.0.17",
+											"product_id": "CSAFPID-300779"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0.0",
+										"product": {
+											"name": "7.0.0",
+											"product_id": "CSAFPID-282695"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.0.1",
+										"product": {
+											"name": "7.0.0.1",
+											"product_id": "CSAFPID-284277"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1",
+										"product": {
+											"name": "7.0.1",
+											"product_id": "CSAFPID-284789"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1.1",
+										"product": {
+											"name": "7.0.1.1",
+											"product_id": "CSAFPID-286538"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.2",
+										"product": {
+											"name": "7.0.2",
+											"product_id": "CSAFPID-286930"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.2.1",
+										"product": {
+											"name": "7.0.2.1",
+											"product_id": "CSAFPID-287122"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.3",
+										"product": {
+											"name": "7.0.3",
+											"product_id": "CSAFPID-287181"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.4",
+										"product": {
+											"name": "7.0.4",
+											"product_id": "CSAFPID-290481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.5",
+										"product": {
+											"name": "7.0.5",
+											"product_id": "CSAFPID-290663"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1.0",
+										"product": {
+											"name": "7.1.0",
+											"product_id": "CSAFPID-286091"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.0.1",
+										"product": {
+											"name": "7.1.0.1",
+											"product_id": "CSAFPID-286543"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.0.2",
+										"product": {
+											"name": "7.1.0.2",
+											"product_id": "CSAFPID-290467"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.0.3",
+										"product": {
+											"name": "7.1.0.3",
+											"product_id": "CSAFPID-290468"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2.0",
+										"product": {
+											"name": "7.2.0",
+											"product_id": "CSAFPID-287081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.0.1",
+										"product": {
+											"name": "7.2.0.1",
+											"product_id": "CSAFPID-290469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1",
+										"product": {
+											"name": "7.2.1",
+											"product_id": "CSAFPID-290563"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2",
+										"product": {
+											"name": "7.2.2",
+											"product_id": "CSAFPID-292413"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.3",
+										"product": {
+											"name": "7.2.3",
+											"product_id": "CSAFPID-294794"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3.0",
+										"product": {
+											"name": "7.3.0",
+											"product_id": "CSAFPID-292363"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1",
+										"product": {
+											"name": "7.3.1",
+											"product_id": "CSAFPID-294962"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1.1",
+										"product": {
+											"name": "7.3.1.1",
+											"product_id": "CSAFPID-300512"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1.2",
+										"product": {
+											"name": "7.3.1.2",
+											"product_id": "CSAFPID-301705"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco ASA 5500-X Series Firewalls",
+						"product": {
+							"name": "Cisco ASA 5500-X Series Firewalls",
+							"product_id": "CSAFPID-277437"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-233334:277392"
+				},
+				"product_reference": "CSAFPID-233334",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-233334:277438"
+				},
+				"product_reference": "CSAFPID-233334",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-245396:277392"
+				},
+				"product_reference": "CSAFPID-245396",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-245396:277438"
+				},
+				"product_reference": "CSAFPID-245396",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-245397:277392"
+				},
+				"product_reference": "CSAFPID-245397",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.2 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-245397:277437"
+				},
+				"product_reference": "CSAFPID-245397",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-245397:277438"
+				},
+				"product_reference": "CSAFPID-245397",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-245398:277392"
+				},
+				"product_reference": "CSAFPID-245398",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-245398:277438"
+				},
+				"product_reference": "CSAFPID-245398",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.4 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-247893:277392"
+				},
+				"product_reference": "CSAFPID-247893",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.4 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-247893:277437"
+				},
+				"product_reference": "CSAFPID-247893",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.4 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-247893:277438"
+				},
+				"product_reference": "CSAFPID-247893",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.4 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-247893:277440"
+				},
+				"product_reference": "CSAFPID-247893",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.5 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-247894:277392"
+				},
+				"product_reference": "CSAFPID-247894",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.5 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-247894:277437"
+				},
+				"product_reference": "CSAFPID-247894",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.5 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-247894:277438"
+				},
+				"product_reference": "CSAFPID-247894",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.6 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-248816:277392"
+				},
+				"product_reference": "CSAFPID-248816",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.6 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-248816:277438"
+				},
+				"product_reference": "CSAFPID-248816",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.7 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-251756:277392"
+				},
+				"product_reference": "CSAFPID-251756",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.7 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-251756:277437"
+				},
+				"product_reference": "CSAFPID-251756",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.7 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-251756:277438"
+				},
+				"product_reference": "CSAFPID-251756",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.8 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-251757:277392"
+				},
+				"product_reference": "CSAFPID-251757",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.8 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-251757:277438"
+				},
+				"product_reference": "CSAFPID-251757",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.10 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-258063:277392"
+				},
+				"product_reference": "CSAFPID-258063",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.10 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-258063:277437"
+				},
+				"product_reference": "CSAFPID-258063",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.10 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-258063:277438"
+				},
+				"product_reference": "CSAFPID-258063",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.11 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-258064:277392"
+				},
+				"product_reference": "CSAFPID-258064",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.11 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-258064:277438"
+				},
+				"product_reference": "CSAFPID-258064",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.9 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-258915:277392"
+				},
+				"product_reference": "CSAFPID-258915",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.9 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-258915:277438"
+				},
+				"product_reference": "CSAFPID-258915",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.12 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-265011:277392"
+				},
+				"product_reference": "CSAFPID-265011",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.12 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-265011:277438"
+				},
+				"product_reference": "CSAFPID-265011",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.13 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-267675:277392"
+				},
+				"product_reference": "CSAFPID-267675",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.13 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-267675:277438"
+				},
+				"product_reference": "CSAFPID-267675",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.14 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-267676:277392"
+				},
+				"product_reference": "CSAFPID-267676",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.14 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-267676:277438"
+				},
+				"product_reference": "CSAFPID-267676",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.15 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-275475:277392"
+				},
+				"product_reference": "CSAFPID-275475",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.15 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-275475:277437"
+				},
+				"product_reference": "CSAFPID-275475",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.15 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-275475:277438"
+				},
+				"product_reference": "CSAFPID-275475",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.16 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-278503:277392"
+				},
+				"product_reference": "CSAFPID-278503",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.16 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-278503:277438"
+				},
+				"product_reference": "CSAFPID-278503",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.17 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-284172:277392"
+				},
+				"product_reference": "CSAFPID-284172",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.17 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-284172:277438"
+				},
+				"product_reference": "CSAFPID-284172",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.18 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286536:277392"
+				},
+				"product_reference": "CSAFPID-286536",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.18 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286536:277438"
+				},
+				"product_reference": "CSAFPID-286536",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-225862:277392"
+				},
+				"product_reference": "CSAFPID-225862",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-225862:277438"
+				},
+				"product_reference": "CSAFPID-225862",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-278885:277392"
+				},
+				"product_reference": "CSAFPID-278885",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-278885:277438"
+				},
+				"product_reference": "CSAFPID-278885",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-280013:277392"
+				},
+				"product_reference": "CSAFPID-280013",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-280013:277438"
+				},
+				"product_reference": "CSAFPID-280013",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-281981:277392"
+				},
+				"product_reference": "CSAFPID-281981",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-281981:277438"
+				},
+				"product_reference": "CSAFPID-281981",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.4 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-282174:277392"
+				},
+				"product_reference": "CSAFPID-282174",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.4 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-282174:277437"
+				},
+				"product_reference": "CSAFPID-282174",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.4 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-282174:277438"
+				},
+				"product_reference": "CSAFPID-282174",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-284314:277392"
+				},
+				"product_reference": "CSAFPID-284314",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-284314:277438"
+				},
+				"product_reference": "CSAFPID-284314",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286093:277392"
+				},
+				"product_reference": "CSAFPID-286093",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286093:277438"
+				},
+				"product_reference": "CSAFPID-286093",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286580:277392"
+				},
+				"product_reference": "CSAFPID-286580",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5.2 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-286580:277437"
+				},
+				"product_reference": "CSAFPID-286580",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.5.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286580:277438"
+				},
+				"product_reference": "CSAFPID-286580",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.7 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287202:277392"
+				},
+				"product_reference": "CSAFPID-287202",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.7 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287202:277438"
+				},
+				"product_reference": "CSAFPID-287202",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.7.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-292740:277392"
+				},
+				"product_reference": "CSAFPID-292740",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.7.1 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-292740:277437"
+				},
+				"product_reference": "CSAFPID-292740",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.6.7.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-292740:277438"
+				},
+				"product_reference": "CSAFPID-292740",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-265014:277392"
+				},
+				"product_reference": "CSAFPID-265014",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-265014:277437"
+				},
+				"product_reference": "CSAFPID-265014",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-265014:277438"
+				},
+				"product_reference": "CSAFPID-265014",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-265015:277392"
+				},
+				"product_reference": "CSAFPID-265015",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-265015:277438"
+				},
+				"product_reference": "CSAFPID-265015",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-265950:277392"
+				},
+				"product_reference": "CSAFPID-265950",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.3 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-265950:277437"
+				},
+				"product_reference": "CSAFPID-265950",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-265950:277438"
+				},
+				"product_reference": "CSAFPID-265950",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-268602:277392"
+				},
+				"product_reference": "CSAFPID-268602",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-268602:277438"
+				},
+				"product_reference": "CSAFPID-268602",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.4 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-276372:277392"
+				},
+				"product_reference": "CSAFPID-276372",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.4 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-276372:277438"
+				},
+				"product_reference": "CSAFPID-276372",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.5 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-276373:277392"
+				},
+				"product_reference": "CSAFPID-276373",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.5 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276373:277437"
+				},
+				"product_reference": "CSAFPID-276373",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.5 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-276373:277438"
+				},
+				"product_reference": "CSAFPID-276373",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.6 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-276933:277392"
+				},
+				"product_reference": "CSAFPID-276933",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.6 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276933:277437"
+				},
+				"product_reference": "CSAFPID-276933",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.6 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-276933:277438"
+				},
+				"product_reference": "CSAFPID-276933",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.7 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-276934:277392"
+				},
+				"product_reference": "CSAFPID-276934",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.7 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276934:277437"
+				},
+				"product_reference": "CSAFPID-276934",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.7 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-276934:277438"
+				},
+				"product_reference": "CSAFPID-276934",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.8 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-276935:277392"
+				},
+				"product_reference": "CSAFPID-276935",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.8 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-276935:277438"
+				},
+				"product_reference": "CSAFPID-276935",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.9 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-278397:277392"
+				},
+				"product_reference": "CSAFPID-278397",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.9 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-278397:277437"
+				},
+				"product_reference": "CSAFPID-278397",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.9 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-278397:277438"
+				},
+				"product_reference": "CSAFPID-278397",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.10 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-280662:277392"
+				},
+				"product_reference": "CSAFPID-280662",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.10 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-280662:277438"
+				},
+				"product_reference": "CSAFPID-280662",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.11 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-280999:277392"
+				},
+				"product_reference": "CSAFPID-280999",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.11 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-280999:277438"
+				},
+				"product_reference": "CSAFPID-280999",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.12 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-282609:277392"
+				},
+				"product_reference": "CSAFPID-282609",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.12 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-282609:277438"
+				},
+				"product_reference": "CSAFPID-282609",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.13 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286092:277392"
+				},
+				"product_reference": "CSAFPID-286092",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.13 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286092:277438"
+				},
+				"product_reference": "CSAFPID-286092",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.14 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286537:277392"
+				},
+				"product_reference": "CSAFPID-286537",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.14 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286537:277438"
+				},
+				"product_reference": "CSAFPID-286537",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.15 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287041:277392"
+				},
+				"product_reference": "CSAFPID-287041",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.15 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287041:277438"
+				},
+				"product_reference": "CSAFPID-287041",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.16 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290665:277392"
+				},
+				"product_reference": "CSAFPID-290665",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.16 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290665:277438"
+				},
+				"product_reference": "CSAFPID-290665",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.17 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300779:277392"
+				},
+				"product_reference": "CSAFPID-300779",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.17 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300779:277393"
+				},
+				"product_reference": "CSAFPID-300779",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.17 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-300779:277437"
+				},
+				"product_reference": "CSAFPID-300779",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.4.0.17 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300779:277438"
+				},
+				"product_reference": "CSAFPID-300779",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-282695:277392"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-282695:277437"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-282695:277438"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-284277:277392"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-284277:277438"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-284789:277392"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-284789:277438"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286538:277392"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286538:277438"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286930:277392"
+				},
+				"product_reference": "CSAFPID-286930",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286930:277438"
+				},
+				"product_reference": "CSAFPID-286930",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287122:277392"
+				},
+				"product_reference": "CSAFPID-287122",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.2.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287122:277438"
+				},
+				"product_reference": "CSAFPID-287122",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287181:277392"
+				},
+				"product_reference": "CSAFPID-287181",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287181:277438"
+				},
+				"product_reference": "CSAFPID-287181",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.4 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290481:277392"
+				},
+				"product_reference": "CSAFPID-290481",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.4 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-290481:277437"
+				},
+				"product_reference": "CSAFPID-290481",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.4 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290481:277438"
+				},
+				"product_reference": "CSAFPID-290481",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.5 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290663:277392"
+				},
+				"product_reference": "CSAFPID-290663",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.5 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290663:277438"
+				},
+				"product_reference": "CSAFPID-290663",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286091:277392"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286091:277438"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-286091:286865"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286543:277392"
+				},
+				"product_reference": "CSAFPID-286543",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286543:277438"
+				},
+				"product_reference": "CSAFPID-286543",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290467:286865"
+				},
+				"product_reference": "CSAFPID-290467",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290468:277392"
+				},
+				"product_reference": "CSAFPID-290468",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290468:277438"
+				},
+				"product_reference": "CSAFPID-290468",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0.3 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290468:286865"
+				},
+				"product_reference": "CSAFPID-290468",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-287081:277392"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-287081:277438"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-287081:286865"
+				},
+				"product_reference": "CSAFPID-287081",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290469:277392"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290469:277438"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.0.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290469:286865"
+				},
+				"product_reference": "CSAFPID-290469",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-290563:277392"
+				},
+				"product_reference": "CSAFPID-290563",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-290563:277438"
+				},
+				"product_reference": "CSAFPID-290563",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-290563:286865"
+				},
+				"product_reference": "CSAFPID-290563",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-292413:277392"
+				},
+				"product_reference": "CSAFPID-292413",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-292413:277438"
+				},
+				"product_reference": "CSAFPID-292413",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-292413:286865"
+				},
+				"product_reference": "CSAFPID-292413",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-294794:277392"
+				},
+				"product_reference": "CSAFPID-294794",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-294794:277438"
+				},
+				"product_reference": "CSAFPID-294794",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.2.3 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-294794:286865"
+				},
+				"product_reference": "CSAFPID-294794",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-292363:277392"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-292363:277438"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-292363:286865"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-294962:277392"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-294962:277438"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-294962:286865"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300512:277392"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300512:277393"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300512:277438"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-300512:286865"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-301705:277392"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-301705:277393"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-301705:277438"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-301705:286865"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-286865"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2023-20083",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwc20635"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-225862:277392",
+					"CSAFPID-225862:277438",
+					"CSAFPID-233334:277392",
+					"CSAFPID-233334:277438",
+					"CSAFPID-245396:277392",
+					"CSAFPID-245396:277438",
+					"CSAFPID-245397:277392",
+					"CSAFPID-245397:277437",
+					"CSAFPID-245397:277438",
+					"CSAFPID-245398:277392",
+					"CSAFPID-245398:277438",
+					"CSAFPID-247893:277392",
+					"CSAFPID-247893:277437",
+					"CSAFPID-247893:277438",
+					"CSAFPID-247893:277440",
+					"CSAFPID-247894:277392",
+					"CSAFPID-247894:277437",
+					"CSAFPID-247894:277438",
+					"CSAFPID-248816:277392",
+					"CSAFPID-248816:277438",
+					"CSAFPID-251756:277392",
+					"CSAFPID-251756:277437",
+					"CSAFPID-251756:277438",
+					"CSAFPID-251757:277392",
+					"CSAFPID-251757:277438",
+					"CSAFPID-258063:277392",
+					"CSAFPID-258063:277437",
+					"CSAFPID-258063:277438",
+					"CSAFPID-258064:277392",
+					"CSAFPID-258064:277438",
+					"CSAFPID-258915:277392",
+					"CSAFPID-258915:277438",
+					"CSAFPID-265011:277392",
+					"CSAFPID-265011:277438",
+					"CSAFPID-265014:277392",
+					"CSAFPID-265014:277437",
+					"CSAFPID-265014:277438",
+					"CSAFPID-265015:277392",
+					"CSAFPID-265015:277438",
+					"CSAFPID-265950:277392",
+					"CSAFPID-265950:277437",
+					"CSAFPID-265950:277438",
+					"CSAFPID-267675:277392",
+					"CSAFPID-267675:277438",
+					"CSAFPID-267676:277392",
+					"CSAFPID-267676:277438",
+					"CSAFPID-268602:277392",
+					"CSAFPID-268602:277438",
+					"CSAFPID-275475:277392",
+					"CSAFPID-275475:277437",
+					"CSAFPID-275475:277438",
+					"CSAFPID-276372:277392",
+					"CSAFPID-276372:277438",
+					"CSAFPID-276373:277392",
+					"CSAFPID-276373:277437",
+					"CSAFPID-276373:277438",
+					"CSAFPID-276933:277392",
+					"CSAFPID-276933:277437",
+					"CSAFPID-276933:277438",
+					"CSAFPID-276934:277392",
+					"CSAFPID-276934:277437",
+					"CSAFPID-276934:277438",
+					"CSAFPID-276935:277392",
+					"CSAFPID-276935:277438",
+					"CSAFPID-278397:277392",
+					"CSAFPID-278397:277437",
+					"CSAFPID-278397:277438",
+					"CSAFPID-278503:277392",
+					"CSAFPID-278503:277438",
+					"CSAFPID-278885:277392",
+					"CSAFPID-278885:277438",
+					"CSAFPID-280013:277392",
+					"CSAFPID-280013:277438",
+					"CSAFPID-280662:277392",
+					"CSAFPID-280662:277438",
+					"CSAFPID-280999:277392",
+					"CSAFPID-280999:277438",
+					"CSAFPID-281981:277392",
+					"CSAFPID-281981:277438",
+					"CSAFPID-282174:277392",
+					"CSAFPID-282174:277437",
+					"CSAFPID-282174:277438",
+					"CSAFPID-282609:277392",
+					"CSAFPID-282609:277438",
+					"CSAFPID-282695:277392",
+					"CSAFPID-282695:277437",
+					"CSAFPID-282695:277438",
+					"CSAFPID-284172:277392",
+					"CSAFPID-284172:277438",
+					"CSAFPID-284277:277392",
+					"CSAFPID-284277:277438",
+					"CSAFPID-284314:277392",
+					"CSAFPID-284314:277438",
+					"CSAFPID-284789:277392",
+					"CSAFPID-284789:277438",
+					"CSAFPID-286091:277392",
+					"CSAFPID-286091:277438",
+					"CSAFPID-286091:286865",
+					"CSAFPID-286092:277392",
+					"CSAFPID-286092:277438",
+					"CSAFPID-286093:277392",
+					"CSAFPID-286093:277438",
+					"CSAFPID-286536:277392",
+					"CSAFPID-286536:277438",
+					"CSAFPID-286537:277392",
+					"CSAFPID-286537:277438",
+					"CSAFPID-286538:277392",
+					"CSAFPID-286538:277438",
+					"CSAFPID-286543:277392",
+					"CSAFPID-286543:277438",
+					"CSAFPID-286580:277392",
+					"CSAFPID-286580:277437",
+					"CSAFPID-286580:277438",
+					"CSAFPID-286930:277392",
+					"CSAFPID-286930:277438",
+					"CSAFPID-287041:277392",
+					"CSAFPID-287041:277438",
+					"CSAFPID-287081:277392",
+					"CSAFPID-287081:277438",
+					"CSAFPID-287081:286865",
+					"CSAFPID-287122:277392",
+					"CSAFPID-287122:277438",
+					"CSAFPID-287181:277392",
+					"CSAFPID-287181:277438",
+					"CSAFPID-287202:277392",
+					"CSAFPID-287202:277438",
+					"CSAFPID-290467:286865",
+					"CSAFPID-290468:277392",
+					"CSAFPID-290468:277438",
+					"CSAFPID-290468:286865",
+					"CSAFPID-290469:277392",
+					"CSAFPID-290469:277438",
+					"CSAFPID-290469:286865",
+					"CSAFPID-290481:277392",
+					"CSAFPID-290481:277437",
+					"CSAFPID-290481:277438",
+					"CSAFPID-290563:277392",
+					"CSAFPID-290563:277438",
+					"CSAFPID-290563:286865",
+					"CSAFPID-290663:277392",
+					"CSAFPID-290663:277438",
+					"CSAFPID-290665:277392",
+					"CSAFPID-290665:277438",
+					"CSAFPID-292363:277392",
+					"CSAFPID-292363:277438",
+					"CSAFPID-292363:286865",
+					"CSAFPID-292413:277392",
+					"CSAFPID-292413:277438",
+					"CSAFPID-292413:286865",
+					"CSAFPID-292740:277392",
+					"CSAFPID-292740:277437",
+					"CSAFPID-292740:277438",
+					"CSAFPID-294794:277392",
+					"CSAFPID-294794:277438",
+					"CSAFPID-294794:286865",
+					"CSAFPID-294962:277392",
+					"CSAFPID-294962:277438",
+					"CSAFPID-294962:286865",
+					"CSAFPID-300512:277392",
+					"CSAFPID-300512:277393",
+					"CSAFPID-300512:277438",
+					"CSAFPID-300512:286865",
+					"CSAFPID-300779:277392",
+					"CSAFPID-300779:277393",
+					"CSAFPID-300779:277437",
+					"CSAFPID-300779:277438",
+					"CSAFPID-301705:277392",
+					"CSAFPID-301705:277393",
+					"CSAFPID-301705:277438",
+					"CSAFPID-301705:286865"
+				]
+			},
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-225862:277392",
+						"CSAFPID-225862:277438",
+						"CSAFPID-233334:277392",
+						"CSAFPID-233334:277438",
+						"CSAFPID-245396:277392",
+						"CSAFPID-245396:277438",
+						"CSAFPID-245397:277392",
+						"CSAFPID-245397:277437",
+						"CSAFPID-245397:277438",
+						"CSAFPID-245398:277392",
+						"CSAFPID-245398:277438",
+						"CSAFPID-247893:277392",
+						"CSAFPID-247893:277437",
+						"CSAFPID-247893:277438",
+						"CSAFPID-247893:277440",
+						"CSAFPID-247894:277392",
+						"CSAFPID-247894:277437",
+						"CSAFPID-247894:277438",
+						"CSAFPID-248816:277392",
+						"CSAFPID-248816:277438",
+						"CSAFPID-251756:277392",
+						"CSAFPID-251756:277437",
+						"CSAFPID-251756:277438",
+						"CSAFPID-251757:277392",
+						"CSAFPID-251757:277438",
+						"CSAFPID-258063:277392",
+						"CSAFPID-258063:277437",
+						"CSAFPID-258063:277438",
+						"CSAFPID-258064:277392",
+						"CSAFPID-258064:277438",
+						"CSAFPID-258915:277392",
+						"CSAFPID-258915:277438",
+						"CSAFPID-265011:277392",
+						"CSAFPID-265011:277438",
+						"CSAFPID-265014:277392",
+						"CSAFPID-265014:277437",
+						"CSAFPID-265014:277438",
+						"CSAFPID-265015:277392",
+						"CSAFPID-265015:277438",
+						"CSAFPID-265950:277392",
+						"CSAFPID-265950:277437",
+						"CSAFPID-265950:277438",
+						"CSAFPID-267675:277392",
+						"CSAFPID-267675:277438",
+						"CSAFPID-267676:277392",
+						"CSAFPID-267676:277438",
+						"CSAFPID-268602:277392",
+						"CSAFPID-268602:277438",
+						"CSAFPID-275475:277392",
+						"CSAFPID-275475:277437",
+						"CSAFPID-275475:277438",
+						"CSAFPID-276372:277392",
+						"CSAFPID-276372:277438",
+						"CSAFPID-276373:277392",
+						"CSAFPID-276373:277437",
+						"CSAFPID-276373:277438",
+						"CSAFPID-276933:277392",
+						"CSAFPID-276933:277437",
+						"CSAFPID-276933:277438",
+						"CSAFPID-276934:277392",
+						"CSAFPID-276934:277437",
+						"CSAFPID-276934:277438",
+						"CSAFPID-276935:277392",
+						"CSAFPID-276935:277438",
+						"CSAFPID-278397:277392",
+						"CSAFPID-278397:277437",
+						"CSAFPID-278397:277438",
+						"CSAFPID-278503:277392",
+						"CSAFPID-278503:277438",
+						"CSAFPID-278885:277392",
+						"CSAFPID-278885:277438",
+						"CSAFPID-280013:277392",
+						"CSAFPID-280013:277438",
+						"CSAFPID-280662:277392",
+						"CSAFPID-280662:277438",
+						"CSAFPID-280999:277392",
+						"CSAFPID-280999:277438",
+						"CSAFPID-281981:277392",
+						"CSAFPID-281981:277438",
+						"CSAFPID-282174:277392",
+						"CSAFPID-282174:277437",
+						"CSAFPID-282174:277438",
+						"CSAFPID-282609:277392",
+						"CSAFPID-282609:277438",
+						"CSAFPID-282695:277392",
+						"CSAFPID-282695:277437",
+						"CSAFPID-282695:277438",
+						"CSAFPID-284172:277392",
+						"CSAFPID-284172:277438",
+						"CSAFPID-284277:277392",
+						"CSAFPID-284277:277438",
+						"CSAFPID-284314:277392",
+						"CSAFPID-284314:277438",
+						"CSAFPID-284789:277392",
+						"CSAFPID-284789:277438",
+						"CSAFPID-286091:277392",
+						"CSAFPID-286091:277438",
+						"CSAFPID-286091:286865",
+						"CSAFPID-286092:277392",
+						"CSAFPID-286092:277438",
+						"CSAFPID-286093:277392",
+						"CSAFPID-286093:277438",
+						"CSAFPID-286536:277392",
+						"CSAFPID-286536:277438",
+						"CSAFPID-286537:277392",
+						"CSAFPID-286537:277438",
+						"CSAFPID-286538:277392",
+						"CSAFPID-286538:277438",
+						"CSAFPID-286543:277392",
+						"CSAFPID-286543:277438",
+						"CSAFPID-286580:277392",
+						"CSAFPID-286580:277437",
+						"CSAFPID-286580:277438",
+						"CSAFPID-286930:277392",
+						"CSAFPID-286930:277438",
+						"CSAFPID-287041:277392",
+						"CSAFPID-287041:277438",
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:286865",
+						"CSAFPID-287122:277392",
+						"CSAFPID-287122:277438",
+						"CSAFPID-287181:277392",
+						"CSAFPID-287181:277438",
+						"CSAFPID-287202:277392",
+						"CSAFPID-287202:277438",
+						"CSAFPID-290467:286865",
+						"CSAFPID-290468:277392",
+						"CSAFPID-290468:277438",
+						"CSAFPID-290468:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:286865",
+						"CSAFPID-290481:277392",
+						"CSAFPID-290481:277437",
+						"CSAFPID-290481:277438",
+						"CSAFPID-290563:277392",
+						"CSAFPID-290563:277438",
+						"CSAFPID-290563:286865",
+						"CSAFPID-290663:277392",
+						"CSAFPID-290663:277438",
+						"CSAFPID-290665:277392",
+						"CSAFPID-290665:277438",
+						"CSAFPID-292363:277392",
+						"CSAFPID-292363:277438",
+						"CSAFPID-292363:286865",
+						"CSAFPID-292413:277392",
+						"CSAFPID-292413:277438",
+						"CSAFPID-292413:286865",
+						"CSAFPID-292740:277392",
+						"CSAFPID-292740:277437",
+						"CSAFPID-292740:277438",
+						"CSAFPID-294794:277392",
+						"CSAFPID-294794:277438",
+						"CSAFPID-294794:286865",
+						"CSAFPID-294962:277392",
+						"CSAFPID-294962:277438",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:286865",
+						"CSAFPID-300779:277392",
+						"CSAFPID-300779:277393",
+						"CSAFPID-300779:277437",
+						"CSAFPID-300779:277438",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:286865"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-225862:277392",
+						"CSAFPID-225862:277438",
+						"CSAFPID-233334:277392",
+						"CSAFPID-233334:277438",
+						"CSAFPID-245396:277392",
+						"CSAFPID-245396:277438",
+						"CSAFPID-245397:277392",
+						"CSAFPID-245397:277437",
+						"CSAFPID-245397:277438",
+						"CSAFPID-245398:277392",
+						"CSAFPID-245398:277438",
+						"CSAFPID-247893:277392",
+						"CSAFPID-247893:277437",
+						"CSAFPID-247893:277438",
+						"CSAFPID-247893:277440",
+						"CSAFPID-247894:277392",
+						"CSAFPID-247894:277437",
+						"CSAFPID-247894:277438",
+						"CSAFPID-248816:277392",
+						"CSAFPID-248816:277438",
+						"CSAFPID-251756:277392",
+						"CSAFPID-251756:277437",
+						"CSAFPID-251756:277438",
+						"CSAFPID-251757:277392",
+						"CSAFPID-251757:277438",
+						"CSAFPID-258063:277392",
+						"CSAFPID-258063:277437",
+						"CSAFPID-258063:277438",
+						"CSAFPID-258064:277392",
+						"CSAFPID-258064:277438",
+						"CSAFPID-258915:277392",
+						"CSAFPID-258915:277438",
+						"CSAFPID-265011:277392",
+						"CSAFPID-265011:277438",
+						"CSAFPID-265014:277392",
+						"CSAFPID-265014:277437",
+						"CSAFPID-265014:277438",
+						"CSAFPID-265015:277392",
+						"CSAFPID-265015:277438",
+						"CSAFPID-265950:277392",
+						"CSAFPID-265950:277437",
+						"CSAFPID-265950:277438",
+						"CSAFPID-267675:277392",
+						"CSAFPID-267675:277438",
+						"CSAFPID-267676:277392",
+						"CSAFPID-267676:277438",
+						"CSAFPID-268602:277392",
+						"CSAFPID-268602:277438",
+						"CSAFPID-275475:277392",
+						"CSAFPID-275475:277437",
+						"CSAFPID-275475:277438",
+						"CSAFPID-276372:277392",
+						"CSAFPID-276372:277438",
+						"CSAFPID-276373:277392",
+						"CSAFPID-276373:277437",
+						"CSAFPID-276373:277438",
+						"CSAFPID-276933:277392",
+						"CSAFPID-276933:277437",
+						"CSAFPID-276933:277438",
+						"CSAFPID-276934:277392",
+						"CSAFPID-276934:277437",
+						"CSAFPID-276934:277438",
+						"CSAFPID-276935:277392",
+						"CSAFPID-276935:277438",
+						"CSAFPID-278397:277392",
+						"CSAFPID-278397:277437",
+						"CSAFPID-278397:277438",
+						"CSAFPID-278503:277392",
+						"CSAFPID-278503:277438",
+						"CSAFPID-278885:277392",
+						"CSAFPID-278885:277438",
+						"CSAFPID-280013:277392",
+						"CSAFPID-280013:277438",
+						"CSAFPID-280662:277392",
+						"CSAFPID-280662:277438",
+						"CSAFPID-280999:277392",
+						"CSAFPID-280999:277438",
+						"CSAFPID-281981:277392",
+						"CSAFPID-281981:277438",
+						"CSAFPID-282174:277392",
+						"CSAFPID-282174:277437",
+						"CSAFPID-282174:277438",
+						"CSAFPID-282609:277392",
+						"CSAFPID-282609:277438",
+						"CSAFPID-282695:277392",
+						"CSAFPID-282695:277437",
+						"CSAFPID-282695:277438",
+						"CSAFPID-284172:277392",
+						"CSAFPID-284172:277438",
+						"CSAFPID-284277:277392",
+						"CSAFPID-284277:277438",
+						"CSAFPID-284314:277392",
+						"CSAFPID-284314:277438",
+						"CSAFPID-284789:277392",
+						"CSAFPID-284789:277438",
+						"CSAFPID-286091:277392",
+						"CSAFPID-286091:277438",
+						"CSAFPID-286091:286865",
+						"CSAFPID-286092:277392",
+						"CSAFPID-286092:277438",
+						"CSAFPID-286093:277392",
+						"CSAFPID-286093:277438",
+						"CSAFPID-286536:277392",
+						"CSAFPID-286536:277438",
+						"CSAFPID-286537:277392",
+						"CSAFPID-286537:277438",
+						"CSAFPID-286538:277392",
+						"CSAFPID-286538:277438",
+						"CSAFPID-286543:277392",
+						"CSAFPID-286543:277438",
+						"CSAFPID-286580:277392",
+						"CSAFPID-286580:277437",
+						"CSAFPID-286580:277438",
+						"CSAFPID-286930:277392",
+						"CSAFPID-286930:277438",
+						"CSAFPID-287041:277392",
+						"CSAFPID-287041:277438",
+						"CSAFPID-287081:277392",
+						"CSAFPID-287081:277438",
+						"CSAFPID-287081:286865",
+						"CSAFPID-287122:277392",
+						"CSAFPID-287122:277438",
+						"CSAFPID-287181:277392",
+						"CSAFPID-287181:277438",
+						"CSAFPID-287202:277392",
+						"CSAFPID-287202:277438",
+						"CSAFPID-290467:286865",
+						"CSAFPID-290468:277392",
+						"CSAFPID-290468:277438",
+						"CSAFPID-290468:286865",
+						"CSAFPID-290469:277392",
+						"CSAFPID-290469:277438",
+						"CSAFPID-290469:286865",
+						"CSAFPID-290481:277392",
+						"CSAFPID-290481:277437",
+						"CSAFPID-290481:277438",
+						"CSAFPID-290563:277392",
+						"CSAFPID-290563:277438",
+						"CSAFPID-290563:286865",
+						"CSAFPID-290663:277392",
+						"CSAFPID-290663:277438",
+						"CSAFPID-290665:277392",
+						"CSAFPID-290665:277438",
+						"CSAFPID-292363:277392",
+						"CSAFPID-292363:277438",
+						"CSAFPID-292363:286865",
+						"CSAFPID-292413:277392",
+						"CSAFPID-292413:277438",
+						"CSAFPID-292413:286865",
+						"CSAFPID-292740:277392",
+						"CSAFPID-292740:277437",
+						"CSAFPID-292740:277438",
+						"CSAFPID-294794:277392",
+						"CSAFPID-294794:277438",
+						"CSAFPID-294794:286865",
+						"CSAFPID-294962:277392",
+						"CSAFPID-294962:277438",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:286865",
+						"CSAFPID-300779:277392",
+						"CSAFPID-300779:277393",
+						"CSAFPID-300779:277437",
+						"CSAFPID-300779:277438",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:286865"
+					]
+				}
+			],
+			"title": "Cisco Firepower Threat Defense ICMP Version 6 Denial of Service Vulnerability"
+		}
+	]
+}

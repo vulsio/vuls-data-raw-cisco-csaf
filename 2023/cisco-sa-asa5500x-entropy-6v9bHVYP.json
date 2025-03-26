@@ -1,0 +1,1597 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "Cisco would like to thank ANSSI/CERT-FR, the French national and governmental CSIRT, for reporting this vulnerability."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the deterministic random bit generator (DRBG), also known as pseudorandom number generator (PRNG), in Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software for Cisco ASA 5506-X, ASA 5508-X, and ASA 5516-X Firewalls could allow an unauthenticated, remote attacker to cause a cryptographic collision, enabling the attacker to discover the private key of an affected device.\r\n\r\nThis vulnerability is due to insufficient entropy in the DRBG for the affected hardware platforms when generating cryptographic keys. An attacker could exploit this vulnerability by generating a large number of cryptographic keys on an affected device and looking for collisions with target devices. A successful exploit could allow the attacker to impersonate an affected target device or to decrypt traffic secured by an affected key that is sent to or from an affected target device.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability for some affected configurations.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected the following Cisco products if they were running a Cisco ASA Software release earlier than Release 9.12.11 or a Cisco FTD Software release earlier than Release 6.4.01 and had features that use ECDSA or RSA keys enabled:\r\n\r\nASA 5506-X Security Appliances\r\nASA 5506H-X Security Appliances\r\nASA 5506W-X Security Appliances\r\nASA 5508-X Security Appliances\r\nASA 5516-X Security Appliances\r\n\r\n1. Enhancements to the entropy source in the DRBG that were put in place as result of following the robust Cisco secure development lifecycle (SDL) process prevent this issue from happening in Cisco ASA Software Releases 9.12.1 and later and Cisco FTD Software Releases 6.4.0 and later.\r\n\r\nNote: Devices that are running a fixed release of Cisco ASA Software or Cisco FTD Software may also be affected by this vulnerability if they are configured with an ECDSA or RSA key pair that has been generated while running an affected release. If there is doubt, Cisco recommends regenerating all ECDSA and RSA key pairs that are configured on the device.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n\r\nASA Software\r\n\r\nIn the following table, the left column lists the most common Cisco ASA features that are potentially vulnerable. The right column indicates the basic configuration for the feature from the show running-config CLI command, if it can be determined.\r\n        Cisco ASA Feature  Possible Vulnerable Configuration          Adaptive Security Device Manager (ASDM)1  http server enable <port>\r\nhttp <remote_ip_address> <remote_subnet_mask> <interface_name>      AnyConnect SSL VPN  webvpn\r\n enable <interface_name>      Cisco Security Manager1  http server enable <port>\r\nhttp <remote_ip_address> <remote_subnet_mask> <interface_name>      Clientless SSL VPN (WebVPN)  webvpn\r\n enable <interface_name>      IKEv1 VPN (Remote Access and LAN-to-LAN)\r\nusing Certificate-based Authentication  crypto ikev1 enable <interface_name>\r\ncrypto ikev1 policy <priority>\r\n authentication rsa-sig\r\ntunnel-group <tunnel_group_name> ipsec-attributes\r\n trust-point <trustpoint_name>      IKEv2 VPN (Remote Access and LAN-to-LAN)\r\nusing Certificate-based Authentication  crypto ikev2 enable <interface_name>\r\ntunnel-group <tunnel_group_name> ipsec-attributes\r\n ikev2 remote-authentication certificate\r\n ikev2 local-authentication certificate <trustpoint_name>      Local Certificate Authority (CA)  crypto ca server\r\n no shutdown      Mobile Device Manager (MDM) Proxy  mdm-proxy\r\n enable <interface_name>       Mobile User Security (MUS)  webvpn\r\n mus password <password>\r\n mus server enable port <port #>\r\n mus <address> <mask> <interface_name>      Proxy Bypass  webvpn\r\n proxy-bypass      REST API1  rest-api image disk0:/<image name>\r\nrest-api agent      SSH Access2,3  ssh <remote_ip_address> <remote_subnet_mask> <interface_name>\r\n1. ASDM, CSM, and REST API services are accessible only from an IP address in the configured http command range.\r\n2. SSH service is accessible only from an IP address in the configured ssh command range.\r\n3. There is no workaround that addresses this vulnerability for SSH access.\r\nFTD Software\r\n\r\nIn the following table, the left column lists the most common Cisco FTD features that are potentially vulnerable. The right column indicates the basic configuration for the feature from the show running-config CLI command, if it can be determined.\r\n        Cisco FTD Feature  Possible Vulnerable Configuration          AnyConnect SSL VPN1,2  webvpn\r\n enable <interface_name      Clientless SSL VPN (WebVPN)2  webvpn\r\n enable <interface_name>      HTTP Service enabled3,4  http server enable <port #>\r\nhttp <remote_ip_address> <remote_subnet_mask> <interface_name>      IKEv1 VPN (Remote Access and LAN-to-LAN)\r\nusing Certificate-based Authentication1,2  crypto ikev1 enable <interface_name>\r\ncrypto ikev1 policy <priority>\r\n authentication rsa-sig\r\ntunnel-group <tunnel_group_name> ipsec-attributes\r\n trust-point <trustpoint_name>      IKEv2 VPN (Remote Access and LAN-to-LAN)\r\nusing Certificate-based Authentication1,2  crypto ikev2 enable <interface_name>\r\ntunnel-group <tunnel_group_name> ipsec-attributes\r\n ikev2 remote-authentication certificate\r\n ikev2 local-authentication certificate <trustpoint_name>      SSH Service5,6  ssh <remote_ip_address> <remote_subnet_mask> <interface_name>\r\n1. Remote Access VPN features are enabled by choosing Devices > VPN > Remote Access in the Cisco FMC or Device > Remote Access VPN in Cisco Firepower Device Manager (FDM).\r\n2. The Clientless SSL VPN feature is not officially supported but can be enabled through FlexConfig.\r\n3. The HTTP feature is enabled by choosing Firepower Threat Defense Platform Settings > HTTP in the Cisco Firepower Management Console (FMC).\r\n4. HTTP service is accessible only from an IP address in the configured http command range.\r\n5. SSH is accessible only from an IP address in the configured ssh command range.\r\n6. There is no workaround that addresses this vulnerability for SSH access.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect Cisco ASA Software or FTD Software running on the following platforms:\r\n\r\n3000 Series Industrial Security Appliances (ISAs)\r\nASA 5525-X, 5545-X, 5555-X, and 5585-X Security Appliances\r\nASA Services Module for Cisco Catalyst 6500 Series Switches and Cisco 7600 Series Routers\r\nAdaptive Security Virtual Appliances (ASAv)\r\nFirepower 2100 Series\r\nFirepower 4100 Series\r\nFirepower 9300 Series\r\nFirepower Threat Defense Virtual (FTDv/NGFWv)\r\nSecure Firewall 3100 Series",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability for cryptographic keys that are used with SSL/TLS features only. Cryptographic keys for use with SSH cannot be imported to the device, so there is no workaround for SSH.\r\n\r\nTo avoid the use of potentially weak cryptographic keys, administrators can generate a key pair and a corresponding certificate on a trusted device outside of the Cisco ASA or Cisco FTD device and then import the base 64 encoded PKCS #12 file that contains the keys and certificate(s) to the Cisco ASA or Cisco FTD device using the crypto ca import <trust-point-name> pkcs12 <passphrase> command in global configuration mode.\r\n\r\nFor more details, including steps for how to accomplish this task using the Cisco Adaptive Security Device Manager (ASDM), see ASA 8.x: Renew and Install the SSL Certificate with ASDM [\"https://www.cisco.com/c/en/us/support/docs/security/asa-5500-x-series-next-generation-firewalls/107956-renew-ssl.html#proc\"].\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n        Cisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number—for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n      Only this advisory  All Critical and High advisories  All advisories    Cisco ASA Software  Cisco FMC Software  Cisco FTD Software    Any Platform  3000 Series Industrial Security Appliances (ISA)  ASA 5500-X Series Firewalls  ASA Service Module  Adaptive Security Virtual Appliance (ASAv)  Firepower 1000 Series  Firepower 2100 Series  Firepower 4100 Series  Firepower 9000 Series  Firepower NGFW Virtual  Secure Firewall 3100 Series  Firepower Management Center Appliances\r\n\r\n\r\n\r\n\r\nNote: After upgrading to a fixed release, administrators must regenerate all ECDSA and RSA key pairs that were generated on an affected device while running a vulnerable release.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "Cisco would like to thank ANSSI/CERT-FR, the French national and governmental CSIRT, for reporting this vulnerability.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Adaptive Security Appliance Software and Firepower Threat Defense Software Low-Entropy Keys Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asa5500x-entropy-6v9bHVYP"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "ASA 8.x: Renew and Install the SSL Certificate with ASDM",
+				"url": "https://www.cisco.com/c/en/us/support/docs/security/asa-5500-x-series-next-generation-firewalls/107956-renew-ssl.html#proc"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Adaptive Security Appliance Software and Firepower Threat Defense Software Low-Entropy Keys Vulnerability",
+		"tracking": {
+			"current_release_date": "2023-03-22T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:23:04+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-asa5500x-entropy-6v9bHVYP",
+			"initial_release_date": "2023-03-22T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-03-22T15:49:39+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.8.1",
+										"product": {
+											"name": "9.8.1",
+											"product_id": "CSAFPID-232585"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.1.5",
+										"product": {
+											"name": "9.8.1.5",
+											"product_id": "CSAFPID-232586"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.1.7",
+										"product": {
+											"name": "9.8.1.7",
+											"product_id": "CSAFPID-232587"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2",
+										"product": {
+											"name": "9.8.2",
+											"product_id": "CSAFPID-232588"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.8",
+										"product": {
+											"name": "9.8.2.8",
+											"product_id": "CSAFPID-232589"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.14",
+										"product": {
+											"name": "9.8.2.14",
+											"product_id": "CSAFPID-232897"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.15",
+										"product": {
+											"name": "9.8.2.15",
+											"product_id": "CSAFPID-232898"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.17",
+										"product": {
+											"name": "9.8.2.17",
+											"product_id": "CSAFPID-232899"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.20",
+										"product": {
+											"name": "9.8.2.20",
+											"product_id": "CSAFPID-232902"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.24",
+										"product": {
+											"name": "9.8.2.24",
+											"product_id": "CSAFPID-239005"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.26",
+										"product": {
+											"name": "9.8.2.26",
+											"product_id": "CSAFPID-239006"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.28",
+										"product": {
+											"name": "9.8.2.28",
+											"product_id": "CSAFPID-248821"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.33",
+										"product": {
+											"name": "9.8.2.33",
+											"product_id": "CSAFPID-248822"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.35",
+										"product": {
+											"name": "9.8.2.35",
+											"product_id": "CSAFPID-248823"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.38",
+										"product": {
+											"name": "9.8.2.38",
+											"product_id": "CSAFPID-248824"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.8",
+										"product": {
+											"name": "9.8.3.8",
+											"product_id": "CSAFPID-248825"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.11",
+										"product": {
+											"name": "9.8.3.11",
+											"product_id": "CSAFPID-248826"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.14",
+										"product": {
+											"name": "9.8.3.14",
+											"product_id": "CSAFPID-248827"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.16",
+										"product": {
+											"name": "9.8.3.16",
+											"product_id": "CSAFPID-251745"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.18",
+										"product": {
+											"name": "9.8.3.18",
+											"product_id": "CSAFPID-255556"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.21",
+										"product": {
+											"name": "9.8.3.21",
+											"product_id": "CSAFPID-255557"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3",
+										"product": {
+											"name": "9.8.3",
+											"product_id": "CSAFPID-255929"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.26",
+										"product": {
+											"name": "9.8.3.26",
+											"product_id": "CSAFPID-265020"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.3.29",
+										"product": {
+											"name": "9.8.3.29",
+											"product_id": "CSAFPID-265021"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4",
+										"product": {
+											"name": "9.8.4",
+											"product_id": "CSAFPID-265022"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.3",
+										"product": {
+											"name": "9.8.4.3",
+											"product_id": "CSAFPID-266069"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.7",
+										"product": {
+											"name": "9.8.4.7",
+											"product_id": "CSAFPID-268477"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.8",
+										"product": {
+											"name": "9.8.4.8",
+											"product_id": "CSAFPID-276357"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.10",
+										"product": {
+											"name": "9.8.4.10",
+											"product_id": "CSAFPID-276358"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.12",
+										"product": {
+											"name": "9.8.4.12",
+											"product_id": "CSAFPID-276359"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.15",
+										"product": {
+											"name": "9.8.4.15",
+											"product_id": "CSAFPID-276930"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.17",
+										"product": {
+											"name": "9.8.4.17",
+											"product_id": "CSAFPID-277312"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.2.45",
+										"product": {
+											"name": "9.8.2.45",
+											"product_id": "CSAFPID-278396"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.25",
+										"product": {
+											"name": "9.8.4.25",
+											"product_id": "CSAFPID-278502"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.20",
+										"product": {
+											"name": "9.8.4.20",
+											"product_id": "CSAFPID-278713"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.22",
+										"product": {
+											"name": "9.8.4.22",
+											"product_id": "CSAFPID-278714"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.26",
+										"product": {
+											"name": "9.8.4.26",
+											"product_id": "CSAFPID-279462"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.29",
+										"product": {
+											"name": "9.8.4.29",
+											"product_id": "CSAFPID-280411"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.32",
+										"product": {
+											"name": "9.8.4.32",
+											"product_id": "CSAFPID-281577"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.33",
+										"product": {
+											"name": "9.8.4.33",
+											"product_id": "CSAFPID-281579"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.34",
+										"product": {
+											"name": "9.8.4.34",
+											"product_id": "CSAFPID-282021"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.35",
+										"product": {
+											"name": "9.8.4.35",
+											"product_id": "CSAFPID-282183"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.39",
+										"product": {
+											"name": "9.8.4.39",
+											"product_id": "CSAFPID-283789"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.40",
+										"product": {
+											"name": "9.8.4.40",
+											"product_id": "CSAFPID-284599"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.41",
+										"product": {
+											"name": "9.8.4.41",
+											"product_id": "CSAFPID-284796"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.43",
+										"product": {
+											"name": "9.8.4.43",
+											"product_id": "CSAFPID-286581"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.44",
+										"product": {
+											"name": "9.8.4.44",
+											"product_id": "CSAFPID-287054"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.45",
+										"product": {
+											"name": "9.8.4.45",
+											"product_id": "CSAFPID-289326"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.46",
+										"product": {
+											"name": "9.8.4.46",
+											"product_id": "CSAFPID-290632"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.8.4.48",
+										"product": {
+											"name": "9.8.4.48",
+											"product_id": "CSAFPID-294713"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.8"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.2.3",
+										"product": {
+											"name": "6.2.3",
+											"product_id": "CSAFPID-233334"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.1",
+										"product": {
+											"name": "6.2.3.1",
+											"product_id": "CSAFPID-245396"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.2",
+										"product": {
+											"name": "6.2.3.2",
+											"product_id": "CSAFPID-245397"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.3",
+										"product": {
+											"name": "6.2.3.3",
+											"product_id": "CSAFPID-245398"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.4",
+										"product": {
+											"name": "6.2.3.4",
+											"product_id": "CSAFPID-247893"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.5",
+										"product": {
+											"name": "6.2.3.5",
+											"product_id": "CSAFPID-247894"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.6",
+										"product": {
+											"name": "6.2.3.6",
+											"product_id": "CSAFPID-248816"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.7",
+										"product": {
+											"name": "6.2.3.7",
+											"product_id": "CSAFPID-251756"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.8",
+										"product": {
+											"name": "6.2.3.8",
+											"product_id": "CSAFPID-251757"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.10",
+										"product": {
+											"name": "6.2.3.10",
+											"product_id": "CSAFPID-258063"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.11",
+										"product": {
+											"name": "6.2.3.11",
+											"product_id": "CSAFPID-258064"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.9",
+										"product": {
+											"name": "6.2.3.9",
+											"product_id": "CSAFPID-258915"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.12",
+										"product": {
+											"name": "6.2.3.12",
+											"product_id": "CSAFPID-265011"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.13",
+										"product": {
+											"name": "6.2.3.13",
+											"product_id": "CSAFPID-267675"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.14",
+										"product": {
+											"name": "6.2.3.14",
+											"product_id": "CSAFPID-267676"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.15",
+										"product": {
+											"name": "6.2.3.15",
+											"product_id": "CSAFPID-275475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.16",
+										"product": {
+											"name": "6.2.3.16",
+											"product_id": "CSAFPID-278503"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.17",
+										"product": {
+											"name": "6.2.3.17",
+											"product_id": "CSAFPID-284172"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2.3.18",
+										"product": {
+											"name": "6.2.3.18",
+											"product_id": "CSAFPID-286536"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.2"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco ASA 5500-X Series Firewalls",
+						"product": {
+							"name": "Cisco ASA 5500-X Series Firewalls",
+							"product_id": "CSAFPID-277437"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.1 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232585:277437"
+				},
+				"product_reference": "CSAFPID-232585",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.1.5 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232586:277437"
+				},
+				"product_reference": "CSAFPID-232586",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.1.7 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232587:277437"
+				},
+				"product_reference": "CSAFPID-232587",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232588:277437"
+				},
+				"product_reference": "CSAFPID-232588",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.8 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232589:277437"
+				},
+				"product_reference": "CSAFPID-232589",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.14 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232897:277437"
+				},
+				"product_reference": "CSAFPID-232897",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.15 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232898:277437"
+				},
+				"product_reference": "CSAFPID-232898",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.17 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232899:277437"
+				},
+				"product_reference": "CSAFPID-232899",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.20 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-232902:277437"
+				},
+				"product_reference": "CSAFPID-232902",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.24 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-239005:277437"
+				},
+				"product_reference": "CSAFPID-239005",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.26 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-239006:277437"
+				},
+				"product_reference": "CSAFPID-239006",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.28 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248821:277437"
+				},
+				"product_reference": "CSAFPID-248821",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.33 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248822:277437"
+				},
+				"product_reference": "CSAFPID-248822",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.35 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248823:277437"
+				},
+				"product_reference": "CSAFPID-248823",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.38 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248824:277437"
+				},
+				"product_reference": "CSAFPID-248824",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.8 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248825:277437"
+				},
+				"product_reference": "CSAFPID-248825",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.11 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248826:277437"
+				},
+				"product_reference": "CSAFPID-248826",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.14 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248827:277437"
+				},
+				"product_reference": "CSAFPID-248827",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.16 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-251745:277437"
+				},
+				"product_reference": "CSAFPID-251745",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.18 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-255556:277437"
+				},
+				"product_reference": "CSAFPID-255556",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.21 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-255557:277437"
+				},
+				"product_reference": "CSAFPID-255557",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-255929:277437"
+				},
+				"product_reference": "CSAFPID-255929",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.26 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-265020:277437"
+				},
+				"product_reference": "CSAFPID-265020",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.3.29 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-265021:277437"
+				},
+				"product_reference": "CSAFPID-265021",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-265022:277437"
+				},
+				"product_reference": "CSAFPID-265022",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.3 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-266069:277437"
+				},
+				"product_reference": "CSAFPID-266069",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.7 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-268477:277437"
+				},
+				"product_reference": "CSAFPID-268477",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.8 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276357:277437"
+				},
+				"product_reference": "CSAFPID-276357",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.10 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276358:277437"
+				},
+				"product_reference": "CSAFPID-276358",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.12 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276359:277437"
+				},
+				"product_reference": "CSAFPID-276359",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.15 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-276930:277437"
+				},
+				"product_reference": "CSAFPID-276930",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.17 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-277312:277437"
+				},
+				"product_reference": "CSAFPID-277312",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.2.45 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-278396:277437"
+				},
+				"product_reference": "CSAFPID-278396",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.25 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-278502:277437"
+				},
+				"product_reference": "CSAFPID-278502",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.20 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-278713:277437"
+				},
+				"product_reference": "CSAFPID-278713",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.22 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-278714:277437"
+				},
+				"product_reference": "CSAFPID-278714",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.26 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-279462:277437"
+				},
+				"product_reference": "CSAFPID-279462",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.29 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-280411:277437"
+				},
+				"product_reference": "CSAFPID-280411",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.32 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-281577:277437"
+				},
+				"product_reference": "CSAFPID-281577",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.33 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-281579:277437"
+				},
+				"product_reference": "CSAFPID-281579",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.34 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-282021:277437"
+				},
+				"product_reference": "CSAFPID-282021",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.35 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-282183:277437"
+				},
+				"product_reference": "CSAFPID-282183",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.39 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-283789:277437"
+				},
+				"product_reference": "CSAFPID-283789",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.40 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-284599:277437"
+				},
+				"product_reference": "CSAFPID-284599",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.41 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-284796:277437"
+				},
+				"product_reference": "CSAFPID-284796",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.43 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-286581:277437"
+				},
+				"product_reference": "CSAFPID-286581",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.44 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-287054:277437"
+				},
+				"product_reference": "CSAFPID-287054",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.45 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-289326:277437"
+				},
+				"product_reference": "CSAFPID-289326",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.46 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-290632:277437"
+				},
+				"product_reference": "CSAFPID-290632",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.8.4.48 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-294713:277437"
+				},
+				"product_reference": "CSAFPID-294713",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-233334:277437"
+				},
+				"product_reference": "CSAFPID-233334",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.1 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-245396:277437"
+				},
+				"product_reference": "CSAFPID-245396",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.2 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-245397:277437"
+				},
+				"product_reference": "CSAFPID-245397",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.3 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-245398:277437"
+				},
+				"product_reference": "CSAFPID-245398",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.4 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-247893:277437"
+				},
+				"product_reference": "CSAFPID-247893",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.5 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-247894:277437"
+				},
+				"product_reference": "CSAFPID-247894",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.6 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-248816:277437"
+				},
+				"product_reference": "CSAFPID-248816",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.7 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-251756:277437"
+				},
+				"product_reference": "CSAFPID-251756",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.8 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-251757:277437"
+				},
+				"product_reference": "CSAFPID-251757",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.10 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-258063:277437"
+				},
+				"product_reference": "CSAFPID-258063",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.11 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-258064:277437"
+				},
+				"product_reference": "CSAFPID-258064",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.9 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-258915:277437"
+				},
+				"product_reference": "CSAFPID-258915",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.12 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-265011:277437"
+				},
+				"product_reference": "CSAFPID-265011",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.13 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-267675:277437"
+				},
+				"product_reference": "CSAFPID-267675",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.14 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-267676:277437"
+				},
+				"product_reference": "CSAFPID-267676",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.15 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-275475:277437"
+				},
+				"product_reference": "CSAFPID-275475",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.16 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-278503:277437"
+				},
+				"product_reference": "CSAFPID-278503",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.17 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-284172:277437"
+				},
+				"product_reference": "CSAFPID-284172",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 6.2.3.18 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-286536:277437"
+				},
+				"product_reference": "CSAFPID-286536",
+				"relates_to_product_reference": "CSAFPID-277437"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2023-20107",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvm90511"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-232585:277437",
+					"CSAFPID-232586:277437",
+					"CSAFPID-232587:277437",
+					"CSAFPID-232588:277437",
+					"CSAFPID-232589:277437",
+					"CSAFPID-232897:277437",
+					"CSAFPID-232898:277437",
+					"CSAFPID-232899:277437",
+					"CSAFPID-232902:277437",
+					"CSAFPID-239005:277437",
+					"CSAFPID-239006:277437",
+					"CSAFPID-248821:277437",
+					"CSAFPID-248822:277437",
+					"CSAFPID-248823:277437",
+					"CSAFPID-248824:277437",
+					"CSAFPID-248825:277437",
+					"CSAFPID-248826:277437",
+					"CSAFPID-248827:277437",
+					"CSAFPID-251745:277437",
+					"CSAFPID-255556:277437",
+					"CSAFPID-255557:277437",
+					"CSAFPID-255929:277437",
+					"CSAFPID-265020:277437",
+					"CSAFPID-265021:277437",
+					"CSAFPID-265022:277437",
+					"CSAFPID-266069:277437",
+					"CSAFPID-268477:277437",
+					"CSAFPID-276357:277437",
+					"CSAFPID-276358:277437",
+					"CSAFPID-276359:277437",
+					"CSAFPID-276930:277437",
+					"CSAFPID-277312:277437",
+					"CSAFPID-278396:277437",
+					"CSAFPID-278502:277437",
+					"CSAFPID-278713:277437",
+					"CSAFPID-278714:277437",
+					"CSAFPID-279462:277437",
+					"CSAFPID-280411:277437",
+					"CSAFPID-281577:277437",
+					"CSAFPID-281579:277437",
+					"CSAFPID-282021:277437",
+					"CSAFPID-282183:277437",
+					"CSAFPID-283789:277437",
+					"CSAFPID-284599:277437",
+					"CSAFPID-284796:277437",
+					"CSAFPID-286581:277437",
+					"CSAFPID-287054:277437",
+					"CSAFPID-289326:277437",
+					"CSAFPID-290632:277437",
+					"CSAFPID-294713:277437",
+					"CSAFPID-233334:277437",
+					"CSAFPID-245396:277437",
+					"CSAFPID-245397:277437",
+					"CSAFPID-245398:277437",
+					"CSAFPID-247893:277437",
+					"CSAFPID-247894:277437",
+					"CSAFPID-248816:277437",
+					"CSAFPID-251756:277437",
+					"CSAFPID-251757:277437",
+					"CSAFPID-258063:277437",
+					"CSAFPID-258064:277437",
+					"CSAFPID-258915:277437",
+					"CSAFPID-265011:277437",
+					"CSAFPID-267675:277437",
+					"CSAFPID-267676:277437",
+					"CSAFPID-275475:277437",
+					"CSAFPID-278503:277437",
+					"CSAFPID-284172:277437",
+					"CSAFPID-286536:277437"
+				]
+			},
+			"release_date": "2023-03-22T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-233334:277437",
+						"CSAFPID-245396:277437",
+						"CSAFPID-245397:277437",
+						"CSAFPID-245398:277437",
+						"CSAFPID-247893:277437",
+						"CSAFPID-247894:277437",
+						"CSAFPID-248816:277437",
+						"CSAFPID-251756:277437",
+						"CSAFPID-251757:277437",
+						"CSAFPID-258063:277437",
+						"CSAFPID-258064:277437",
+						"CSAFPID-258915:277437",
+						"CSAFPID-265011:277437",
+						"CSAFPID-267675:277437",
+						"CSAFPID-267676:277437",
+						"CSAFPID-275475:277437",
+						"CSAFPID-278503:277437",
+						"CSAFPID-284172:277437",
+						"CSAFPID-286536:277437",
+						"CSAFPID-232585:277437",
+						"CSAFPID-232586:277437",
+						"CSAFPID-232587:277437",
+						"CSAFPID-232588:277437",
+						"CSAFPID-232589:277437",
+						"CSAFPID-232897:277437",
+						"CSAFPID-232898:277437",
+						"CSAFPID-232899:277437",
+						"CSAFPID-232902:277437",
+						"CSAFPID-239005:277437",
+						"CSAFPID-239006:277437",
+						"CSAFPID-248821:277437",
+						"CSAFPID-248822:277437",
+						"CSAFPID-248823:277437",
+						"CSAFPID-248824:277437",
+						"CSAFPID-248825:277437",
+						"CSAFPID-248826:277437",
+						"CSAFPID-248827:277437",
+						"CSAFPID-251745:277437",
+						"CSAFPID-255556:277437",
+						"CSAFPID-255557:277437",
+						"CSAFPID-255929:277437",
+						"CSAFPID-265020:277437",
+						"CSAFPID-265021:277437",
+						"CSAFPID-265022:277437",
+						"CSAFPID-266069:277437",
+						"CSAFPID-268477:277437",
+						"CSAFPID-276357:277437",
+						"CSAFPID-276358:277437",
+						"CSAFPID-276359:277437",
+						"CSAFPID-276930:277437",
+						"CSAFPID-277312:277437",
+						"CSAFPID-278396:277437",
+						"CSAFPID-278502:277437",
+						"CSAFPID-278713:277437",
+						"CSAFPID-278714:277437",
+						"CSAFPID-279462:277437",
+						"CSAFPID-280411:277437",
+						"CSAFPID-281577:277437",
+						"CSAFPID-281579:277437",
+						"CSAFPID-282021:277437",
+						"CSAFPID-282183:277437",
+						"CSAFPID-283789:277437",
+						"CSAFPID-284599:277437",
+						"CSAFPID-284796:277437",
+						"CSAFPID-286581:277437",
+						"CSAFPID-287054:277437",
+						"CSAFPID-289326:277437",
+						"CSAFPID-290632:277437",
+						"CSAFPID-294713:277437"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.3,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-232585:277437",
+						"CSAFPID-232586:277437",
+						"CSAFPID-232587:277437",
+						"CSAFPID-232588:277437",
+						"CSAFPID-232589:277437",
+						"CSAFPID-232897:277437",
+						"CSAFPID-232898:277437",
+						"CSAFPID-232899:277437",
+						"CSAFPID-232902:277437",
+						"CSAFPID-239005:277437",
+						"CSAFPID-239006:277437",
+						"CSAFPID-248821:277437",
+						"CSAFPID-248822:277437",
+						"CSAFPID-248823:277437",
+						"CSAFPID-248824:277437",
+						"CSAFPID-248825:277437",
+						"CSAFPID-248826:277437",
+						"CSAFPID-248827:277437",
+						"CSAFPID-251745:277437",
+						"CSAFPID-255556:277437",
+						"CSAFPID-255557:277437",
+						"CSAFPID-255929:277437",
+						"CSAFPID-265020:277437",
+						"CSAFPID-265021:277437",
+						"CSAFPID-265022:277437",
+						"CSAFPID-266069:277437",
+						"CSAFPID-268477:277437",
+						"CSAFPID-276357:277437",
+						"CSAFPID-276358:277437",
+						"CSAFPID-276359:277437",
+						"CSAFPID-276930:277437",
+						"CSAFPID-277312:277437",
+						"CSAFPID-278396:277437",
+						"CSAFPID-278502:277437",
+						"CSAFPID-278713:277437",
+						"CSAFPID-278714:277437",
+						"CSAFPID-279462:277437",
+						"CSAFPID-280411:277437",
+						"CSAFPID-281577:277437",
+						"CSAFPID-281579:277437",
+						"CSAFPID-282021:277437",
+						"CSAFPID-282183:277437",
+						"CSAFPID-283789:277437",
+						"CSAFPID-284599:277437",
+						"CSAFPID-284796:277437",
+						"CSAFPID-286581:277437",
+						"CSAFPID-287054:277437",
+						"CSAFPID-289326:277437",
+						"CSAFPID-290632:277437",
+						"CSAFPID-294713:277437",
+						"CSAFPID-233334:277437",
+						"CSAFPID-245396:277437",
+						"CSAFPID-245397:277437",
+						"CSAFPID-245398:277437",
+						"CSAFPID-247893:277437",
+						"CSAFPID-247894:277437",
+						"CSAFPID-248816:277437",
+						"CSAFPID-251756:277437",
+						"CSAFPID-251757:277437",
+						"CSAFPID-258063:277437",
+						"CSAFPID-258064:277437",
+						"CSAFPID-258915:277437",
+						"CSAFPID-265011:277437",
+						"CSAFPID-267675:277437",
+						"CSAFPID-267676:277437",
+						"CSAFPID-275475:277437",
+						"CSAFPID-278503:277437",
+						"CSAFPID-284172:277437",
+						"CSAFPID-286536:277437"
+					]
+				}
+			],
+			"title": "Cisco Adaptive Security Appliance Software and Firepower Threat Defense Software Low-Entropy Keys Vulnerability"
+		}
+	]
+}

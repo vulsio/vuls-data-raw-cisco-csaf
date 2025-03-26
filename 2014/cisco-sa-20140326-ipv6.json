@@ -1,0 +1,1060 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the implementation of the IP version 6 (IPv6) protocol stack in Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause I/O memory depletion on an affected device that has IPv6 enabled. The vulnerability is triggered when an affected device processes a malformed IPv6 packet.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds to mitigate this vulnerability.\n\r\n\n\r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140326-ipv6[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140326-ipv6\"]\n\r\n\n\r\nNote: The March 26, 2014, Cisco IOS Software Security Advisory bundled publication includes six Cisco Security Advisories. All advisories address vulnerabilities in Cisco IOS Software. Each Cisco IOS Software Security Advisory lists the Cisco IOS Software releases that correct the vulnerability or vulnerabilities detailed in the advisory as well as the Cisco IOS Software releases that correct all Cisco IOS Software vulnerabilities in the March 2014 bundled publication. \r\n\r\nIndividual publication links are in Cisco Event Response: Semiannual Cisco IOS Software Security Advisory Bundled Publication at the following link: \r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar14.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar14.html\"]\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco devices running an affected Cisco IOS Software or Cisco IOS XE Software release and have IPv6 enabled. IPv6 is not enabled by default in Cisco IOS Software and Cisco IOS XE Software.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "A Cisco device running an affected version of Cisco IOS Software or Cisco IOS XE Software release and has IPv6 enabled will show interfaces with assigned IPv6 addresses when the show ipv6 interface brief command is issued.\n\r\n\n\r\nThe show ipv6 interface brief command will produce an error message if the running version of Cisco IOS Software or Cisco IOS XE Software release does not support IPv6, or will not show any interfaces with IPv6 addresses if IPv6 is disabled. The system is not vulnerable in either scenario.\n\r\n\n\r\nThe following example shows the output from the show ipv6 interface brief command issued on a device running Cisco IOS Software enabled for IPv6:\r\n\r\nrouter>show ipv6 interface brief \r\nFastEthernet0/0            [up/up]\r\n    FE80::222:90FF:FEB0:1098\r\n    2001:DB8:2:93::3\r\n    200A:1::1\r\nFastEthernet0/1            [up/up]\r\n    FE80::222:90FF:FEB0:1099\r\n    2001:DB8:2:94::1\r\nSerial0/0/0                [down/down]\r\n    unassigned\r\nSerial0/0/0.4              [down/down]\r\n    unassigned\r\nSerial0/0/0.5              [down/down]\r\n    unassigned\r\nSerial0/0/0.6              [down/down]\r\n    unassigned\r\n\r\nThe IPv6 protocol is enabled if the interface configuration command ipv6 address  or ipv6 enable is present in the configuration; however, both may be present. The following examples shows a vulnerable configuration with both present:\r\n\r\ninterface FastEthernet0/1\r\n ipv6 address 2001:0DB8:C18:1::/64 eui-64\r\n!\r\ninterface FastEthernet0/2\r\n ipv6 enable\r\n\r\nA device running Cisco IOS Software or Cisco IOS XE Software with IPv6 enabled on a physical or logical interface is vulnerable even if ipv6 unicast-routing is globally disabled (that is, the device is not routing IPv6 packets).\n\r\n\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.2(4)M5 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), 15.2(4)M5, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\nCompiled Fri 13-Sep-13 16:44 by prod_rel_team\r\n!--- output truncated \r\n\r\nAdditional information about Cisco IOS Software release naming conventions is available in White Paper: Cisco IOS and NX-OS Software Reference Guide[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "The following products are not affected by this vulnerability:\r\n\r\n    Cisco IOS XR Software \r\n    Cisco NX-OS Software \r\n    Cisco ASA Software \r\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Designed by the Internet Engineering Task Force (IETF), IPv6 is intended to replace the current IP version (IPv4).\n\r\n\n\r\nA vulnerability in the implementation of the IPv6 protocol stack in Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause I/O memory depletion on the affected device.\n\r\n\n\r\nThe vulnerability is due to incorrect processing of crafted IPv6 packets. An attacker could exploit this vulnerability by sending specially crafted IPv6 packets to the affected device. An exploit could allow the attacker to trigger I/O memory depletion, causing device instability and could cause a device to reload.\n\r\n\n\r\nThis vulnerability has been documented in Cisco bug ID CSCui59540[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCui59540\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only), and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2014-2113\n\r\n\n\r\nThe vulnerability is triggered when an affected device processes a malformed IPv6 packet. Transit IPv6 traffic will not trigger this vulnerability.\n\r\n\n\r\nIdentification of potentially hitting this vulnerability would be via small amounts of I/O memory being available as shown in the following example via the show memory summary CLI command:\r\n\r\nRouter#show memory summary\n                Head    Total(b)     Used(b)     Free(b)   Lowest(b)  Largest(b)\nProcessor   128C7B50   759290240   249009244   510280996   504250376   510241908\n      I/O   3C400000    62914560    62912692        1868        1868         236\r\n\r\nMemory will be held by the Pool Manager process as shown in the following example via the show memory debug leaks chunks command:\r\n\r\nRouter#show memory debug leaks chunks\nAdding blocks for GD...\n\n                 I/O memory                 \n\n\nAddress    Size   Alloc_pc  PID  Alloc-Proc       Name\n\nChunk Elements:\n\n\nAllocPC  Address  Size  Parent   Name\n\n                 Processor memory                 \n\n\nAddress    Size   Alloc_pc  PID  Alloc-Proc       Name\n 1020A20     1244  430FAC8  7    Pool Manager    *Packet Header*\n 102226C     1244  430FAC8  7    Pool Manager    *Packet Header*\n 1022C24     1244  430FAC8  7    Pool Manager    *Packet Header*\n 1023100     1244  430FAC8  7    Pool Manager    *Packet Header*\n 10235DC     1244  430FAC8  7    Pool Manager    *Packet Header*\n 1023AB8     1244  430FAC8  7    Pool Manager    *Packet Header*\n 102494C     1244  430FAC8  7    Pool Manager    *Packet Header*\r\n\r\nA reload of the device is required to release the memory. Disabling IPv6 by removing the IPv6 configuration will not release the memory.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "If IPv6 configuration is required, there are no workarounds for this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\n\r\n\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\n\n\r\n\r\nIn February 2014, Cisco announced details of an industry-wide issue with memory components manufactured by a single supplier between 2005 and 2010. Although the majority of Cisco products that use these components are experiencing field failure rates below expected levels, a device reload or power cycle could expose component failures. While there are no known security implications associated with this issue, a subset of the affected products may experience a memory component failure during the software upgrade process. Cisco recommends customers review the related information and product-specific field notices at www.cisco.com/go/memory[\"http://www.cisco.com/go/memory\"] before making upgrade decisions. Each Field Notice indicates whether the product could experience the memory component failure during a software upgrade.\r\n\r\nCisco IOS Software\r\nThe Cisco IOS Software Checker[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] is the quickest method to determine exposure to vulnerabilities in Cisco IOS Software. The tool allows customers to quickly identify Cisco Security Advisories that impact specific Cisco IOS Software releases. Users can initiate a search by selecting releases from the drop-down menu or uploading a file from their local system. The tool is also capable of parsing show version command output. Results can be customized by searching against all previously published Cisco Security Advisories, a specific publication, or all the advisories in the March 2014 Bundled Publication. \n\r\n\n\r\nCustomers can also use the Cisco IOS Software tables below to determine their exposure. Each row corresponds to a Cisco IOS Software release; if a particular release is vulnerable, the earliest releases that contain the fix are listed in the second column. The third column lists the earliest possible releases that correct all vulnerabilities in this Cisco IOS Software Security Advisory bundled publication.\r\n\r\n\n\r\n\n\r\n[\"javascript:Toggle(']Expand to View Detailed Fixed Software Information\r\n\r\n    \r\n        \r\n            Major Release\r\n            Availability of Repaired Releases\r\n        \r\n        \r\n            Affected 12.X-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2014 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.X based releases\r\n        \r\n        \r\n            Affected 15.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2014 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.0 based releases\r\n        \r\n        \r\n            Affected 15.1-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2014 Bundled Publication\r\n        \r\n        \r\n            15.1EY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1GC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1M\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1MR\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1MRA\r\n            Not vulnerable\n\r\n            \r\n            Releases prior to 15.1(3)MRA3 are vulnerable; Releases 15.1(3)MRA3 and later are not vulnerable.\n\r\n            \r\n        \r\n        \r\n            15.1S\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.3S[\"#15_3S\"]\n\r\n            \r\n        \r\n        \r\n            15.1SG\r\n            Not vulnerable\n\r\n            \r\n            Releases prior to 15.1(2)SG4 are vulnerable; Releases 15.1(2)SG4 and later are not vulnerable.\n\r\n            \r\n        \r\n        \r\n            15.1SNG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1SNH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1SNI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1SVD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SVE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SVF\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SVG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.1SY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1T\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.1XO\r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            Affected 15.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2014 Bundled Publication\r\n        \r\n        \r\n            15.2E\r\n            15.2(1)E2\n\r\n            \r\n            15.2(1)E2\n\r\n            \r\n        \r\n        \r\n            15.2EX\r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2EY\r\n            Vulnerable; First fixed in Release 15.2E[\"#15_2E\"]\n\r\n            \r\n            15.2(1)E2\n\r\n            \r\n        \r\n        \r\n            15.2GC\r\n            Releases up to and including 15.2(3)GC1 are not vulnerable. \n\r\n            15.2(4)GC1\n\r\n            \r\n            15.2(4)GC1\n\r\n            \r\n        \r\n        \r\n            15.2JA\r\n            Releases up to and including 15.2(2)JA2 are not vulnerable. \n\r\n            \r\n            \r\n        \r\n        \r\n            15.2JAX\r\n            Not vulnerable\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2JB\r\n            Only releases 15.2(4)JB through 15.2(4)JB3a are vulnerable.\n\r\n            \r\n            15.2(4)JB3h\n\r\n            \r\n        \r\n        \r\n            15.2JBX\r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2JN\r\n            Releases up to and including 15.2(2)JN2 are not vulnerable. \n\r\n            \r\n            \r\n        \r\n        \r\n            15.2M\r\n            15.2(4)M6; Available on 26-MAR-14\n\r\n            \r\n            15.2(4)M6; Available on 26-MAR-14\n\r\n            \r\n        \r\n        \r\n            15.2S\r\n            Releases up to and including 15.2(2)S2 are not vulnerable. \n\r\n            15.2(4)S5\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            15.2(4)S5\n\r\n            \r\n        \r\n        \r\n            15.2SA\r\n            Not vulnerable\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2SNG\r\n            Not vulnerable\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2SNH\r\n            Not vulnerable\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2SNI\r\n            Not vulnerable\n\r\n            \r\n            \r\n        \r\n        \r\n            15.2T\r\n            Not vulnerable\n\r\n            \r\n            \r\n        \r\n        \r\n            Affected 15.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2014 Bundled Publication\r\n        \r\n        \r\n            15.3M\r\n            15.3(3)M2\n\r\n            \r\n            15.3(3)M2\n\r\n            \r\n        \r\n        \r\n            15.3S\r\n            15.3(3)S2\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            15.3(3)S2\n\r\n            \r\n        \r\n        \r\n            15.3T\r\n            15.3(1)T4; Available on 30-MAY-14\n\r\n            15.3(2)T3\n\r\n            \r\n            15.3(2)T3\n\r\n            \r\n        \r\n        \r\n            Affected 15.4-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2014 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.4 based releases\r\n        \r\n    \r\n\r\nCisco IOS XE Software\r\n\r\n    \r\n        \r\n            Cisco IOS XE Software Release \r\n            First Fixed Release \r\n            First Fixed Release for All Advisories in the March 2014 Cisco IOS Software Security Advisory Bundled Publication \r\n        \r\n        \r\n            2.1.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.2.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.3.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.4.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.5.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.6.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.1.xS \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.1.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.5S or later.\r\n        \r\n        \r\n            3.2xSE\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xXO\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.3.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.5S or later.\r\n        \r\n        \r\n            3.3.xSE\r\n            Not vulnerable\r\n            Not vulnerable.\r\n        \r\n        \r\n            3.3xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.5.2E.\r\n        \r\n        \r\n            3.3xXO\r\n            Vulnerable; migrate to 3.6.0E (available May 2014).\r\n            Vulnerable; migrate to 3.6.0E (available May 2014).\r\n        \r\n        \r\n            3.3xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.4.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.5S or later.\r\n        \r\n        \r\n            3.4.xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.5.2E.\r\n        \r\n        \r\n            3.5.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.5S or later.\r\n        \r\n        \r\n            3.5.xE\r\n            3.5.2E\r\n            3.5.2E\r\n        \r\n        \r\n            3.6.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.5S or later.\r\n        \r\n        \r\n            3.6.xE\r\n            Not vulnerable\r\n            3.6.0E (available May 2014)\r\n        \r\n        \r\n            3.7.xS\r\n            3.7.5S\r\n            3.7.5S\r\n        \r\n        \r\n            3.8.xS\r\n            Vulnerable; migrate to 3.10.2S or later.\r\n            Vulnerable; migrate to 3.10.2S or later.\r\n        \r\n        \r\n            3.9.xS\r\n            Vulnerable; migrate to 3.10.2S or later.\r\n            Vulnerable; migrate to 3.10.2S or later.\r\n        \r\n        \r\n            3.10.xS\r\n            3.10.2S\r\n            3.10.2S\r\n        \r\n        \r\n            3.11.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected by any of the vulnerabilities that are disclosed in the March 2014 Cisco IOS Software Security Advisory Bundled Publication.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.\n\r\n\n\r\nThis vulnerability was discovered by Cisco during internal testing.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Crafted IPv6 Packet Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140326-ipv6"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Software and Cisco IOS XE Software Crafted IPv6 Packet Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAlert.x?alertId=33351"
+			}
+		],
+		"title": "Cisco IOS Software Crafted IPv6 Packet Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2014-03-26T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:23:53+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20140326-ipv6",
+			"initial_release_date": "2014-03-26T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2014-03-26T15:22:02+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S",
+										"product": {
+											"name": "15.2(4)S",
+											"product_id": "CSAFPID-112424"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S1",
+										"product": {
+											"name": "15.2(4)S1",
+											"product_id": "CSAFPID-183813"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S4",
+										"product": {
+											"name": "15.2(4)S4",
+											"product_id": "CSAFPID-183835"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S2",
+										"product": {
+											"name": "15.2(4)S2",
+											"product_id": "CSAFPID-183837"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S3",
+										"product": {
+											"name": "15.2(4)S3",
+											"product_id": "CSAFPID-183839"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S0c",
+										"product": {
+											"name": "15.2(4)S0c",
+											"product_id": "CSAFPID-184933"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S1c",
+										"product": {
+											"name": "15.2(4)S1c",
+											"product_id": "CSAFPID-188198"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S3a",
+										"product": {
+											"name": "15.2(4)S3a",
+											"product_id": "CSAFPID-191686"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S4a",
+										"product": {
+											"name": "15.2(4)S4a",
+											"product_id": "CSAFPID-195062"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(1)T",
+										"product": {
+											"name": "15.3(1)T",
+											"product_id": "CSAFPID-103851"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)T",
+										"product": {
+											"name": "15.3(2)T",
+											"product_id": "CSAFPID-111023"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)T1",
+										"product": {
+											"name": "15.3(1)T1",
+											"product_id": "CSAFPID-187231"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)T2",
+										"product": {
+											"name": "15.3(1)T2",
+											"product_id": "CSAFPID-187232"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)T3",
+										"product": {
+											"name": "15.3(1)T3",
+											"product_id": "CSAFPID-187425"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)T1",
+										"product": {
+											"name": "15.3(2)T1",
+											"product_id": "CSAFPID-190432"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)T2",
+										"product": {
+											"name": "15.3(2)T2",
+											"product_id": "CSAFPID-190493"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M",
+										"product": {
+											"name": "15.2(4)M",
+											"product_id": "CSAFPID-106899"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M1",
+										"product": {
+											"name": "15.2(4)M1",
+											"product_id": "CSAFPID-116774"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M2",
+										"product": {
+											"name": "15.2(4)M2",
+											"product_id": "CSAFPID-117681"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M4",
+										"product": {
+											"name": "15.2(4)M4",
+											"product_id": "CSAFPID-117682"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M3",
+										"product": {
+											"name": "15.2(4)M3",
+											"product_id": "CSAFPID-117683"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M5",
+										"product": {
+											"name": "15.2(4)M5",
+											"product_id": "CSAFPID-117789"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)GC",
+										"product": {
+											"name": "15.2(4)GC",
+											"product_id": "CSAFPID-193316"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2GC"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(1)S",
+										"product": {
+											"name": "15.3(1)S",
+											"product_id": "CSAFPID-113970"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)S",
+										"product": {
+											"name": "15.3(2)S",
+											"product_id": "CSAFPID-116256"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S",
+										"product": {
+											"name": "15.3(3)S",
+											"product_id": "CSAFPID-117783"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)S2",
+										"product": {
+											"name": "15.3(1)S2",
+											"product_id": "CSAFPID-187962"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)S1",
+										"product": {
+											"name": "15.3(1)S1",
+											"product_id": "CSAFPID-188008"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)S2",
+										"product": {
+											"name": "15.3(2)S2",
+											"product_id": "CSAFPID-191331"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(2)S1",
+										"product": {
+											"name": "15.3(2)S1",
+											"product_id": "CSAFPID-191336"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)S1e",
+										"product": {
+											"name": "15.3(1)S1e",
+											"product_id": "CSAFPID-192443"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S1",
+										"product": {
+											"name": "15.3(3)S1",
+											"product_id": "CSAFPID-193406"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)S1a",
+										"product": {
+											"name": "15.3(3)S1a",
+											"product_id": "CSAFPID-197457"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E",
+										"product": {
+											"name": "15.2(1)E",
+											"product_id": "CSAFPID-183811"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E1",
+										"product": {
+											"name": "15.2(1)E1",
+											"product_id": "CSAFPID-195469"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JB",
+										"product": {
+											"name": "15.2(4)JB",
+											"product_id": "CSAFPID-194475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JB1",
+										"product": {
+											"name": "15.2(4)JB1",
+											"product_id": "CSAFPID-195690"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JB2",
+										"product": {
+											"name": "15.2(4)JB2",
+											"product_id": "CSAFPID-195894"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JB3",
+										"product": {
+											"name": "15.2(4)JB3",
+											"product_id": "CSAFPID-196399"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JB3a",
+										"product": {
+											"name": "15.2(4)JB3a",
+											"product_id": "CSAFPID-197464"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)M",
+										"product": {
+											"name": "15.3(3)M",
+											"product_id": "CSAFPID-187412"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(3)M1",
+										"product": {
+											"name": "15.3(3)M1",
+											"product_id": "CSAFPID-193284"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JN",
+										"product": {
+											"name": "15.2(4)JN",
+											"product_id": "CSAFPID-194433"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JN"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)EY",
+										"product": {
+											"name": "15.2(1)EY",
+											"product_id": "CSAFPID-191928"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2EY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)XB12",
+										"product": {
+											"name": "15.3(3)XB12",
+											"product_id": "CSAFPID-195876"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3XB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JK6",
+										"product": {
+											"name": "15.3(3)JK6",
+											"product_id": "CSAFPID-282669"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JK"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.7.0S",
+										"product": {
+											"name": "3.7.0S",
+											"product_id": "CSAFPID-184480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1S",
+										"product": {
+											"name": "3.7.1S",
+											"product_id": "CSAFPID-184481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2S",
+										"product": {
+											"name": "3.7.2S",
+											"product_id": "CSAFPID-194730"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.3S",
+										"product": {
+											"name": "3.7.3S",
+											"product_id": "CSAFPID-194731"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.4S",
+										"product": {
+											"name": "3.7.4S",
+											"product_id": "CSAFPID-194732"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.4aS",
+										"product": {
+											"name": "3.7.4aS",
+											"product_id": "CSAFPID-213798"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2tS",
+										"product": {
+											"name": "3.7.2tS",
+											"product_id": "CSAFPID-213799"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.0bS",
+										"product": {
+											"name": "3.7.0bS",
+											"product_id": "CSAFPID-213955"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1aS",
+										"product": {
+											"name": "3.7.1aS",
+											"product_id": "CSAFPID-213957"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.7S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.8.0S",
+										"product": {
+											"name": "3.8.0S",
+											"product_id": "CSAFPID-194735"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.1S",
+										"product": {
+											"name": "3.8.1S",
+											"product_id": "CSAFPID-194736"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.2S",
+										"product": {
+											"name": "3.8.2S",
+											"product_id": "CSAFPID-194737"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.8S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.9.1S",
+										"product": {
+											"name": "3.9.1S",
+											"product_id": "CSAFPID-194842"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.0S",
+										"product": {
+											"name": "3.9.0S",
+											"product_id": "CSAFPID-194843"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.2S",
+										"product": {
+											"name": "3.9.2S",
+											"product_id": "CSAFPID-202558"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.1aS",
+										"product": {
+											"name": "3.9.1aS",
+											"product_id": "CSAFPID-213816"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.0aS",
+										"product": {
+											"name": "3.9.0aS",
+											"product_id": "CSAFPID-213825"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.9S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0XO",
+										"product": {
+											"name": "3.3.0XO",
+											"product_id": "CSAFPID-196220"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3XO"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.5.0E",
+										"product": {
+											"name": "3.5.0E",
+											"product_id": "CSAFPID-197145"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.1E",
+										"product": {
+											"name": "3.5.1E",
+											"product_id": "CSAFPID-206168"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.5E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.10.0S",
+										"product": {
+											"name": "3.10.0S",
+											"product_id": "CSAFPID-198123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1S",
+										"product": {
+											"name": "3.10.1S",
+											"product_id": "CSAFPID-198124"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1xbS",
+										"product": {
+											"name": "3.10.1xbS",
+											"product_id": "CSAFPID-213642"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.10S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.9.1",
+										"product": {
+											"name": "17.9.1",
+											"product_id": "CSAFPID-278025"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.9"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2014-2113",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCui59540",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-103851",
+					"CSAFPID-106899",
+					"CSAFPID-111023",
+					"CSAFPID-112424",
+					"CSAFPID-113970",
+					"CSAFPID-116256",
+					"CSAFPID-116774",
+					"CSAFPID-117681",
+					"CSAFPID-117682",
+					"CSAFPID-117683",
+					"CSAFPID-117783",
+					"CSAFPID-117789",
+					"CSAFPID-183811",
+					"CSAFPID-183813",
+					"CSAFPID-183835",
+					"CSAFPID-183837",
+					"CSAFPID-183839",
+					"CSAFPID-184933",
+					"CSAFPID-187231",
+					"CSAFPID-187232",
+					"CSAFPID-187412",
+					"CSAFPID-187425",
+					"CSAFPID-187962",
+					"CSAFPID-188008",
+					"CSAFPID-188198",
+					"CSAFPID-190432",
+					"CSAFPID-190493",
+					"CSAFPID-191331",
+					"CSAFPID-191336",
+					"CSAFPID-191686",
+					"CSAFPID-191928",
+					"CSAFPID-192443",
+					"CSAFPID-193284",
+					"CSAFPID-193316",
+					"CSAFPID-193406",
+					"CSAFPID-194433",
+					"CSAFPID-194475",
+					"CSAFPID-195062",
+					"CSAFPID-195469",
+					"CSAFPID-195690",
+					"CSAFPID-195876",
+					"CSAFPID-195894",
+					"CSAFPID-196399",
+					"CSAFPID-197457",
+					"CSAFPID-197464",
+					"CSAFPID-282669",
+					"CSAFPID-184480",
+					"CSAFPID-184481",
+					"CSAFPID-194730",
+					"CSAFPID-194731",
+					"CSAFPID-194732",
+					"CSAFPID-194735",
+					"CSAFPID-194736",
+					"CSAFPID-194737",
+					"CSAFPID-194842",
+					"CSAFPID-194843",
+					"CSAFPID-196220",
+					"CSAFPID-197145",
+					"CSAFPID-198123",
+					"CSAFPID-198124",
+					"CSAFPID-202558",
+					"CSAFPID-206168",
+					"CSAFPID-213642",
+					"CSAFPID-213798",
+					"CSAFPID-213799",
+					"CSAFPID-213816",
+					"CSAFPID-213825",
+					"CSAFPID-213955",
+					"CSAFPID-213957",
+					"CSAFPID-278025"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Crafted IPv6 Packet Denial of Service Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140326-ipv6"
+				}
+			],
+			"release_date": "2014-03-26T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If IPv6 configuration is required, there are no workarounds for this vulnerability."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-103851",
+						"CSAFPID-106899",
+						"CSAFPID-111023",
+						"CSAFPID-112424",
+						"CSAFPID-113970",
+						"CSAFPID-116256",
+						"CSAFPID-116774",
+						"CSAFPID-117681",
+						"CSAFPID-117682",
+						"CSAFPID-117683",
+						"CSAFPID-117783",
+						"CSAFPID-117789",
+						"CSAFPID-183811",
+						"CSAFPID-183813",
+						"CSAFPID-183835",
+						"CSAFPID-183837",
+						"CSAFPID-183839",
+						"CSAFPID-184933",
+						"CSAFPID-187231",
+						"CSAFPID-187232",
+						"CSAFPID-187412",
+						"CSAFPID-187425",
+						"CSAFPID-187962",
+						"CSAFPID-188008",
+						"CSAFPID-188198",
+						"CSAFPID-190432",
+						"CSAFPID-190493",
+						"CSAFPID-191331",
+						"CSAFPID-191336",
+						"CSAFPID-191686",
+						"CSAFPID-191928",
+						"CSAFPID-192443",
+						"CSAFPID-193284",
+						"CSAFPID-193316",
+						"CSAFPID-193406",
+						"CSAFPID-194433",
+						"CSAFPID-194475",
+						"CSAFPID-195062",
+						"CSAFPID-195469",
+						"CSAFPID-195690",
+						"CSAFPID-195876",
+						"CSAFPID-195894",
+						"CSAFPID-196399",
+						"CSAFPID-197457",
+						"CSAFPID-197464",
+						"CSAFPID-282669",
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-194730",
+						"CSAFPID-194731",
+						"CSAFPID-194732",
+						"CSAFPID-194735",
+						"CSAFPID-194736",
+						"CSAFPID-194737",
+						"CSAFPID-194842",
+						"CSAFPID-194843",
+						"CSAFPID-196220",
+						"CSAFPID-197145",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-202558",
+						"CSAFPID-206168",
+						"CSAFPID-213642",
+						"CSAFPID-213798",
+						"CSAFPID-213799",
+						"CSAFPID-213816",
+						"CSAFPID-213825",
+						"CSAFPID-213955",
+						"CSAFPID-213957",
+						"CSAFPID-278025"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-103851",
+						"CSAFPID-106899",
+						"CSAFPID-111023",
+						"CSAFPID-112424",
+						"CSAFPID-113970",
+						"CSAFPID-116256",
+						"CSAFPID-116774",
+						"CSAFPID-117681",
+						"CSAFPID-117682",
+						"CSAFPID-117683",
+						"CSAFPID-117783",
+						"CSAFPID-117789",
+						"CSAFPID-183811",
+						"CSAFPID-183813",
+						"CSAFPID-183835",
+						"CSAFPID-183837",
+						"CSAFPID-183839",
+						"CSAFPID-184933",
+						"CSAFPID-187231",
+						"CSAFPID-187232",
+						"CSAFPID-187412",
+						"CSAFPID-187425",
+						"CSAFPID-187962",
+						"CSAFPID-188008",
+						"CSAFPID-188198",
+						"CSAFPID-190432",
+						"CSAFPID-190493",
+						"CSAFPID-191331",
+						"CSAFPID-191336",
+						"CSAFPID-191686",
+						"CSAFPID-191928",
+						"CSAFPID-192443",
+						"CSAFPID-193284",
+						"CSAFPID-193316",
+						"CSAFPID-193406",
+						"CSAFPID-194433",
+						"CSAFPID-194475",
+						"CSAFPID-195062",
+						"CSAFPID-195469",
+						"CSAFPID-195690",
+						"CSAFPID-195876",
+						"CSAFPID-195894",
+						"CSAFPID-196399",
+						"CSAFPID-197457",
+						"CSAFPID-197464",
+						"CSAFPID-282669",
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-194730",
+						"CSAFPID-194731",
+						"CSAFPID-194732",
+						"CSAFPID-194735",
+						"CSAFPID-194736",
+						"CSAFPID-194737",
+						"CSAFPID-194842",
+						"CSAFPID-194843",
+						"CSAFPID-196220",
+						"CSAFPID-197145",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-202558",
+						"CSAFPID-206168",
+						"CSAFPID-213642",
+						"CSAFPID-213798",
+						"CSAFPID-213799",
+						"CSAFPID-213816",
+						"CSAFPID-213825",
+						"CSAFPID-213955",
+						"CSAFPID-213957",
+						"CSAFPID-278025"
+					]
+				}
+			],
+			"title": "Cisco IOS Software and Cisco IOS XE Software Crafted IPv6 Packet Denial of Service Vulnerability"
+		}
+	]
+}

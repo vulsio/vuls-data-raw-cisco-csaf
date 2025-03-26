@@ -1,0 +1,198 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the sysadmin virtual machine (VM) on Cisco ASR 9000 Series Aggregation Services Routers running Cisco IOS XR 64-bit Software could allow an unauthenticated, remote attacker to access internal applications running on the sysadmin VM.\r\nThe vulnerability is due to incorrect isolation of the secondary management interface from internal sysadmin applications. An attacker could exploit this vulnerability by connecting to one of the listening internal applications. A successful exploit could result in unstable conditions, including both a denial of service and remote unauthenticated access to the device.\r\n\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco ASR 9000 Series Aggregation Services Routers that are running an affected version of Cisco IOS XR 64-bit Software and have the secondary management interface (physically MGT LAN 1 on the route switch processor (RSP)) connected and configured. To determine if the secondary management interface is connected, log in to the sysadmin virtual machine and use the show interface command. If the secondary management interface is configured and connected, the device is vulnerable as shown in the following example (in dual route switch processor/route processor (RSP/RP) systems, check both active and standby RSP/RP):\r\n\r\n\r\nsysadmin-vm:0_RSP1:eXR# show interface\r\nTue Mar  19 19:32:00.839 UTC  MgmtEth0/RSP1/0/0  Link encap: Ethernet  HWaddr 08:96:ad:22:7a:31    inet  addr: 192.168.0.1      UP RUNNING BROADCAST MULTICAST   MTU:1500  Metric:1    RX packets:      14093 errors:0 dropped:1 overruns:0   frame:0    TX packets:         49 errors:0 dropped:0 overruns:0 carrier:0                           collisions:0 txqueuelen:1000    RX bytes:                867463  TX bytes:                  6889    sysadmin-vm:0_RSP1:eXR#\r\n\r\nFor more information about which Cisco IOS XR Software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect Cisco IOS-XR 64 bit Software running on platforms other than the ASR9000 Series Aggregation Services Routers.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Customers can perform the following workaround, which is equivalent to upgrading to a fixed software release. Although the reload of the sysadmin VM is hitless, Cisco recommends performing this change during a maintenance window:\r\n  Step 1: Access the sysadmin VM:\r\n\r\n\r\n\r\nRP/0/RSP1/CPU0:eXR#admin\r\nTue Mar 12 22:46:37.110 UTC    root connected from 127.0.0.1 using console on host\r\n    Step 2: Run bash and edit the calvados_bootstrap.cfg file:\r\n\r\n\r\n\r\nsysadmin-vm:0_RSP1:eXR# run bash\r\nTue Mar 12 22:46:44.224 UTC  bash-4.3# vi /etc/init.d/calvados_bootstrap.cfg\r\n\r\n  Step 3: Edit the file by changing:\r\n\r\n\r\n\r\n\r\n#CTRL_VRF=0\r\n#MGMT_VRF=2\r\n\r\n  To:\r\n\r\n\r\nCTRL_VRF=0\r\nMGMT_VRF=2\r\n\r\n  Exit the file and save. In dual RSP/RP systems, the edit must be performed on both active and standby RSP/RPs.\r\n\r\n  Step 4: Reload the sysadmin VM (repeat for both in dual systems):\r\n\r\n\r\nsysadmin-vm:0_RSP1:eXR# reload admin location 0/RSP1\r\nTue Mar 12 22:49:28.589 UTC  Reload node ? [no,yes] yes  result Admin VM graceful reload request on 0/RSP1 succeeded.  sysadmin-vm:0_RSP1:eXR# RP/0/RSP1/CPU0:Mar 12 22:49:34.059 UTC: rmf_svr[402]: %PKT_INFRA-FM-3-FAULT_MAJOR : ALARM_MAJOR :RP-RED-LOST-ADMINNR :DECLARE :0/RSP1/CPU0:    Confd is down  RP/0/RSP1/CPU0:eXR#\r\n\r\n  Wait till the admin VM returns:\r\n\r\n\r\nRP/0/RSP1/CPU0:eXR#0/RSP1/ADMIN0:Mar 12 22:59:30.220 UTC: envmon[3680]: %PKT_INFRA-FM-3-FAULT_MAJOR : ALARM_MAJOR :Power Module redundancy lost :DECLARE :0:\r\nRP/0/RSP1/CPU0:Mar 12 22:59:33.708 UTC: rmf_svr[402]: %PKT_INFRA-FM-3-FAULT_MAJOR : ALARM_MAJOR :RP-RED-LOST-ADMINNR :CLEAR :0/RSP1/CPU0:",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates that address the vulnerability described in this advisory. Customers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nWhen considering software upgrades, customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n\r\nCustomers Without Service Contracts\r\n\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC:\r\nhttps://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n  Fixed Releases\r\nThis vulnerability has been fixed in Cisco IOS XR 64-bit Software Release 6.5.3 and 7.0.1, which will edit the calvados_boostrap.cfg file and reload the device.\r\n\r\nCisco will not publish a software maintenance upgrade (SMU) for this vulnerability due to the effectiveness of the workaround.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR 64-Bit Software for Cisco ASR 9000 Series Aggregation Services Routers Network Isolation Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20190417-asr9k-exr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories and Alerts page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			}
+		],
+		"title": "Cisco IOS XR 64-Bit Software for Cisco ASR 9000 Series Aggregation Services Routers Network Isolation Vulnerability",
+		"tracking": {
+			"current_release_date": "2019-04-17T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T22:46:46+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20190417-asr9k-exr",
+			"initial_release_date": "2019-04-17T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2019-04-17T13:43:22+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco ASR 9000 Series Aggregation Services Routers",
+						"product": {
+							"name": "Cisco ASR 9000 Series Aggregation Services Routers ",
+							"product_id": "CSAFPID-202356"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2019-1710",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvn56004"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-202356",
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2019-04-17T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-202356",
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "Customers can perform the following workaround, which is equivalent to upgrading to a fixed software release. Although the reload of the sysadmin VM is hitless, Cisco recommends performing this change during a maintenance window:\r\n  Step 1: Access the sysadmin VM:\r\n\r\n\r\n\r\nRP/0/RSP1/CPU0:eXR#admin\r\nTue Mar 12 22:46:37.110 UTC    root connected from 127.0.0.1 using console on host\r\n    Step 2: Run bash and edit the calvados_bootstrap.cfg file:\r\n\r\n\r\n\r\nsysadmin-vm:0_RSP1:eXR# run bash\r\nTue Mar 12 22:46:44.224 UTC  bash-4.3# vi /etc/init.d/calvados_bootstrap.cfg\r\n\r\n  Step 3: Edit the file by changing:\r\n\r\n\r\n\r\n\r\n#CTRL_VRF=0\r\n#MGMT_VRF=2\r\n\r\n  To:\r\n\r\n\r\nCTRL_VRF=0\r\nMGMT_VRF=2\r\n\r\n  Exit the file and save. In dual RSP/RP systems, the edit must be performed on both active and standby RSP/RPs.\r\n\r\n  Step 4: Reload the sysadmin VM (repeat for both in dual systems):\r\n\r\n\r\nsysadmin-vm:0_RSP1:eXR# reload admin location 0/RSP1\r\nTue Mar 12 22:49:28.589 UTC  Reload node ? [no,yes] yes  result Admin VM graceful reload request on 0/RSP1 succeeded.  sysadmin-vm:0_RSP1:eXR# RP/0/RSP1/CPU0:Mar 12 22:49:34.059 UTC: rmf_svr[402]: %PKT_INFRA-FM-3-FAULT_MAJOR : ALARM_MAJOR :RP-RED-LOST-ADMINNR :DECLARE :0/RSP1/CPU0:    Confd is down  RP/0/RSP1/CPU0:eXR#\r\n\r\n  Wait till the admin VM returns:\r\n\r\n\r\nRP/0/RSP1/CPU0:eXR#0/RSP1/ADMIN0:Mar 12 22:59:30.220 UTC: envmon[3680]: %PKT_INFRA-FM-3-FAULT_MAJOR : ALARM_MAJOR :Power Module redundancy lost :DECLARE :0:\r\nRP/0/RSP1/CPU0:Mar 12 22:59:33.708 UTC: rmf_svr[402]: %PKT_INFRA-FM-3-FAULT_MAJOR : ALARM_MAJOR :RP-RED-LOST-ADMINNR :CLEAR :0/RSP1/CPU0:",
+					"product_ids": [
+						"CSAFPID-202356",
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 9.8,
+						"baseSeverity": "CRITICAL",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-202356",
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR 64-Bit Software for Cisco ASR 9000 Series Aggregation Services Routers Network Isolation Vulnerability"
+		}
+	]
+}

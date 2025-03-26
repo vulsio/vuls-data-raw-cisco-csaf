@@ -1,0 +1,870 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing by X.B. and J.F.D. of Cisco."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Easy Virtual Switching System (VSS) feature of Cisco IOS XE Software for Cisco Catalyst 4500 Series Switches and Cisco Catalyst 4500-X Series Switches could allow an unauthenticated, remote attacker to execute arbitrary code on the underlying Linux operating system of an affected device.\r\n\r\nThe vulnerability is due to incorrect boundary checks of certain values in Easy VSS protocol packets that are destined for an affected device. An attacker could exploit this vulnerability by sending crafted Easy VSS protocol packets to UDP port 5500 while the affected device is in a specific state. When the crafted packet is processed, a buffer overflow condition may occur. A successful exploit could allow the attacker to trigger a denial of service (DoS) condition or execute arbitrary code with root privileges on the underlying Linux operating system of the affected device.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the March 2021 release of the Cisco IOS and IOS XE Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: March 2021 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74408\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco Catalyst 4500 and 4500-X Series Switches if they are running a vulnerable release of Cisco IOS XE Software and one of the following conditions is true:\r\n\r\nThe switch is being converted from standalone mode to virtual switch mode using the Easy VSS feature.\r\nCisco Discovery Protocol is enabled with Application type, length, value (TLV) information.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n  Determine the Cisco Discovery Protocol Configuration\r\nTo determine whether the Cisco Discovery Protocol is enabled on a device, use the show cdp command in the device CLI. The output of the command displays global Cisco Discovery Protocol information. The following example shows the output of the show cdp command if the Cisco Discovery Protocol is enabled:\r\n\r\n\r\nSwitch#show cdp\r\nGlobal CDP information:\r\nSending CDP packets every 60 seconds\r\nSending a holdtime value of 180 seconds\r\nSending CDPv2 advertisements is  enabled\r\n\r\nThe following example shows the output of the show cdp command if the protocol is not enabled:\r\n\r\n\r\nSwitch#show cdp\r\n% CDP is not enabled\r\n\r\n   Determine the Cisco Discovery Protocol Application TLVs Configuration\r\nCisco Discovery Protocol Application TLV processing is enabled by default. To determine if the Application TLVs are disabled, use the show running-config | include no cdp tlv app CLI command. If the command returns no output, then processing of Cisco Discovery Protocol Application TLVs is enabled.\r\n\r\nIf the show running-config | include no cdp tlv app command returns output, that output will indicate how many interfaces have Cisco Discovery Protocol Application TLV processing disabled. The following example shows output for the command if one interface is disabled:\r\n\r\n\r\nSwitch#show running-config | include no cdp tlv app\r\nno cdp tlv app\r\n\r\nWhen the Cisco Discovery Protocol is enabled with Application TLVs on a device, an adjacent attack vector exists through the Cisco Discovery Protocol handler. An attacker could use this vector to force the device into a vulnerable state and exploit this vulnerability by targeting UDP port 5500 of the affected device.\r\n\r\nThe Cisco Discovery Protocol is a Layer 2 protocol. To exploit the vulnerability through the Cisco Discovery Protocol, the attacker would need to be in the same broadcast domain as the affected device that has the Cisco Discovery Protocol enabled with Application TLVs (Layer 2 adjacent).\r\n\r\nNote: If the switch operates as a VSS member, this vulnerability is not exploitable remotely. Only the adjacent vector through the Cisco Discovery Protocol is available. Use the show switch virtual command in the device CLI to determine the status of a VSS. The following example shows the output of the show switch virtual CLI command for a device that operates as a VSS member:\r\n\r\n\r\nSwitch#show switch virtual\r\nExecuting the command on VSS member switch role = VSS Active, id = 2\r\nSwitch mode: Virtual Switch\r\n\r\nThe following example shows the output of the show switch virtual CLI command for a device that does not operate as a VSS member:\r\n\r\n\r\nSwitch# show switch virtual\r\nSwitch Mode : Standalone",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XR Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "By default, Catalyst 4500 Series and 4500-X Series Switches are configured to operate in standalone mode, with each switch working independently. The VSS feature enables administrators to combine two switches into a single network element that operates in virtual switch mode. The Easy VSS feature simplifies the VSS configuration through a single command.\r\n\r\nThe switch convert mode easy-virtual-switch exec command configures the switches to operate as a VSS. As part of this process, UDP port 5500 is opened until the switches reload as a single VSS. While the port is open, an attacker can remotely exploit this vulnerability through UDP port 5500.\r\n\r\nOnce the system reloads as a VSS, UDP port 5500 is closed and this vulnerability is no longer exploitable remotely. Only the adjacent attack vector through the Cisco Discovery Protocol is available.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability can result in a crash of the vss bringup process on an affected device. When a device has experienced a crash of the vss bringup process, the following message may be seen in the system logs:\r\n\r\n\r\nIOSD-EXT-SIGNAL: Segmentation fault(11), Process = vss bringup\r\n\n\r\nThis error message indicates that the vss bringup process has crashed. However, the process may have crashed for a reason other than the exploitation of this vulnerability. Customers are advised to contact their support organization to review the error messages and determine whether the device has been compromised by an exploitation of this vulnerability.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds for this vulnerability. However, mitigations are available.\r\n  Disable Cisco Discovery Protocol Application TLVs\r\nCisco Discovery Protocol Application TLVs are enabled by default. Disabling the Application TLVs will close the adjacent attack vector and reduce the attack surface.\r\n\r\nTo disable use of Cisco Discovery Protocol Application TLVs globally for a device, use the no cdp tlv app command in the global configuration CLI. To disable use of Application TLVs for a specific interface of a device, use the no cdp tlv app command in the interface configuration CLI.\r\n\r\nTo see if Cisco Discovery Protocol Application TLVs are in use on the device before disabling them, use the show cdp tlv app command. If the command returns output, then disabling the Application TLVs globally is not advised.\r\n  Disable Cisco Discovery Protocol\r\nCustomers who do not use the Cisco Discovery Protocol feature may disable it either globally, which will close the adjacent attack vector, or on individual interfaces, which will reduce the attack surface.\r\n\r\nTo disable the protocol globally for a device, use the no cdp run command in the global configuration CLI. To disable the protocol for a specific interface of a device, use the no cdp enable command in the interface configuration CLI.\r\n\r\nCustomers who cannot apply the above mitigations can reduce the attack surface by restricting inbound traffic to UDP port 5500 by implementing an access control list (ACL) or an infrastructure access control list (iACL).\r\n\r\nWhile these mitigations have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates that address the vulnerability described in this advisory. Customers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n Customers Without Service Contracts\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n    Cisco IOS and IOS XE Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco IOS and IOS XE Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] to identify any Cisco Security Advisories that impact a specific software release and the earliest release that fixes the vulnerabilities described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities described in all the advisories identified (“Combined First Fixed”).\r\n\r\nCustomers can use the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] to search advisories in the following ways:\r\n\r\nChoose the software and one or more releases\r\nUpload a .txt file that includes a list of specific releases\r\nEnter the output of the show version command\r\n\r\nAfter initiating a search, customers can customize the search to include all Cisco Security Advisories, a specific advisory, or all advisories in the most recent bundled publication.\r\n\r\nCustomers can also use the following form to determine whether a release is affected by any Cisco Security Advisory by entering a Cisco IOS or IOS XE Software release—for example, 15.1(4)M2 or 3.13.8S:\r\n\r\n\r\n\r\nBy default, the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] includes results only for vulnerabilities that have a Critical or High Security Impact Rating (SIR). To include results for Medium SIR vulnerabilities, customers can use the Cisco Software Checker on Cisco.com and check the Medium check box in the drop-down list under Impact Rating when customizing a search.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing by X.B. and J.F.D. of Cisco.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XE Software Easy Virtual Switching System Arbitrary Code Execution Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ios-xe-evss-code-exe-8cw5VSvw"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: March 2021 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74408"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			}
+		],
+		"title": "Cisco IOS XE Software Easy Virtual Switching System Arbitrary Code Execution Vulnerability",
+		"tracking": {
+			"current_release_date": "2021-03-24T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:00:48+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-ios-xe-evss-code-exe-8cw5VSvw",
+			"initial_release_date": "2021-03-24T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2021-03-23T15:49:16+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.6.0E",
+										"product": {
+											"name": "3.6.0E",
+											"product_id": "CSAFPID-206172"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.1E",
+										"product": {
+											"name": "3.6.1E",
+											"product_id": "CSAFPID-206173"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.0bE",
+										"product": {
+											"name": "3.6.0bE",
+											"product_id": "CSAFPID-210074"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.2E",
+										"product": {
+											"name": "3.6.2E",
+											"product_id": "CSAFPID-210264"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.3E",
+										"product": {
+											"name": "3.6.3E",
+											"product_id": "CSAFPID-212674"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.4E",
+										"product": {
+											"name": "3.6.4E",
+											"product_id": "CSAFPID-213790"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.5E",
+										"product": {
+											"name": "3.6.5E",
+											"product_id": "CSAFPID-217279"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.6E",
+										"product": {
+											"name": "3.6.6E",
+											"product_id": "CSAFPID-220357"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.5aE",
+										"product": {
+											"name": "3.6.5aE",
+											"product_id": "CSAFPID-221108"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.5bE",
+										"product": {
+											"name": "3.6.5bE",
+											"product_id": "CSAFPID-222435"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.7E",
+										"product": {
+											"name": "3.6.7E",
+											"product_id": "CSAFPID-224840"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.8E",
+										"product": {
+											"name": "3.6.8E",
+											"product_id": "CSAFPID-229136"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.9E",
+										"product": {
+											"name": "3.6.9E",
+											"product_id": "CSAFPID-232766"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.10E",
+										"product": {
+											"name": "3.6.10E",
+											"product_id": "CSAFPID-244686"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.6E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.7.0E",
+										"product": {
+											"name": "3.7.0E",
+											"product_id": "CSAFPID-206211"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1E",
+										"product": {
+											"name": "3.7.1E",
+											"product_id": "CSAFPID-210076"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2E",
+										"product": {
+											"name": "3.7.2E",
+											"product_id": "CSAFPID-210077"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.3E",
+										"product": {
+											"name": "3.7.3E",
+											"product_id": "CSAFPID-213797"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.4E",
+										"product": {
+											"name": "3.7.4E",
+											"product_id": "CSAFPID-217280"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.5E",
+										"product": {
+											"name": "3.7.5E",
+											"product_id": "CSAFPID-220290"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.7E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.8.0E",
+										"product": {
+											"name": "3.8.0E",
+											"product_id": "CSAFPID-213811"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.1E",
+										"product": {
+											"name": "3.8.1E",
+											"product_id": "CSAFPID-213812"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.2E",
+										"product": {
+											"name": "3.8.2E",
+											"product_id": "CSAFPID-217283"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.3E",
+										"product": {
+											"name": "3.8.3E",
+											"product_id": "CSAFPID-220489"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.4E",
+										"product": {
+											"name": "3.8.4E",
+											"product_id": "CSAFPID-222695"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.5E",
+										"product": {
+											"name": "3.8.5E",
+											"product_id": "CSAFPID-226331"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.5aE",
+										"product": {
+											"name": "3.8.5aE",
+											"product_id": "CSAFPID-231004"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.6E",
+										"product": {
+											"name": "3.8.6E",
+											"product_id": "CSAFPID-231472"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.7E",
+										"product": {
+											"name": "3.8.7E",
+											"product_id": "CSAFPID-239007"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.8E",
+										"product": {
+											"name": "3.8.8E",
+											"product_id": "CSAFPID-246387"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.9E",
+										"product": {
+											"name": "3.8.9E",
+											"product_id": "CSAFPID-264514"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.10E",
+										"product": {
+											"name": "3.8.10E",
+											"product_id": "CSAFPID-271633"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.8E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.9.0E",
+										"product": {
+											"name": "3.9.0E",
+											"product_id": "CSAFPID-217282"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.1E",
+										"product": {
+											"name": "3.9.1E",
+											"product_id": "CSAFPID-222483"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.2E",
+										"product": {
+											"name": "3.9.2E",
+											"product_id": "CSAFPID-226158"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.2bE",
+										"product": {
+											"name": "3.9.2bE",
+											"product_id": "CSAFPID-227755"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.9E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.10.0E",
+										"product": {
+											"name": "3.10.0E",
+											"product_id": "CSAFPID-227555"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1E",
+										"product": {
+											"name": "3.10.1E",
+											"product_id": "CSAFPID-228689"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.0cE",
+										"product": {
+											"name": "3.10.0cE",
+											"product_id": "CSAFPID-231246"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2E",
+										"product": {
+											"name": "3.10.2E",
+											"product_id": "CSAFPID-232009"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1aE",
+										"product": {
+											"name": "3.10.1aE",
+											"product_id": "CSAFPID-239000"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1sE",
+										"product": {
+											"name": "3.10.1sE",
+											"product_id": "CSAFPID-240187"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.3E",
+										"product": {
+											"name": "3.10.3E",
+											"product_id": "CSAFPID-262994"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.10E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.11.2",
+										"product": {
+											"name": "16.11.2",
+											"product_id": "CSAFPID-261240"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.11"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.12.5a",
+										"product": {
+											"name": "16.12.5a",
+											"product_id": "CSAFPID-281438"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.12"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.11.0E",
+										"product": {
+											"name": "3.11.0E",
+											"product_id": "CSAFPID-242315"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.1E",
+										"product": {
+											"name": "3.11.1E",
+											"product_id": "CSAFPID-265450"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.2E",
+										"product": {
+											"name": "3.11.2E",
+											"product_id": "CSAFPID-270098"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.3E",
+										"product": {
+											"name": "3.11.3E",
+											"product_id": "CSAFPID-271632"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.1aE",
+										"product": {
+											"name": "3.11.1aE",
+											"product_id": "CSAFPID-273857"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.2aE",
+										"product": {
+											"name": "3.11.2aE",
+											"product_id": "CSAFPID-277358"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.3aE",
+										"product": {
+											"name": "3.11.3aE",
+											"product_id": "CSAFPID-280217"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.11E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.3.1",
+										"product": {
+											"name": "17.3.1",
+											"product_id": "CSAFPID-254712"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.10.1a",
+										"product": {
+											"name": "17.10.1a",
+											"product_id": "CSAFPID-290580"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.10"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.8.1",
+										"product": {
+											"name": "17.8.1",
+											"product_id": "CSAFPID-278023"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.8"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2021-1451",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvv66062"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-206172",
+					"CSAFPID-206173",
+					"CSAFPID-206211",
+					"CSAFPID-210074",
+					"CSAFPID-210076",
+					"CSAFPID-210077",
+					"CSAFPID-210264",
+					"CSAFPID-212674",
+					"CSAFPID-213790",
+					"CSAFPID-213797",
+					"CSAFPID-213811",
+					"CSAFPID-213812",
+					"CSAFPID-217279",
+					"CSAFPID-217280",
+					"CSAFPID-217282",
+					"CSAFPID-217283",
+					"CSAFPID-220290",
+					"CSAFPID-220357",
+					"CSAFPID-220489",
+					"CSAFPID-221108",
+					"CSAFPID-222435",
+					"CSAFPID-222483",
+					"CSAFPID-222695",
+					"CSAFPID-224840",
+					"CSAFPID-226158",
+					"CSAFPID-226331",
+					"CSAFPID-227555",
+					"CSAFPID-227755",
+					"CSAFPID-228689",
+					"CSAFPID-229136",
+					"CSAFPID-231004",
+					"CSAFPID-231246",
+					"CSAFPID-231472",
+					"CSAFPID-232009",
+					"CSAFPID-232766",
+					"CSAFPID-239000",
+					"CSAFPID-239007",
+					"CSAFPID-240187",
+					"CSAFPID-242315",
+					"CSAFPID-244686",
+					"CSAFPID-246387",
+					"CSAFPID-254712",
+					"CSAFPID-261240",
+					"CSAFPID-262994",
+					"CSAFPID-264514",
+					"CSAFPID-265450",
+					"CSAFPID-270098",
+					"CSAFPID-271632",
+					"CSAFPID-271633",
+					"CSAFPID-273857",
+					"CSAFPID-277358",
+					"CSAFPID-278023",
+					"CSAFPID-280217",
+					"CSAFPID-281438",
+					"CSAFPID-290580"
+				]
+			},
+			"release_date": "2021-03-24T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-206172",
+						"CSAFPID-206173",
+						"CSAFPID-206211",
+						"CSAFPID-210074",
+						"CSAFPID-210076",
+						"CSAFPID-210077",
+						"CSAFPID-210264",
+						"CSAFPID-212674",
+						"CSAFPID-213790",
+						"CSAFPID-213797",
+						"CSAFPID-213811",
+						"CSAFPID-213812",
+						"CSAFPID-217279",
+						"CSAFPID-217280",
+						"CSAFPID-217282",
+						"CSAFPID-217283",
+						"CSAFPID-220290",
+						"CSAFPID-220357",
+						"CSAFPID-220489",
+						"CSAFPID-221108",
+						"CSAFPID-222435",
+						"CSAFPID-222483",
+						"CSAFPID-222695",
+						"CSAFPID-224840",
+						"CSAFPID-226158",
+						"CSAFPID-226331",
+						"CSAFPID-227555",
+						"CSAFPID-227755",
+						"CSAFPID-228689",
+						"CSAFPID-229136",
+						"CSAFPID-231004",
+						"CSAFPID-231246",
+						"CSAFPID-231472",
+						"CSAFPID-232009",
+						"CSAFPID-232766",
+						"CSAFPID-239000",
+						"CSAFPID-239007",
+						"CSAFPID-240187",
+						"CSAFPID-242315",
+						"CSAFPID-244686",
+						"CSAFPID-246387",
+						"CSAFPID-254712",
+						"CSAFPID-261240",
+						"CSAFPID-262994",
+						"CSAFPID-264514",
+						"CSAFPID-265450",
+						"CSAFPID-270098",
+						"CSAFPID-271632",
+						"CSAFPID-271633",
+						"CSAFPID-273857",
+						"CSAFPID-277358",
+						"CSAFPID-278023",
+						"CSAFPID-280217",
+						"CSAFPID-281438",
+						"CSAFPID-290580"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.1,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-206172",
+						"CSAFPID-206173",
+						"CSAFPID-206211",
+						"CSAFPID-210074",
+						"CSAFPID-210076",
+						"CSAFPID-210077",
+						"CSAFPID-210264",
+						"CSAFPID-212674",
+						"CSAFPID-213790",
+						"CSAFPID-213797",
+						"CSAFPID-213811",
+						"CSAFPID-213812",
+						"CSAFPID-217279",
+						"CSAFPID-217280",
+						"CSAFPID-217282",
+						"CSAFPID-217283",
+						"CSAFPID-220290",
+						"CSAFPID-220357",
+						"CSAFPID-220489",
+						"CSAFPID-221108",
+						"CSAFPID-222435",
+						"CSAFPID-222483",
+						"CSAFPID-222695",
+						"CSAFPID-224840",
+						"CSAFPID-226158",
+						"CSAFPID-226331",
+						"CSAFPID-227555",
+						"CSAFPID-227755",
+						"CSAFPID-228689",
+						"CSAFPID-229136",
+						"CSAFPID-231004",
+						"CSAFPID-231246",
+						"CSAFPID-231472",
+						"CSAFPID-232009",
+						"CSAFPID-232766",
+						"CSAFPID-239000",
+						"CSAFPID-239007",
+						"CSAFPID-240187",
+						"CSAFPID-242315",
+						"CSAFPID-244686",
+						"CSAFPID-246387",
+						"CSAFPID-254712",
+						"CSAFPID-261240",
+						"CSAFPID-262994",
+						"CSAFPID-264514",
+						"CSAFPID-265450",
+						"CSAFPID-270098",
+						"CSAFPID-271632",
+						"CSAFPID-271633",
+						"CSAFPID-273857",
+						"CSAFPID-277358",
+						"CSAFPID-278023",
+						"CSAFPID-280217",
+						"CSAFPID-281438",
+						"CSAFPID-290580"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software Easy Virtual Switching System Arbitrary Code Execution"
+		}
+	]
+}

@@ -1,0 +1,1031 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Multiple Cisco products contain vulnerabilities in the processing of  IPSec IKE (Internet Key Exchange) messages. These vulnerabilities were  identified by the University of Oulu Secure Programming Group (OUSPG) \"PROTOS\"  Test Suite for IPSec and can be repeatedly exploited to produce a denial of  service.\r\n\r\nCisco has made free software available to address this vulnerability  for affected customers. Prior to deploying software, customers should consult  their maintenance provider or check the software for feature set compatibility  and known issues specific to their environment.\r\n\r\nThis advisory is posted at  http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec [\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This section provides details on affected products.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco devices running affected versions of software and configured for  IKE are vulnerable. This vulnerability is not dependent on a specific hardware  configuration. For example, the Cisco VPNSM or VPN SPA are not required for the  device to be vulnerable.\r\n\r\n   Cisco IOS versions based on 12.2SXD, 12.3T, 12.4 and 12.4T\r\n\r\n   Cisco PIX Firewall versions up to but not including 6.3(5)\r\n\r\n   Cisco PIX Firewall/ASA versions up to but not including 7.0.1.4\r\n\r\n   Cisco Firewall Services Module (FWSM) versions up to but not including 2.3(3)\r\n\r\n   Cisco VPN 3000 Series Concentrators versions up to but not including 4.1(7)H and 4.7(2)B\r\n\r\n   Cisco MDS Series SanOS versions up to but not including 2.1(2)\r\n\r\n   Cisco Wireless LAN Controllers up to and including 3.2.78.0 with Crypto Accelerator present.\r\n\r\n\r\nTo determine the software running on a Cisco IOS product, log in to the  device and issue the show version command to display the system banner. Cisco  IOS software will identify itself as \"Internetwork Operating System Software\"  or simply \"IOS.\" On the next line of output, the image name will be displayed  between parentheses, followed by \"Version\" and the Cisco IOS release name.  Other Cisco devices will not have the show version command, or will give  different output.\r\n\r\nThe following example identifies a Cisco 7200 router running Cisco IOS  release 12.3(10a) with an installed image name of C7200-JO3S-M.\r\n\r\n\r\n\nRouter# show version Cisco Internetwork Operating System Software  IOS (tm) 7200 Software (C7200-JO3S-M), Version 12.3(10a), RELEASE SOFTWARE (fc2) Copyright (c) 1986-2004 by cisco Systems, Inc.\r\n\r\nAdditional information about Cisco IOS release naming can be found at  http://www.cisco.com/warp/public/620/1.html [\"http://www.cisco.com/warp/public/620/1.html\"].\r\n\r\nOnly Cisco IOS images that contain the Crypto Feature Set contain the  vulnerable IPSec code. Customers that are not running an IOS image with crypto  support are not exposed to this vulnerability.\r\n\r\nCisco IOS feature set naming indicates that IOS images with crypto  support will have 'K8' or 'K9' in the feature designator field.\r\n\r\nFor example, the image in the example above, C7200-JO3S-M, does not  contain 'K8' or 'K9.' This indicates that this image does not support crypto,  and is therefore not vulnerable to the issues described in this Security  Advisory.\r\n\r\nThe following output was taken from a device that is running an IOS  image with crypto support:\r\n\r\n\r\n\nCisco Internetwork Operating System Software  IOS (tm) c6sup2_rp Software (c6sup2_rp-PK9S-M), Version 12.2(18)SXD5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2005 by cisco Systems, Inc. Compiled Fri 13-May-05 21:12 by ssearch\r\n\r\nSince the feature set designator (PK9S) contains 'K9', we can quickly  determine that this feature set contains crypto support.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other IOS trains are known to be affected.\r\n\r\nCisco IOS XR is not affected.\r\n\r\nCisco wireless LAN controllers without Crypto Accelerator  present.\r\n\r\nCisco Catalyst 6500 Series Wireless Services Module.\r\n\r\nCisco Wireless LAN Controller Module for Integrated Services  Routers.\r\n\r\nNo other Cisco products are currently known to be affected by these  vulnerabilities.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "IP Security, or IPSec, is a set of protocols standardized by the IETF  to support encrypted and/or authenticated transmission of IP packets. IPSec is  a protocol commonly used in Virtual Private Networks (VPNs).\r\n\r\nThe Internet Key Exchange (IKE) protocol is used to negotiate keying  material for IPSec Security Associations (SAs) and provides authentication of  peers.\r\n\r\nFor more complete information on IPSec, consult IETF Request For  Comments (RFCs) 2401:\r\n\r\n http://www.ietf.org/rfc/rfc2401.txt [\"http://www.ietf.org/rfc/rfc2401.txt\"]\r\n\r\nFor more complete information on IKE, consult IETF Request For Comments  (RFCs) 2408 and 2409:\r\n\r\n http://www.ietf.org/rfc/rfc2408.txt [\"http://www.ietf.org/rfc/rfc2408.txt\"]\r\n\r\n http://www.ietf.org/rfc/rfc2409.txt [\"http://www.ietf.org/rfc/rfc2409.txt\"]\r\n\r\nIPSec is used in two general cases.\r\n\r\nThe first case is LAN-to-LAN VPN operation in which two devices  negotiate an IPSec connection between them for the purposes of connecting two  remote LANs via an IPSec tunnel. In this case the devices negotiating the IPSec  connection generally have static IP addresses, and the IPSec tunnel is up as  long as there is traffic that needs to traverse the tunnel.\r\n\r\nThe second case is a Remote Access (RA) VPN which is typically used to  allow remote clients a connection to a secure network or service. A common  example of this is a user connecting to a corporate network while away from the  office. In this scenario, the remote user could be connecting from anywhere,  and their IP address is not static, but rather dynamically assigned via the  transport provider.\r\n\r\nIKE is not a requirement for the establishment of IPSec connections.  Depending on your requirements and the devices involved, it may be possible to  statically configure the SA information and disable IKE. This type of  configuration may not be possible in the case of RA VPNs due to the user's IP  address being unknown prior to the establishment of the IPSec connection. See  the Workarounds Section for more information.\r\n\r\nThe PROTOS test suite for IPSec is designed to test the design limits  of IPSec implementations by sending malformed IKE messages to the target  device.\r\n\r\nWhen receiving certain malformed packets, vulnerable Cisco devices may  reset, causing a temporary Denial of Service (DoS).\r\n\r\nThe vulnerabilities identified can be easily and repeatedly reproduced  with the use of the OUSPG \"PROTOS\" Test Suite for IKE. This suite is designed  to test the design limits of implementations that process IKE messages.\r\n     Additional Details for Cisco IOS\r\nThe vulnerabilities addressed by this Advisory were introduced in IOS  version 12.3(4)T, and are present in versions of 12.3T, 12.4, 12.4T, and  12.2SXD.\r\n\r\nPrior to IOS version 12.3(8)T, IKE was enabled by default, with no  crypto configuration needed for the IOS device to process IKE messages.\r\n\r\n12.2SXD versions of Cisco IOS have IKE enabled by default. To ensure  that IKE processing is disabled, enter the global configuration command  no crypto isakmp enable.\r\n\r\nAs of IOS version 12.3(8)T (which includes all 12.4-based versions),  crypto configuration is required to enable IKE message processing.\r\n\r\nIn order for an IOS device to process IKE packets, a crypto map must be  configured and applied to an interface.\r\n     Additional Details for Cisco PIX\r\nThe Cisco PIX does not enable IKE processing by default in any versions  of software.\r\n\r\nFor Cisco PIX versions prior to 7.0, use the following to determine if  IKE message processing is enabled:\r\n\r\n\r\n\nshow isakmp enable\r\n\r\nThe following example shows the output when IKE is enabled on the  outside interface:\r\n\r\n\r\n\npixfirewall(config)# show isakmp enable isakmp enable outside\r\n\r\nThe following example shows the output when IKE is not enabled on any  interface:\r\n\r\n\r\n\npixfirewall(config)# show isakmp pixfirewall(config)#\r\n\r\nFor Cisco PIX/ASA versions 7.0 and later, IKE is enabled only if the  following command is in the device configuration:\r\n\r\n\r\n\nisakmp enable\r\n      Additional Details for Cisco Wireless LAN controllers\r\nThe Cisco Wireless LAN controllers do not enable IKE message processing  by default in any versions of software and requires a Crypto Accelerator card  to be present in the controller to allow configuration of IPsec and IKE message  processing.\r\n\r\nTo determine if IKE message processing is enabled from the CLI prompt  issue the command:\r\n\r\n\r\nshow wlan <wlan identifier>\n\r\n\r\nIn a system where IKE message processing is enabled, IP Security field  will be marked \"Enabled\" and IKE configuration information will be present in  the show wlan <wlan ID> output.\r\n\r\nThe following example shows the output when IKE message processing is  enabled on WLAN 1:\r\n\r\n\r\n(WLC) >show wlan 1\n WLAN Identifier.................................. 1 Network Name (SSID).............................. mobile Status........................................... Enabled MAC Filtering.................................... Disabled Broadcast SSID................................... Enabled AAA Policy Override.............................. Disabled Network Access Control........................... Disabled Number of Active Clients......................... 1 Exclusionlist Timeout............................ 60 seconds Session Timeout.................................. Infinity Interface........................................ management DHCP Server...................................... 10.1.1.3 DHCP Address Assignment Required................. Enabled Quality of Service............................... Silver (best effort) WMM.............................................. Disabled 802.11e.......................................... Disabled Dot11-Phone Mode (7920).......................... Disabled Wired Protocol................................... None IPv6 Support..................................... Disabled Radio Policy..................................... All Security    802.11 Authentication:........................ Open System    Static WEP Keys............................... Disabled    802.1X........................................ Disabled    Wi-Fi Protected Access (WPA1)................. Disabled    Wi-Fi Protected Access v2 (WPA2).............. Disabled    IP Security................................... Enabled         Authentication:................................. HMAC-SHA-1         Encryption:..................................... 3DES         AH:............................................. Disabled (not changeable)         IKE Authentication:............................. Pre-Shared-Key              Pre-Shared Key Length:..................... 8 bytes         IKE Diffie Hellman Group:....................... DH Group 2 (1024 bits)         IKE Phase 1 Mode:............................... Aggressive         PFS Key Mode:................................... Disabled (not changeable)         IKE Timeout:.................................... 57600 seconds      IP Security Passthru.......................... Disabled    L2TP.......................................... Disabled    Web Based Authentication...................... Disabled    Web-Passthrough............................... Disabled    Auto Anchor................................... Disabled    Cranite Passthru.............................. Disabled    Fortress Passthru............................. Disabled\r\n\r\nIn a system where IKE message processing is not enabled, IP Security  field will be marked \"Disabled\" and IKE configuration information will not be  present in the show wlan <wlan ID> output.\r\n\r\nThe following example shows the output when IKE message processing is  not enabled on any WLAN interface:\r\n\r\n\r\n(WLC) >show wlan 1\n WLAN Identifier.................................. 1 Network Name (SSID).............................. Airespace1 Status........................................... Disabled MAC Filtering.................................... Disabled Broadcast SSID................................... Enabled AAA Policy Override.............................. Disabled Network Access Control........................... Disabled Number of Active Clients......................... 0 Exclusionlist Timeout............................ 60 seconds Session Timeout.................................. 1800 seconds Interface........................................ management DHCP Server...................................... Default Quality of Service............................... Silver (best effort) WMM.............................................. Disabled 802.11e.......................................... Disabled Dot11-Phone Mode (7920).......................... Disabled Wired Protocol................................... None IPv6 Support..................................... Disabled Radio Policy..................................... All Security    802.11 Authentication:........................ Open System    Static WEP Keys............................... Disabled    802.1X........................................ Enabled         Encryption:..................................... 104-bit WEP    Wi-Fi Protected Access (WPA1)................. Disabled    Wi-Fi Protected Access v2 (WPA2).............. Disabled    IP Security................................... Disabled    IP Security Passthru.......................... Disabled    L2TP.......................................... Disabled    Web Based Authentication...................... Disabled    Web-Passthrough............................... Disabled    Auto Anchor................................... Disabled    Cranite Passthru.............................. Disabled    Fortress Passthru............................. Disabled\r\n      Cisco Bug IDs\r\nBelow are the Cisco bug IDs and their corresponding product(s):\r\n\r\n   Cisco IOS versions based on 12.2SX, 12.3T, 12.4 and 12.4T - CSCed94829 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCed94829\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n\r\n   Cisco PIX Firewall versions up to but not including 6.3(5) - CSCei14171 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCei14171\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n\r\n   Cisco PIX Firewall/ASA versions up to but not including 7.0.1.4 - CSCei15053 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCei15053\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n\r\n   Cisco Firewall Services Module (FWSM) versions up to but not including 2.3(3) - CSCei19275 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCei19275\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n\r\n   Cisco VPN 3000 Series Concentrators versions up to but not including 4.1(7)H and 4.7(2)B - CSCsb15296 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsb15296\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n\r\n   Cisco MDS Series SanOS versions up to but not including 2.1(2) - CSCei46258 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCei46258\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n\r\n   Cisco Wireless LAN controllers up to and including 3.2.78.0 - CSCsc75655 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsc75655\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"].",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, also consult  http://www.cisco.com/go/psirt [\"http://www.cisco.com/go/psirt\"]  and any subsequent advisories to determine exposure and a complete upgrade  solution.\r\n\r\nIn all cases, customers should exercise caution to be certain the  devices to be upgraded contain sufficient memory and that current hardware and  software configurations will continue to be supported properly by the new  release. If the information is not clear, contact the Cisco Technical  Assistance Center (\"TAC\") or your contracted maintenance provider for  assistance.\r\n    Non-IOS Products\r\nAffected Product\r\n\r\nVulnerable Version\r\n\r\nFixed Version\r\n\r\nCisco PIX running pre-7.0 code\r\n\r\nUp to, but not including, 6.3(5)\r\n\r\n6.3(5) or later\r\n\r\nCisco PIX/ASA running 7.0 or later code\r\n\r\nUp to, but not including 7.0.1.4\r\n\r\n7.0.1.4 or later\r\n\r\nCisco FWSM for Catalyst 6500 or 7600\r\n\r\nUp to, but not including, 2.3(3)\r\n\r\n2.3(3) or later\r\n\r\nCisco VPN3000 Concentrators running pre 4.7 code\r\n\r\nUp to, but not including, 4.1(7)H\r\n\r\n4.1(7)H or later\r\n\r\nCisco VPN3000 Concentrators running 4.7 code\r\n\r\nUp to, but not including, 4.7(2)B\r\n\r\n4.7(2)B or later\r\n\r\nCisco MDS devices\r\n\r\nUp to, but not including, 2.1(2)\r\n\r\n2.1(2) or later\r\n\r\nCisco Wireless LAN controller\r\n\r\nUp to, and including 3.2.78.0\r\n\r\nVulnerable, contact TAC\r\n\r\n\r\n    Cisco IOS\r\nEach row of the Cisco IOS software table (below) describes a release  train and the platforms or products for which it is intended. If a given  release train is vulnerable, then the earliest possible releases that contain  the fix (the \"First Fixed Release\") and the anticipated date of availability  for each are listed in the \"Rebuild\" and \"Maintenance\" columns. A device  running a release in the given train that is earlier than the release in a  specific column (less than the First Fixed Release) is known to be vulnerable.  The release should be upgraded at least to the indicated release or a later  version (greater than or equal to the First Fixed Release label).\r\n\r\nFor further information on the terms \"Rebuild\" and \"Maintenance, \"  please consult the following URL:  http://www.cisco.com/warp/public/620/1.html [\"http://www.cisco.com/warp/public/620/1.html\"]\r\n\r\nFor Cisco IOS, the vulnerabilities were introduced with 12.3(4)T and  12.2(18)SXD. Previous versions of Cisco IOS are not affected.\r\n\r\nMajor Release\r\n\r\nAvailability of Repaired Releases\r\n\r\n Affected 12.2-Based Release\r\n\r\n Rebuild\r\n\r\n  Maintenance\r\n\r\n12.2SXD\r\n\r\n12.2(18)SXD7; available 13-Dec-05\r\n\r\n Affected 12.3-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.3T\r\n\r\n12.3(4)T12: Vulnerable; migrate to 12.4(5) or later\r\n\r\n12.3(11)T9; available 27-Dec-05\r\n\r\n12.3(14)T5\r\n\r\n12.3TPC\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3XD\r\n\r\nVulnerable; migrate to 12.3(14)T5 or later\r\n\r\n12.3XE\r\n\r\nVulnerable. For C820v and SOHO78, migrate to 12.4(5) or later. For all other platforms, contact TAC.\r\n\r\n12.3XF\r\n\r\nVulnerable; migrate to 12.3(14)T5 or later\r\n\r\n12.3XG\r\n\r\nVulnerable. For C828, C820v, and SOHO78, migrate to 12.4(5) or later. For all other platforms, contact TAC.\r\n\r\n12.3XH\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3XI\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3XJ\r\n\r\nVulnerable: migrate to 12.3(14)YX; available 22-Dec-05\r\n\r\n12.3XK\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3XM\r\n\r\nVulnerable; migrate to 12.3(14)T5 or later\r\n\r\n12.3XQ\r\n\r\nVulnerable; migrate to 12.4(5) or later\r\n\r\n12.3XR\r\n\r\nVulnerable. For C820v, C828, and SOHO78, migrate to 12.4(5) or later. For all other platforms, contact TAC.\r\n\r\n12.3XS\r\n\r\nVulnerable; migrate to 12.4(5) or later\r\n\r\n12.3XU\r\n\r\nVulnerable; migrate to 12.4(4)T or later\r\n\r\n12.3XW\r\n\r\nVulnerable: migrate to 12.3(14)YX; available 22-Dec-05\r\n\r\n12.3XX\r\n\r\nVulnerable; migrate to 12.4(5) or later\r\n\r\n12.3YA\r\n\r\nVulnerable. For C828, migrate to 12.4(5) or later. For all other platforms, contact TAC.\r\n\r\n12.3YD\r\n\r\nVulnerable; migrate to 12.4(4)T or later\r\n\r\n12.3YF\r\n\r\nVulnerable: migrate to 12.3(14)YX; available 22-Dec-05\r\n\r\n12.3YG\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3YH\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3YI\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3YJ\r\n\r\nVulnerable; migrates to 12.3(14)YQ4, available 1-Dec-05\r\n\r\n12.3YK\r\n\r\nVulnerable; migrate to 12.4(4)T\r\n\r\n12.3YM\r\n\r\n12.3(14)YM4\r\n\r\n12.3YQ\r\n\r\n12.3(14)YQ4; available 01-Dec-05\r\n\r\n12.3YS\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3YT\r\n\r\nVulnerable; migrate to 12.4(4)T\r\n\r\n12.3YU\r\n\r\nVulnerable; contact TAC\r\n\r\n12.3YX\r\n\r\nVulnerable; contact TAC\r\n\r\n Affected 12.4-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.4\r\n\r\n12.4(1c); available 14-Nov-05\r\n\r\n12.4(3b); available 12-Dec-05\r\n\r\n12.4(5)\r\n\r\n12.4T\r\n\r\n12.4(2)T2\r\n\r\n12.4(4)T\r\n\r\n12.4XA\r\n\r\nVulnerable; contact TAC\r\n\r\n12.4XB\r\n\r\n12.4(2)XB; available TBD",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The OUSPG Test Suite for IPSec can be used to trigger these  vulnerabilities.\r\n\r\nThese vulnerabilities were discovered in cooperation with CERT-FI and  NISCC. For their release information, please see  http://www.niscc.gov.uk/niscc/vulnAdv-en.html [\"http://www.cpni.gov.uk/\"].",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+			}
+		],
+		"title": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+		"tracking": {
+			"current_release_date": "2005-11-14T11:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:09:49+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20051114-ipsec",
+			"initial_release_date": "2005-11-14T11:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2005-11-14T11:00:00+00:00",
+					"number": "1.9.0",
+					"summary": "Updated the Vulnerable Products section. Updated the Products\n\t\t\t\tConfirmed Not Vulnerable section. Add the Additional Details for Cisco Wireless\n\t\t\t\tLAN controllers section. Updated the Cisco Bug IDs section. Updated the\n\t\t\t\tSoftware Versions and Fixes section Non-IOS products table."
+				}
+			],
+			"status": "final",
+			"version": "1.9.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco PIX Firewall Software",
+						"product": {
+							"name": "Cisco PIX Firewall Software ",
+							"product_id": "CSAFPID-2117"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco VPN 3000 Series Concentrator",
+						"product": {
+							"name": "Cisco VPN 3000 Series Concentrator ",
+							"product_id": "CSAFPID-2134"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Firewall Services Module (FWSM)",
+						"product": {
+							"name": "Cisco Firewall Services Module (FWSM) ",
+							"product_id": "CSAFPID-5176"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco MDS SAN-OS Software",
+						"product": {
+							"name": "Cisco MDS SAN-OS Software ",
+							"product_id": "CSAFPID-5348"
+						}
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0.1",
+										"product": {
+											"name": "7.0.1",
+											"product_id": "CSAFPID-54555"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.2.78.0",
+										"product": {
+											"name": "3.2.78.0",
+											"product_id": "CSAFPID-61937"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.1.105.0",
+										"product": {
+											"name": "3.1.105.0",
+											"product_id": "CSAFPID-61938"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.1"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Wireless LAN Controller (WLC)"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2005-3666",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3667",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3668",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3669",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3670",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3671",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3672",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3673",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3674",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3732",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3733",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3768",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3915",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-3985",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-4321",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-4564",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-4565",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-4566",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-4570",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2006-0718",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2006-1646",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCed94829",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-54555",
+					"CSAFPID-61937",
+					"CSAFPID-61938",
+					"CSAFPID-5176",
+					"CSAFPID-5348",
+					"CSAFPID-2117",
+					"CSAFPID-2134"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities Found by PROTOS IPSec Test Suite",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20051114-ipsec"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\nFor customers that use IPSec, but do not require IKE for connection  establishment, IPSec connection information may be able to be entered manually,  and IKE can be disabled, eliminating the exposure.\r\n\r\nNote: Due to the potential complexity of configuring IPSec information,  this is likely not a viable alternative for most customers, but is mentioned  here for completeness. Please consult your product documentation for further  information on static IPSec configuration.\r\n     Restricting IKE Messages\r\nIt is possible to mitigate the effects of this vulnerability by  restricting the devices that can send IKE traffic to your IPSec devices. Due to  the potential for IKE traffic to come from a spoofed source address, a  combination of Access Control Lists (ACLs) and anti-spoofing mechanisms will be  most effective.\r\n     Anti-spoofing\r\nThe Unicast Reverse Path Forwarding (Unicast RPF) feature helps to  mitigate problems that are caused by spoofed IP source addresses. It is  available on Cisco routers and firewalls. For further details, please refer  to:\r\n\r\n http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fothersf/scfrpf.htm [\"/en/US/docs/ios/12_2/security/configuration/guide/scfrpf.html\"]\r\n\r\nBy enabling Unicast Reverse Path Forwarding (uRPF), all spoofed packets  will be dropped at the first device. To enable uRPF, use the following  commands.\r\n\r\n\r\n\nrouter(config)# ip cef  router(config)# interface <interface #>  router(config-if)# ip verify unicast reverse-path\r\n      Infrastructure Access Control Lists\r\n Although it is often difficult to block traffic transiting your  network, it is possible to identify traffic which should never be allowed to  target your infrastructure devices and block that traffic at the border of your  network. Infrastructure ACLs are considered a network security best practice  and should be considered as a long-term addition to good network security as  well as a workaround for this specific vulnerability. The white paper  \"Protecting Your Core: Infrastructure Protection Access Control Lists\" presents  guidelines and recommended deployment techniques for infrastructure protection  ACLs: http://www.cisco.com/warp/public/707/iacl.html [\"/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"]."
+				}
+			],
+			"title": "Multiple Vendors ISAKMP/IKE Implementation Multiple Vulnerabilities"
+		}
+	]
+}

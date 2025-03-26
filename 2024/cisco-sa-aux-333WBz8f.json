@@ -1,0 +1,4688 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in auxiliary asynchronous port (AUX) functions of Cisco IOS XE Software could allow an authenticated, local attacker to cause an affected device to reload or stop responding.\r\n\r\nThis vulnerability is due to the incorrect handling of specific ingress traffic when flow control hardware is enabled on the AUX port. An attacker could exploit this vulnerability by reverse telnetting to the AUX port and sending specific data after connecting. A successful exploit could allow the attacker to cause the device to reset or stop responding, resulting in a denial of service (DoS) condition.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the March 2024 release of the Cisco IOS and IOS XE Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: March 2024 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75056\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco platforms if they were running a vulnerable release of Cisco IOS XE Software and the following conditions were true:\r\n\r\nThe device has an AUX port.\r\nThe AUX port is configured with flowcontrol hardware.\r\nThere is no hardware attached to the AUX port or the attached modem has signaled for flow control to be off and does not turn it on again.\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory.\r\n\r\nDetermine the AUX Port Configuration\r\n\r\nTo determine whether the device has an AUX port and whether flowcontrol hardware is enabled, log in to the system and use the show running-config | section aux 0 CLI command to check for the presence of the flowcontrol hardware and transport input all|telnet commands. If these are present, as shown in the following example, the device is considered vulnerable if either no hardware is attached or if the attached modem has signaled for flow control to be off and does not turn it back on:\r\n\r\n\r\nRouter#show running-config | section line aux 0\r\nline aux 0\r\n transport input all\r\n transport output none\r\n flowcontrol hardware\r\nRouter#\r\n\r\nIf the output does not contain flowcontrol hardware or is blank, as shown in the following example, the device is not affected by this vulnerability:\r\n\r\n\r\nSwitch#show running-config | section line aux 0\r\nSwitch#",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XR Software\r\nMeraki products\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability.\r\n\r\nIf the AUX port is not being used, it should be disabled, as shown in the following example:\r\n\r\n\r\nRouter# show running-config | section line aux 0\r\nline aux 0\r\ntransport input none\r\ntransport output none\r\nno exec\r\nRouter#\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n        Cisco IOS and IOS XE Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco IOS and IOS XE Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to determine whether a release is affected by any Cisco Security Advisory. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—only this advisory, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or all advisories.\r\nEnter a release number—for example, 15.9(3)M2 or 17.3.3.\r\nClick Check.\r\n\r\n       Only this advisory  All Critical and High advisories  All advisories",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XE Software Auxiliary Asynchronous Port Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-aux-333WBz8f"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: March 2024 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75056"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XE Software Auxiliary Asynchronous Port Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-03-27T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:30:05+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-aux-333WBz8f",
+			"initial_release_date": "2024-03-27T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-03-27T15:55:23+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.7.0S",
+										"product": {
+											"name": "3.7.0S",
+											"product_id": "CSAFPID-184480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1S",
+										"product": {
+											"name": "3.7.1S",
+											"product_id": "CSAFPID-184481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2S",
+										"product": {
+											"name": "3.7.2S",
+											"product_id": "CSAFPID-194730"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.3S",
+										"product": {
+											"name": "3.7.3S",
+											"product_id": "CSAFPID-194731"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.4S",
+										"product": {
+											"name": "3.7.4S",
+											"product_id": "CSAFPID-194732"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.5S",
+										"product": {
+											"name": "3.7.5S",
+											"product_id": "CSAFPID-202541"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.6S",
+										"product": {
+											"name": "3.7.6S",
+											"product_id": "CSAFPID-202542"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.7S",
+										"product": {
+											"name": "3.7.7S",
+											"product_id": "CSAFPID-206188"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.8S",
+										"product": {
+											"name": "3.7.8S",
+											"product_id": "CSAFPID-213580"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.4aS",
+										"product": {
+											"name": "3.7.4aS",
+											"product_id": "CSAFPID-213798"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.2tS",
+										"product": {
+											"name": "3.7.2tS",
+											"product_id": "CSAFPID-213799"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.0xbS",
+										"product": {
+											"name": "3.7.0xbS",
+											"product_id": "CSAFPID-213848"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.0bS",
+										"product": {
+											"name": "3.7.0bS",
+											"product_id": "CSAFPID-213955"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.0xaS",
+										"product": {
+											"name": "3.7.0xaS",
+											"product_id": "CSAFPID-213956"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1aS",
+										"product": {
+											"name": "3.7.1aS",
+											"product_id": "CSAFPID-213957"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.7S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.8.0S",
+										"product": {
+											"name": "3.8.0S",
+											"product_id": "CSAFPID-194735"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.1S",
+										"product": {
+											"name": "3.8.1S",
+											"product_id": "CSAFPID-194736"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.8.2S",
+										"product": {
+											"name": "3.8.2S",
+											"product_id": "CSAFPID-194737"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.8S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.9.1S",
+										"product": {
+											"name": "3.9.1S",
+											"product_id": "CSAFPID-194842"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.0S",
+										"product": {
+											"name": "3.9.0S",
+											"product_id": "CSAFPID-194843"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.2S",
+										"product": {
+											"name": "3.9.2S",
+											"product_id": "CSAFPID-202558"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.0xaS",
+										"product": {
+											"name": "3.9.0xaS",
+											"product_id": "CSAFPID-213815"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.1aS",
+										"product": {
+											"name": "3.9.1aS",
+											"product_id": "CSAFPID-213816"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.9.0aS",
+										"product": {
+											"name": "3.9.0aS",
+											"product_id": "CSAFPID-213825"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.9S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.2.0SE",
+										"product": {
+											"name": "3.2.0SE",
+											"product_id": "CSAFPID-196216"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.2.1SE",
+										"product": {
+											"name": "3.2.1SE",
+											"product_id": "CSAFPID-196221"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.2.2SE",
+										"product": {
+											"name": "3.2.2SE",
+											"product_id": "CSAFPID-196222"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.2.3SE",
+										"product": {
+											"name": "3.2.3SE",
+											"product_id": "CSAFPID-196223"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.2SE"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0SE",
+										"product": {
+											"name": "3.3.0SE",
+											"product_id": "CSAFPID-196218"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.1SE",
+										"product": {
+											"name": "3.3.1SE",
+											"product_id": "CSAFPID-196925"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.2SE",
+										"product": {
+											"name": "3.3.2SE",
+											"product_id": "CSAFPID-206200"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.3SE",
+										"product": {
+											"name": "3.3.3SE",
+											"product_id": "CSAFPID-206201"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.4SE",
+										"product": {
+											"name": "3.3.4SE",
+											"product_id": "CSAFPID-206202"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.5SE",
+										"product": {
+											"name": "3.3.5SE",
+											"product_id": "CSAFPID-206203"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3SE"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.10.0S",
+										"product": {
+											"name": "3.10.0S",
+											"product_id": "CSAFPID-198123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1S",
+										"product": {
+											"name": "3.10.1S",
+											"product_id": "CSAFPID-198124"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2S",
+										"product": {
+											"name": "3.10.2S",
+											"product_id": "CSAFPID-198125"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.3S",
+										"product": {
+											"name": "3.10.3S",
+											"product_id": "CSAFPID-202539"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.4S",
+										"product": {
+											"name": "3.10.4S",
+											"product_id": "CSAFPID-202540"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.5S",
+										"product": {
+											"name": "3.10.5S",
+											"product_id": "CSAFPID-206159"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.6S",
+										"product": {
+											"name": "3.10.6S",
+											"product_id": "CSAFPID-206189"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1xcS",
+										"product": {
+											"name": "3.10.1xcS",
+											"product_id": "CSAFPID-213469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2aS",
+										"product": {
+											"name": "3.10.2aS",
+											"product_id": "CSAFPID-213470"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.2tS",
+										"product": {
+											"name": "3.10.2tS",
+											"product_id": "CSAFPID-213471"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.7S",
+										"product": {
+											"name": "3.10.7S",
+											"product_id": "CSAFPID-213472"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.1xbS",
+										"product": {
+											"name": "3.10.1xbS",
+											"product_id": "CSAFPID-213642"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.8S",
+										"product": {
+											"name": "3.10.8S",
+											"product_id": "CSAFPID-217260"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.8aS",
+										"product": {
+											"name": "3.10.8aS",
+											"product_id": "CSAFPID-220687"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.9S",
+										"product": {
+											"name": "3.10.9S",
+											"product_id": "CSAFPID-225337"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.10.10S",
+										"product": {
+											"name": "3.10.10S",
+											"product_id": "CSAFPID-227922"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.10S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.11.1S",
+										"product": {
+											"name": "3.11.1S",
+											"product_id": "CSAFPID-200768"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.2S",
+										"product": {
+											"name": "3.11.2S",
+											"product_id": "CSAFPID-200771"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.0S",
+										"product": {
+											"name": "3.11.0S",
+											"product_id": "CSAFPID-203353"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.3S",
+										"product": {
+											"name": "3.11.3S",
+											"product_id": "CSAFPID-206160"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.11.4S",
+										"product": {
+											"name": "3.11.4S",
+											"product_id": "CSAFPID-206190"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.11S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.12.0S",
+										"product": {
+											"name": "3.12.0S",
+											"product_id": "CSAFPID-200770"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.1S",
+										"product": {
+											"name": "3.12.1S",
+											"product_id": "CSAFPID-206161"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.2S",
+										"product": {
+											"name": "3.12.2S",
+											"product_id": "CSAFPID-206162"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.3S",
+										"product": {
+											"name": "3.12.3S",
+											"product_id": "CSAFPID-206176"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.0aS",
+										"product": {
+											"name": "3.12.0aS",
+											"product_id": "CSAFPID-213473"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.12.4S",
+										"product": {
+											"name": "3.12.4S",
+											"product_id": "CSAFPID-213474"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.12S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.13.0S",
+										"product": {
+											"name": "3.13.0S",
+											"product_id": "CSAFPID-201495"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.1S",
+										"product": {
+											"name": "3.13.1S",
+											"product_id": "CSAFPID-206174"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.2S",
+										"product": {
+											"name": "3.13.2S",
+											"product_id": "CSAFPID-206175"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.3S",
+										"product": {
+											"name": "3.13.3S",
+											"product_id": "CSAFPID-210078"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.4S",
+										"product": {
+											"name": "3.13.4S",
+											"product_id": "CSAFPID-213475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.5S",
+										"product": {
+											"name": "3.13.5S",
+											"product_id": "CSAFPID-213557"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.2aS",
+										"product": {
+											"name": "3.13.2aS",
+											"product_id": "CSAFPID-213661"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.0aS",
+										"product": {
+											"name": "3.13.0aS",
+											"product_id": "CSAFPID-213781"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.5aS",
+										"product": {
+											"name": "3.13.5aS",
+											"product_id": "CSAFPID-217261"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.6S",
+										"product": {
+											"name": "3.13.6S",
+											"product_id": "CSAFPID-217262"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.7S",
+										"product": {
+											"name": "3.13.7S",
+											"product_id": "CSAFPID-217263"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.6aS",
+										"product": {
+											"name": "3.13.6aS",
+											"product_id": "CSAFPID-220688"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.6bS",
+										"product": {
+											"name": "3.13.6bS",
+											"product_id": "CSAFPID-225568"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.7aS",
+										"product": {
+											"name": "3.13.7aS",
+											"product_id": "CSAFPID-225569"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.8S",
+										"product": {
+											"name": "3.13.8S",
+											"product_id": "CSAFPID-227923"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.9S",
+										"product": {
+											"name": "3.13.9S",
+											"product_id": "CSAFPID-231454"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.13.10S",
+										"product": {
+											"name": "3.13.10S",
+											"product_id": "CSAFPID-234928"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.13S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.6.0aE",
+										"product": {
+											"name": "3.6.0aE",
+											"product_id": "CSAFPID-210073"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.2aE",
+										"product": {
+											"name": "3.6.2aE",
+											"product_id": "CSAFPID-210075"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.2E",
+										"product": {
+											"name": "3.6.2E",
+											"product_id": "CSAFPID-210264"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.5bE",
+										"product": {
+											"name": "3.6.5bE",
+											"product_id": "CSAFPID-222435"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.7aE",
+										"product": {
+											"name": "3.6.7aE",
+											"product_id": "CSAFPID-230240"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.7bE",
+										"product": {
+											"name": "3.6.7bE",
+											"product_id": "CSAFPID-230998"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.9E",
+										"product": {
+											"name": "3.6.9E",
+											"product_id": "CSAFPID-232766"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.10E",
+										"product": {
+											"name": "3.6.10E",
+											"product_id": "CSAFPID-244686"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.6.9aE",
+										"product": {
+											"name": "3.6.9aE",
+											"product_id": "CSAFPID-247573"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.6E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.14.0S",
+										"product": {
+											"name": "3.14.0S",
+											"product_id": "CSAFPID-206178"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.14.1S",
+										"product": {
+											"name": "3.14.1S",
+											"product_id": "CSAFPID-206181"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.14.2S",
+										"product": {
+											"name": "3.14.2S",
+											"product_id": "CSAFPID-206191"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.14.3S",
+										"product": {
+											"name": "3.14.3S",
+											"product_id": "CSAFPID-206192"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.14.4S",
+										"product": {
+											"name": "3.14.4S",
+											"product_id": "CSAFPID-206193"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.14S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.15.0S",
+										"product": {
+											"name": "3.15.0S",
+											"product_id": "CSAFPID-206180"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.15.1S",
+										"product": {
+											"name": "3.15.1S",
+											"product_id": "CSAFPID-210079"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.15.2S",
+										"product": {
+											"name": "3.15.2S",
+											"product_id": "CSAFPID-212268"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.15.1cS",
+										"product": {
+											"name": "3.15.1cS",
+											"product_id": "CSAFPID-213700"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.15.3S",
+										"product": {
+											"name": "3.15.3S",
+											"product_id": "CSAFPID-213776"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.15.4S",
+										"product": {
+											"name": "3.15.4S",
+											"product_id": "CSAFPID-217264"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.15S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0SQ",
+										"product": {
+											"name": "3.3.0SQ",
+											"product_id": "CSAFPID-206205"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.1SQ",
+										"product": {
+											"name": "3.3.1SQ",
+											"product_id": "CSAFPID-206206"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3SQ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.4.0SQ",
+										"product": {
+											"name": "3.4.0SQ",
+											"product_id": "CSAFPID-206208"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.4.1SQ",
+										"product": {
+											"name": "3.4.1SQ",
+											"product_id": "CSAFPID-206209"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.4SQ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.5.0SQ",
+										"product": {
+											"name": "3.5.0SQ",
+											"product_id": "CSAFPID-210072"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.1SQ",
+										"product": {
+											"name": "3.5.1SQ",
+											"product_id": "CSAFPID-213786"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.2SQ",
+										"product": {
+											"name": "3.5.2SQ",
+											"product_id": "CSAFPID-213787"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.3SQ",
+										"product": {
+											"name": "3.5.3SQ",
+											"product_id": "CSAFPID-217278"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.4SQ",
+										"product": {
+											"name": "3.5.4SQ",
+											"product_id": "CSAFPID-220671"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.5SQ",
+										"product": {
+											"name": "3.5.5SQ",
+											"product_id": "CSAFPID-225360"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.6SQ",
+										"product": {
+											"name": "3.5.6SQ",
+											"product_id": "CSAFPID-226037"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.7SQ",
+										"product": {
+											"name": "3.5.7SQ",
+											"product_id": "CSAFPID-227513"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.8SQ",
+										"product": {
+											"name": "3.5.8SQ",
+											"product_id": "CSAFPID-232851"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.5SQ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.16.0S",
+										"product": {
+											"name": "3.16.0S",
+											"product_id": "CSAFPID-210081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.1S",
+										"product": {
+											"name": "3.16.1S",
+											"product_id": "CSAFPID-212408"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.0aS",
+										"product": {
+											"name": "3.16.0aS",
+											"product_id": "CSAFPID-213476"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.1aS",
+										"product": {
+											"name": "3.16.1aS",
+											"product_id": "CSAFPID-213477"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.2S",
+										"product": {
+											"name": "3.16.2S",
+											"product_id": "CSAFPID-213478"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.2aS",
+										"product": {
+											"name": "3.16.2aS",
+											"product_id": "CSAFPID-213635"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.0bS",
+										"product": {
+											"name": "3.16.0bS",
+											"product_id": "CSAFPID-213777"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.0cS",
+										"product": {
+											"name": "3.16.0cS",
+											"product_id": "CSAFPID-213778"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.3S",
+										"product": {
+											"name": "3.16.3S",
+											"product_id": "CSAFPID-213779"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.2bS",
+										"product": {
+											"name": "3.16.2bS",
+											"product_id": "CSAFPID-217265"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.3aS",
+										"product": {
+											"name": "3.16.3aS",
+											"product_id": "CSAFPID-217266"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4S",
+										"product": {
+											"name": "3.16.4S",
+											"product_id": "CSAFPID-217267"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4aS",
+										"product": {
+											"name": "3.16.4aS",
+											"product_id": "CSAFPID-220993"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4bS",
+										"product": {
+											"name": "3.16.4bS",
+											"product_id": "CSAFPID-222257"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4gS",
+										"product": {
+											"name": "3.16.4gS",
+											"product_id": "CSAFPID-222693"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.5S",
+										"product": {
+											"name": "3.16.5S",
+											"product_id": "CSAFPID-222694"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4cS",
+										"product": {
+											"name": "3.16.4cS",
+											"product_id": "CSAFPID-222925"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4dS",
+										"product": {
+											"name": "3.16.4dS",
+											"product_id": "CSAFPID-223252"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.4eS",
+										"product": {
+											"name": "3.16.4eS",
+											"product_id": "CSAFPID-224702"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.6S",
+										"product": {
+											"name": "3.16.6S",
+											"product_id": "CSAFPID-225099"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.5aS",
+										"product": {
+											"name": "3.16.5aS",
+											"product_id": "CSAFPID-225466"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.5bS",
+										"product": {
+											"name": "3.16.5bS",
+											"product_id": "CSAFPID-225832"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.7S",
+										"product": {
+											"name": "3.16.7S",
+											"product_id": "CSAFPID-228690"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.6bS",
+										"product": {
+											"name": "3.16.6bS",
+											"product_id": "CSAFPID-230303"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.7aS",
+										"product": {
+											"name": "3.16.7aS",
+											"product_id": "CSAFPID-233141"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.7bS",
+										"product": {
+											"name": "3.16.7bS",
+											"product_id": "CSAFPID-233447"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.8S",
+										"product": {
+											"name": "3.16.8S",
+											"product_id": "CSAFPID-238937"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.9S",
+										"product": {
+											"name": "3.16.9S",
+											"product_id": "CSAFPID-244912"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.10S",
+										"product": {
+											"name": "3.16.10S",
+											"product_id": "CSAFPID-258406"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.10aS",
+										"product": {
+											"name": "3.16.10aS",
+											"product_id": "CSAFPID-278032"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.16.10bS",
+										"product": {
+											"name": "3.16.10bS",
+											"product_id": "CSAFPID-280800"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.16S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.17.0S",
+										"product": {
+											"name": "3.17.0S",
+											"product_id": "CSAFPID-212411"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.17.1S",
+										"product": {
+											"name": "3.17.1S",
+											"product_id": "CSAFPID-212412"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.17.2S",
+										"product": {
+											"name": "3.17.2S",
+											"product_id": "CSAFPID-217234"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.17.1aS",
+										"product": {
+											"name": "3.17.1aS",
+											"product_id": "CSAFPID-217268"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.17.3S",
+										"product": {
+											"name": "3.17.3S",
+											"product_id": "CSAFPID-222942"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.17.4S",
+										"product": {
+											"name": "3.17.4S",
+											"product_id": "CSAFPID-227556"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.17S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.1.1",
+										"product": {
+											"name": "16.1.1",
+											"product_id": "CSAFPID-212436"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.1.2",
+										"product": {
+											"name": "16.1.2",
+											"product_id": "CSAFPID-213100"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.1.3",
+										"product": {
+											"name": "16.1.3",
+											"product_id": "CSAFPID-214993"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.2.1",
+										"product": {
+											"name": "16.2.1",
+											"product_id": "CSAFPID-213809"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.2.2",
+										"product": {
+											"name": "16.2.2",
+											"product_id": "CSAFPID-217253"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.3.1",
+										"product": {
+											"name": "16.3.1",
+											"product_id": "CSAFPID-213960"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.2",
+										"product": {
+											"name": "16.3.2",
+											"product_id": "CSAFPID-217255"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.3",
+										"product": {
+											"name": "16.3.3",
+											"product_id": "CSAFPID-217256"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.1a",
+										"product": {
+											"name": "16.3.1a",
+											"product_id": "CSAFPID-220802"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.4",
+										"product": {
+											"name": "16.3.4",
+											"product_id": "CSAFPID-222711"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.5",
+										"product": {
+											"name": "16.3.5",
+											"product_id": "CSAFPID-229124"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.5b",
+										"product": {
+											"name": "16.3.5b",
+											"product_id": "CSAFPID-231187"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.6",
+										"product": {
+											"name": "16.3.6",
+											"product_id": "CSAFPID-231667"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.7",
+										"product": {
+											"name": "16.3.7",
+											"product_id": "CSAFPID-239264"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.8",
+										"product": {
+											"name": "16.3.8",
+											"product_id": "CSAFPID-251165"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.9",
+										"product": {
+											"name": "16.3.9",
+											"product_id": "CSAFPID-262389"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.10",
+										"product": {
+											"name": "16.3.10",
+											"product_id": "CSAFPID-273563"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.3.11",
+										"product": {
+											"name": "16.3.11",
+											"product_id": "CSAFPID-278402"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.4.1",
+										"product": {
+											"name": "16.4.1",
+											"product_id": "CSAFPID-214051"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.4.2",
+										"product": {
+											"name": "16.4.2",
+											"product_id": "CSAFPID-217257"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.4.3",
+										"product": {
+											"name": "16.4.3",
+											"product_id": "CSAFPID-231390"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.5.1",
+										"product": {
+											"name": "16.5.1",
+											"product_id": "CSAFPID-217259"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.5.1a",
+										"product": {
+											"name": "16.5.1a",
+											"product_id": "CSAFPID-225784"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.5.1b",
+										"product": {
+											"name": "16.5.1b",
+											"product_id": "CSAFPID-226330"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.5.2",
+										"product": {
+											"name": "16.5.2",
+											"product_id": "CSAFPID-229187"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.5.3",
+										"product": {
+											"name": "16.5.3",
+											"product_id": "CSAFPID-232461"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.5"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.18.0aS",
+										"product": {
+											"name": "3.18.0aS",
+											"product_id": "CSAFPID-217270"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.0S",
+										"product": {
+											"name": "3.18.0S",
+											"product_id": "CSAFPID-217271"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1S",
+										"product": {
+											"name": "3.18.1S",
+											"product_id": "CSAFPID-217272"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.2S",
+										"product": {
+											"name": "3.18.2S",
+											"product_id": "CSAFPID-217273"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.3S",
+										"product": {
+											"name": "3.18.3S",
+											"product_id": "CSAFPID-226078"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.4S",
+										"product": {
+											"name": "3.18.4S",
+											"product_id": "CSAFPID-228193"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.18S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.18.0SP",
+										"product": {
+											"name": "3.18.0SP",
+											"product_id": "CSAFPID-217276"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1SP",
+										"product": {
+											"name": "3.18.1SP",
+											"product_id": "CSAFPID-220517"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1aSP",
+										"product": {
+											"name": "3.18.1aSP",
+											"product_id": "CSAFPID-223018"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1gSP",
+										"product": {
+											"name": "3.18.1gSP",
+											"product_id": "CSAFPID-223019"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1bSP",
+										"product": {
+											"name": "3.18.1bSP",
+											"product_id": "CSAFPID-223241"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1cSP",
+										"product": {
+											"name": "3.18.1cSP",
+											"product_id": "CSAFPID-224424"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.2SP",
+										"product": {
+											"name": "3.18.2SP",
+											"product_id": "CSAFPID-225168"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1hSP",
+										"product": {
+											"name": "3.18.1hSP",
+											"product_id": "CSAFPID-225359"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.2aSP",
+										"product": {
+											"name": "3.18.2aSP",
+											"product_id": "CSAFPID-226160"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.1iSP",
+										"product": {
+											"name": "3.18.1iSP",
+											"product_id": "CSAFPID-226354"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.3SP",
+										"product": {
+											"name": "3.18.3SP",
+											"product_id": "CSAFPID-228194"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.4SP",
+										"product": {
+											"name": "3.18.4SP",
+											"product_id": "CSAFPID-230301"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.3aSP",
+										"product": {
+											"name": "3.18.3aSP",
+											"product_id": "CSAFPID-230302"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.3bSP",
+										"product": {
+											"name": "3.18.3bSP",
+											"product_id": "CSAFPID-231826"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.5SP",
+										"product": {
+											"name": "3.18.5SP",
+											"product_id": "CSAFPID-237332"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.6SP",
+										"product": {
+											"name": "3.18.6SP",
+											"product_id": "CSAFPID-246386"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.7SP",
+										"product": {
+											"name": "3.18.7SP",
+											"product_id": "CSAFPID-264488"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.8aSP",
+										"product": {
+											"name": "3.18.8aSP",
+											"product_id": "CSAFPID-277904"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.18.9SP",
+										"product": {
+											"name": "3.18.9SP",
+											"product_id": "CSAFPID-278780"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.18SP"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.6.1",
+										"product": {
+											"name": "16.6.1",
+											"product_id": "CSAFPID-218901"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.2",
+										"product": {
+											"name": "16.6.2",
+											"product_id": "CSAFPID-228706"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.3",
+										"product": {
+											"name": "16.6.3",
+											"product_id": "CSAFPID-231682"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.4",
+										"product": {
+											"name": "16.6.4",
+											"product_id": "CSAFPID-233155"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.5",
+										"product": {
+											"name": "16.6.5",
+											"product_id": "CSAFPID-241736"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.4s",
+										"product": {
+											"name": "16.6.4s",
+											"product_id": "CSAFPID-244900"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.4a",
+										"product": {
+											"name": "16.6.4a",
+											"product_id": "CSAFPID-247629"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.5a",
+										"product": {
+											"name": "16.6.5a",
+											"product_id": "CSAFPID-252235"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.6",
+										"product": {
+											"name": "16.6.6",
+											"product_id": "CSAFPID-252914"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.5b",
+										"product": {
+											"name": "16.6.5b",
+											"product_id": "CSAFPID-258170"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.7",
+										"product": {
+											"name": "16.6.7",
+											"product_id": "CSAFPID-261241"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.7a",
+										"product": {
+											"name": "16.6.7a",
+											"product_id": "CSAFPID-270097"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.8",
+										"product": {
+											"name": "16.6.8",
+											"product_id": "CSAFPID-277148"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.9",
+										"product": {
+											"name": "16.6.9",
+											"product_id": "CSAFPID-280801"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.6.10",
+										"product": {
+											"name": "16.6.10",
+											"product_id": "CSAFPID-283835"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.6"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.7.1",
+										"product": {
+											"name": "16.7.1",
+											"product_id": "CSAFPID-218903"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.7.1a",
+										"product": {
+											"name": "16.7.1a",
+											"product_id": "CSAFPID-231389"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.7.1b",
+										"product": {
+											"name": "16.7.1b",
+											"product_id": "CSAFPID-232767"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.7.2",
+										"product": {
+											"name": "16.7.2",
+											"product_id": "CSAFPID-236837"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.7.3",
+										"product": {
+											"name": "16.7.3",
+											"product_id": "CSAFPID-244070"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.7.4",
+										"product": {
+											"name": "16.7.4",
+											"product_id": "CSAFPID-258388"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.7"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.8.1",
+										"product": {
+											"name": "16.8.1",
+											"product_id": "CSAFPID-218905"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.1a",
+										"product": {
+											"name": "16.8.1a",
+											"product_id": "CSAFPID-235307"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.1b",
+										"product": {
+											"name": "16.8.1b",
+											"product_id": "CSAFPID-235858"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.1s",
+										"product": {
+											"name": "16.8.1s",
+											"product_id": "CSAFPID-236834"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.1c",
+										"product": {
+											"name": "16.8.1c",
+											"product_id": "CSAFPID-237460"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.1d",
+										"product": {
+											"name": "16.8.1d",
+											"product_id": "CSAFPID-242834"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.2",
+										"product": {
+											"name": "16.8.2",
+											"product_id": "CSAFPID-244071"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.1e",
+										"product": {
+											"name": "16.8.1e",
+											"product_id": "CSAFPID-249171"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.8.3",
+										"product": {
+											"name": "16.8.3",
+											"product_id": "CSAFPID-257984"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.8"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.9.1",
+										"product": {
+											"name": "16.9.1",
+											"product_id": "CSAFPID-225856"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.2",
+										"product": {
+											"name": "16.9.2",
+											"product_id": "CSAFPID-232008"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.1a",
+										"product": {
+											"name": "16.9.1a",
+											"product_id": "CSAFPID-242308"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.1b",
+										"product": {
+											"name": "16.9.1b",
+											"product_id": "CSAFPID-243362"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.1s",
+										"product": {
+											"name": "16.9.1s",
+											"product_id": "CSAFPID-244530"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.1c",
+										"product": {
+											"name": "16.9.1c",
+											"product_id": "CSAFPID-245375"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.1d",
+										"product": {
+											"name": "16.9.1d",
+											"product_id": "CSAFPID-248242"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.3",
+										"product": {
+											"name": "16.9.3",
+											"product_id": "CSAFPID-251075"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.2a",
+										"product": {
+											"name": "16.9.2a",
+											"product_id": "CSAFPID-251166"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.2s",
+										"product": {
+											"name": "16.9.2s",
+											"product_id": "CSAFPID-252272"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.3h",
+										"product": {
+											"name": "16.9.3h",
+											"product_id": "CSAFPID-258229"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.4",
+										"product": {
+											"name": "16.9.4",
+											"product_id": "CSAFPID-262390"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.3s",
+										"product": {
+											"name": "16.9.3s",
+											"product_id": "CSAFPID-262549"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.3a",
+										"product": {
+											"name": "16.9.3a",
+											"product_id": "CSAFPID-263804"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.4c",
+										"product": {
+											"name": "16.9.4c",
+											"product_id": "CSAFPID-268921"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.5",
+										"product": {
+											"name": "16.9.5",
+											"product_id": "CSAFPID-271798"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.5f",
+										"product": {
+											"name": "16.9.5f",
+											"product_id": "CSAFPID-276837"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.6",
+										"product": {
+											"name": "16.9.6",
+											"product_id": "CSAFPID-277945"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.7",
+										"product": {
+											"name": "16.9.7",
+											"product_id": "CSAFPID-280651"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.8",
+										"product": {
+											"name": "16.9.8",
+											"product_id": "CSAFPID-280938"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.8a",
+										"product": {
+											"name": "16.9.8a",
+											"product_id": "CSAFPID-290562"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.9.8b",
+										"product": {
+											"name": "16.9.8b",
+											"product_id": "CSAFPID-290669"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.9"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.10.1",
+										"product": {
+											"name": "16.10.1",
+											"product_id": "CSAFPID-225858"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1a",
+										"product": {
+											"name": "16.10.1a",
+											"product_id": "CSAFPID-250629"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1b",
+										"product": {
+											"name": "16.10.1b",
+											"product_id": "CSAFPID-252045"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1s",
+										"product": {
+											"name": "16.10.1s",
+											"product_id": "CSAFPID-252913"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1c",
+										"product": {
+											"name": "16.10.1c",
+											"product_id": "CSAFPID-254688"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1e",
+										"product": {
+											"name": "16.10.1e",
+											"product_id": "CSAFPID-257955"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1d",
+										"product": {
+											"name": "16.10.1d",
+											"product_id": "CSAFPID-258900"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.2",
+										"product": {
+											"name": "16.10.2",
+											"product_id": "CSAFPID-260917"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1f",
+										"product": {
+											"name": "16.10.1f",
+											"product_id": "CSAFPID-262595"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.1g",
+										"product": {
+											"name": "16.10.1g",
+											"product_id": "CSAFPID-266259"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.10.3",
+										"product": {
+											"name": "16.10.3",
+											"product_id": "CSAFPID-273112"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.10"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.11.1",
+										"product": {
+											"name": "16.11.1",
+											"product_id": "CSAFPID-227918"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.11.1a",
+										"product": {
+											"name": "16.11.1a",
+											"product_id": "CSAFPID-252271"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.11.1b",
+										"product": {
+											"name": "16.11.1b",
+											"product_id": "CSAFPID-260741"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.11.2",
+										"product": {
+											"name": "16.11.2",
+											"product_id": "CSAFPID-261240"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.11.1s",
+										"product": {
+											"name": "16.11.1s",
+											"product_id": "CSAFPID-261465"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.11.1c",
+										"product": {
+											"name": "16.11.1c",
+											"product_id": "CSAFPID-264096"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.11"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "16.12.1",
+										"product": {
+											"name": "16.12.1",
+											"product_id": "CSAFPID-227920"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1s",
+										"product": {
+											"name": "16.12.1s",
+											"product_id": "CSAFPID-265735"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1a",
+										"product": {
+											"name": "16.12.1a",
+											"product_id": "CSAFPID-265841"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1c",
+										"product": {
+											"name": "16.12.1c",
+											"product_id": "CSAFPID-267110"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1w",
+										"product": {
+											"name": "16.12.1w",
+											"product_id": "CSAFPID-267240"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.2",
+										"product": {
+											"name": "16.12.2",
+											"product_id": "CSAFPID-267605"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1y",
+										"product": {
+											"name": "16.12.1y",
+											"product_id": "CSAFPID-271938"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.2a",
+										"product": {
+											"name": "16.12.2a",
+											"product_id": "CSAFPID-272047"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.3",
+										"product": {
+											"name": "16.12.3",
+											"product_id": "CSAFPID-273445"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.8",
+										"product": {
+											"name": "16.12.8",
+											"product_id": "CSAFPID-273448"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.2s",
+										"product": {
+											"name": "16.12.2s",
+											"product_id": "CSAFPID-273509"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1x",
+										"product": {
+											"name": "16.12.1x",
+											"product_id": "CSAFPID-273649"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1t",
+										"product": {
+											"name": "16.12.1t",
+											"product_id": "CSAFPID-274832"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.2t",
+										"product": {
+											"name": "16.12.2t",
+											"product_id": "CSAFPID-275538"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.4",
+										"product": {
+											"name": "16.12.4",
+											"product_id": "CSAFPID-277147"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.3s",
+										"product": {
+											"name": "16.12.3s",
+											"product_id": "CSAFPID-277255"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1z",
+										"product": {
+											"name": "16.12.1z",
+											"product_id": "CSAFPID-277256"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.3a",
+										"product": {
+											"name": "16.12.3a",
+											"product_id": "CSAFPID-277321"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.4a",
+										"product": {
+											"name": "16.12.4a",
+											"product_id": "CSAFPID-278881"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.5",
+										"product": {
+											"name": "16.12.5",
+											"product_id": "CSAFPID-280463"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.6",
+										"product": {
+											"name": "16.12.6",
+											"product_id": "CSAFPID-280937"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1z1",
+										"product": {
+											"name": "16.12.1z1",
+											"product_id": "CSAFPID-281320"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.5a",
+										"product": {
+											"name": "16.12.5a",
+											"product_id": "CSAFPID-281438"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.5b",
+										"product": {
+											"name": "16.12.5b",
+											"product_id": "CSAFPID-281654"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.1z2",
+										"product": {
+											"name": "16.12.1z2",
+											"product_id": "CSAFPID-283831"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.6a",
+										"product": {
+											"name": "16.12.6a",
+											"product_id": "CSAFPID-285325"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.7",
+										"product": {
+											"name": "16.12.7",
+											"product_id": "CSAFPID-286031"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.9",
+										"product": {
+											"name": "16.12.9",
+											"product_id": "CSAFPID-292510"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.10",
+										"product": {
+											"name": "16.12.10",
+											"product_id": "CSAFPID-295421"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "16.12.10a",
+										"product": {
+											"name": "16.12.10a",
+											"product_id": "CSAFPID-300877"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "16.12"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.1.1",
+										"product": {
+											"name": "17.1.1",
+											"product_id": "CSAFPID-245377"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.1.1a",
+										"product": {
+											"name": "17.1.1a",
+											"product_id": "CSAFPID-272932"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.1.1s",
+										"product": {
+											"name": "17.1.1s",
+											"product_id": "CSAFPID-274818"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.1.2",
+										"product": {
+											"name": "17.1.2",
+											"product_id": "CSAFPID-277338"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.1.1t",
+										"product": {
+											"name": "17.1.1t",
+											"product_id": "CSAFPID-277348"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.1.3",
+										"product": {
+											"name": "17.1.3",
+											"product_id": "CSAFPID-280652"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.2.1",
+										"product": {
+											"name": "17.2.1",
+											"product_id": "CSAFPID-251225"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.2.1r",
+										"product": {
+											"name": "17.2.1r",
+											"product_id": "CSAFPID-277194"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.2.1a",
+										"product": {
+											"name": "17.2.1a",
+											"product_id": "CSAFPID-277343"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.2.1v",
+										"product": {
+											"name": "17.2.1v",
+											"product_id": "CSAFPID-278002"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.2.2",
+										"product": {
+											"name": "17.2.2",
+											"product_id": "CSAFPID-278504"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.2.3",
+										"product": {
+											"name": "17.2.3",
+											"product_id": "CSAFPID-280939"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.3.1",
+										"product": {
+											"name": "17.3.1",
+											"product_id": "CSAFPID-254712"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.2",
+										"product": {
+											"name": "17.3.2",
+											"product_id": "CSAFPID-277099"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.3",
+										"product": {
+											"name": "17.3.3",
+											"product_id": "CSAFPID-278019"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.1a",
+										"product": {
+											"name": "17.3.1a",
+											"product_id": "CSAFPID-279338"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.1w",
+										"product": {
+											"name": "17.3.1w",
+											"product_id": "CSAFPID-279339"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.2a",
+										"product": {
+											"name": "17.3.2a",
+											"product_id": "CSAFPID-280555"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.1x",
+										"product": {
+											"name": "17.3.1x",
+											"product_id": "CSAFPID-280783"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.1z",
+										"product": {
+											"name": "17.3.1z",
+											"product_id": "CSAFPID-281331"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.3a",
+										"product": {
+											"name": "17.3.3a",
+											"product_id": "CSAFPID-282017"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.4",
+										"product": {
+											"name": "17.3.4",
+											"product_id": "CSAFPID-282028"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.5",
+										"product": {
+											"name": "17.3.5",
+											"product_id": "CSAFPID-282115"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.4a",
+										"product": {
+											"name": "17.3.4a",
+											"product_id": "CSAFPID-284178"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.6",
+										"product": {
+											"name": "17.3.6",
+											"product_id": "CSAFPID-284331"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.4b",
+										"product": {
+											"name": "17.3.4b",
+											"product_id": "CSAFPID-285326"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.4c",
+										"product": {
+											"name": "17.3.4c",
+											"product_id": "CSAFPID-285327"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.5a",
+										"product": {
+											"name": "17.3.5a",
+											"product_id": "CSAFPID-286498"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.5b",
+										"product": {
+											"name": "17.3.5b",
+											"product_id": "CSAFPID-287125"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.7",
+										"product": {
+											"name": "17.3.7",
+											"product_id": "CSAFPID-290671"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.8",
+										"product": {
+											"name": "17.3.8",
+											"product_id": "CSAFPID-295398"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.3.8a",
+										"product": {
+											"name": "17.3.8a",
+											"product_id": "CSAFPID-300847"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.4.1",
+										"product": {
+											"name": "17.4.1",
+											"product_id": "CSAFPID-262588"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.4.2",
+										"product": {
+											"name": "17.4.2",
+											"product_id": "CSAFPID-278020"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.4.1a",
+										"product": {
+											"name": "17.4.1a",
+											"product_id": "CSAFPID-280770"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.4.1b",
+										"product": {
+											"name": "17.4.1b",
+											"product_id": "CSAFPID-280899"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.4.1c",
+										"product": {
+											"name": "17.4.1c",
+											"product_id": "CSAFPID-282116"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.4.2a",
+										"product": {
+											"name": "17.4.2a",
+											"product_id": "CSAFPID-285328"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.5.1",
+										"product": {
+											"name": "17.5.1",
+											"product_id": "CSAFPID-262590"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.5.1a",
+										"product": {
+											"name": "17.5.1a",
+											"product_id": "CSAFPID-282046"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.5.1b",
+										"product": {
+											"name": "17.5.1b",
+											"product_id": "CSAFPID-290596"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.5.1c",
+										"product": {
+											"name": "17.5.1c",
+											"product_id": "CSAFPID-292698"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.5"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.6.1",
+										"product": {
+											"name": "17.6.1",
+											"product_id": "CSAFPID-262592"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.2",
+										"product": {
+											"name": "17.6.2",
+											"product_id": "CSAFPID-282117"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.1w",
+										"product": {
+											"name": "17.6.1w",
+											"product_id": "CSAFPID-284161"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.1a",
+										"product": {
+											"name": "17.6.1a",
+											"product_id": "CSAFPID-284179"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.1x",
+										"product": {
+											"name": "17.6.1x",
+											"product_id": "CSAFPID-284740"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.3",
+										"product": {
+											"name": "17.6.3",
+											"product_id": "CSAFPID-286409"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.1y",
+										"product": {
+											"name": "17.6.1y",
+											"product_id": "CSAFPID-286477"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.1z",
+										"product": {
+											"name": "17.6.1z",
+											"product_id": "CSAFPID-286544"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.3a",
+										"product": {
+											"name": "17.6.3a",
+											"product_id": "CSAFPID-286594"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.4",
+										"product": {
+											"name": "17.6.4",
+											"product_id": "CSAFPID-287087"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.1z1",
+										"product": {
+											"name": "17.6.1z1",
+											"product_id": "CSAFPID-290565"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.5",
+										"product": {
+											"name": "17.6.5",
+											"product_id": "CSAFPID-290660"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.6",
+										"product": {
+											"name": "17.6.6",
+											"product_id": "CSAFPID-292656"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.6a",
+										"product": {
+											"name": "17.6.6a",
+											"product_id": "CSAFPID-300848"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.6.5a",
+										"product": {
+											"name": "17.6.5a",
+											"product_id": "CSAFPID-300850"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.6"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.7.1",
+										"product": {
+											"name": "17.7.1",
+											"product_id": "CSAFPID-277357"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.7.1a",
+										"product": {
+											"name": "17.7.1a",
+											"product_id": "CSAFPID-285329"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.7.1b",
+										"product": {
+											"name": "17.7.1b",
+											"product_id": "CSAFPID-286410"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.7.2",
+										"product": {
+											"name": "17.7.2",
+											"product_id": "CSAFPID-286534"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.7"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.10.1",
+										"product": {
+											"name": "17.10.1",
+											"product_id": "CSAFPID-278018"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.10.1a",
+										"product": {
+											"name": "17.10.1a",
+											"product_id": "CSAFPID-290580"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.10.1b",
+										"product": {
+											"name": "17.10.1b",
+											"product_id": "CSAFPID-292650"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.10"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.8.1",
+										"product": {
+											"name": "17.8.1",
+											"product_id": "CSAFPID-278023"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.8.1a",
+										"product": {
+											"name": "17.8.1a",
+											"product_id": "CSAFPID-286486"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.8"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.9.1",
+										"product": {
+											"name": "17.9.1",
+											"product_id": "CSAFPID-278025"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.1w",
+										"product": {
+											"name": "17.9.1w",
+											"product_id": "CSAFPID-286802"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.2",
+										"product": {
+											"name": "17.9.2",
+											"product_id": "CSAFPID-288221"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.1a",
+										"product": {
+											"name": "17.9.1a",
+											"product_id": "CSAFPID-288247"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.1x",
+										"product": {
+											"name": "17.9.1x",
+											"product_id": "CSAFPID-289372"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.1y",
+										"product": {
+											"name": "17.9.1y",
+											"product_id": "CSAFPID-290673"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.3",
+										"product": {
+											"name": "17.9.3",
+											"product_id": "CSAFPID-290674"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.2a",
+										"product": {
+											"name": "17.9.2a",
+											"product_id": "CSAFPID-290675"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.1x1",
+										"product": {
+											"name": "17.9.1x1",
+											"product_id": "CSAFPID-292876"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.3a",
+										"product": {
+											"name": "17.9.3a",
+											"product_id": "CSAFPID-295198"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.4",
+										"product": {
+											"name": "17.9.4",
+											"product_id": "CSAFPID-295412"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.1y1",
+										"product": {
+											"name": "17.9.1y1",
+											"product_id": "CSAFPID-299967"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.9.4a",
+										"product": {
+											"name": "17.9.4a",
+											"product_id": "CSAFPID-300845"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.9"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.11.1",
+										"product": {
+											"name": "17.11.1",
+											"product_id": "CSAFPID-286799"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.11.1a",
+										"product": {
+											"name": "17.11.1a",
+											"product_id": "CSAFPID-294838"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.11"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.12.1",
+										"product": {
+											"name": "17.12.1",
+											"product_id": "CSAFPID-286801"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.12.1w",
+										"product": {
+											"name": "17.12.1w",
+											"product_id": "CSAFPID-296763"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.12.1a",
+										"product": {
+											"name": "17.12.1a",
+											"product_id": "CSAFPID-300012"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.12.2",
+										"product": {
+											"name": "17.12.2",
+											"product_id": "CSAFPID-300834"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "17.12.2a",
+										"product": {
+											"name": "17.12.2a",
+											"product_id": "CSAFPID-300948"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.12"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.11.99SW",
+										"product": {
+											"name": "17.11.99SW",
+											"product_id": "CSAFPID-296860"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.11SW"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20309",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwh47363"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-184480",
+					"CSAFPID-184481",
+					"CSAFPID-194730",
+					"CSAFPID-194731",
+					"CSAFPID-194732",
+					"CSAFPID-194735",
+					"CSAFPID-194736",
+					"CSAFPID-194737",
+					"CSAFPID-194842",
+					"CSAFPID-194843",
+					"CSAFPID-196216",
+					"CSAFPID-196218",
+					"CSAFPID-196221",
+					"CSAFPID-196222",
+					"CSAFPID-196223",
+					"CSAFPID-196925",
+					"CSAFPID-198123",
+					"CSAFPID-198124",
+					"CSAFPID-198125",
+					"CSAFPID-200768",
+					"CSAFPID-200770",
+					"CSAFPID-200771",
+					"CSAFPID-201495",
+					"CSAFPID-202539",
+					"CSAFPID-202540",
+					"CSAFPID-202541",
+					"CSAFPID-202542",
+					"CSAFPID-202558",
+					"CSAFPID-203353",
+					"CSAFPID-206159",
+					"CSAFPID-206160",
+					"CSAFPID-206161",
+					"CSAFPID-206162",
+					"CSAFPID-206174",
+					"CSAFPID-206175",
+					"CSAFPID-206176",
+					"CSAFPID-206178",
+					"CSAFPID-206180",
+					"CSAFPID-206181",
+					"CSAFPID-206188",
+					"CSAFPID-206189",
+					"CSAFPID-206190",
+					"CSAFPID-206191",
+					"CSAFPID-206192",
+					"CSAFPID-206193",
+					"CSAFPID-206200",
+					"CSAFPID-206201",
+					"CSAFPID-206202",
+					"CSAFPID-206203",
+					"CSAFPID-206205",
+					"CSAFPID-206206",
+					"CSAFPID-206208",
+					"CSAFPID-206209",
+					"CSAFPID-210072",
+					"CSAFPID-210073",
+					"CSAFPID-210075",
+					"CSAFPID-210078",
+					"CSAFPID-210079",
+					"CSAFPID-210081",
+					"CSAFPID-210264",
+					"CSAFPID-212268",
+					"CSAFPID-212408",
+					"CSAFPID-212411",
+					"CSAFPID-212412",
+					"CSAFPID-212436",
+					"CSAFPID-213100",
+					"CSAFPID-213469",
+					"CSAFPID-213470",
+					"CSAFPID-213471",
+					"CSAFPID-213472",
+					"CSAFPID-213473",
+					"CSAFPID-213474",
+					"CSAFPID-213475",
+					"CSAFPID-213476",
+					"CSAFPID-213477",
+					"CSAFPID-213478",
+					"CSAFPID-213557",
+					"CSAFPID-213580",
+					"CSAFPID-213635",
+					"CSAFPID-213642",
+					"CSAFPID-213661",
+					"CSAFPID-213700",
+					"CSAFPID-213776",
+					"CSAFPID-213777",
+					"CSAFPID-213778",
+					"CSAFPID-213779",
+					"CSAFPID-213781",
+					"CSAFPID-213786",
+					"CSAFPID-213787",
+					"CSAFPID-213798",
+					"CSAFPID-213799",
+					"CSAFPID-213809",
+					"CSAFPID-213815",
+					"CSAFPID-213816",
+					"CSAFPID-213825",
+					"CSAFPID-213848",
+					"CSAFPID-213955",
+					"CSAFPID-213956",
+					"CSAFPID-213957",
+					"CSAFPID-213960",
+					"CSAFPID-214051",
+					"CSAFPID-214993",
+					"CSAFPID-217234",
+					"CSAFPID-217253",
+					"CSAFPID-217255",
+					"CSAFPID-217256",
+					"CSAFPID-217257",
+					"CSAFPID-217259",
+					"CSAFPID-217260",
+					"CSAFPID-217261",
+					"CSAFPID-217262",
+					"CSAFPID-217263",
+					"CSAFPID-217264",
+					"CSAFPID-217265",
+					"CSAFPID-217266",
+					"CSAFPID-217267",
+					"CSAFPID-217268",
+					"CSAFPID-217270",
+					"CSAFPID-217271",
+					"CSAFPID-217272",
+					"CSAFPID-217273",
+					"CSAFPID-217276",
+					"CSAFPID-217278",
+					"CSAFPID-218901",
+					"CSAFPID-218903",
+					"CSAFPID-218905",
+					"CSAFPID-220517",
+					"CSAFPID-220671",
+					"CSAFPID-220687",
+					"CSAFPID-220688",
+					"CSAFPID-220802",
+					"CSAFPID-220993",
+					"CSAFPID-222257",
+					"CSAFPID-222435",
+					"CSAFPID-222693",
+					"CSAFPID-222694",
+					"CSAFPID-222711",
+					"CSAFPID-222925",
+					"CSAFPID-222942",
+					"CSAFPID-223018",
+					"CSAFPID-223019",
+					"CSAFPID-223241",
+					"CSAFPID-223252",
+					"CSAFPID-224424",
+					"CSAFPID-224702",
+					"CSAFPID-225099",
+					"CSAFPID-225168",
+					"CSAFPID-225337",
+					"CSAFPID-225359",
+					"CSAFPID-225360",
+					"CSAFPID-225466",
+					"CSAFPID-225568",
+					"CSAFPID-225569",
+					"CSAFPID-225784",
+					"CSAFPID-225832",
+					"CSAFPID-225856",
+					"CSAFPID-225858",
+					"CSAFPID-226037",
+					"CSAFPID-226078",
+					"CSAFPID-226160",
+					"CSAFPID-226330",
+					"CSAFPID-226354",
+					"CSAFPID-227513",
+					"CSAFPID-227556",
+					"CSAFPID-227918",
+					"CSAFPID-227920",
+					"CSAFPID-227922",
+					"CSAFPID-227923",
+					"CSAFPID-228193",
+					"CSAFPID-228194",
+					"CSAFPID-228690",
+					"CSAFPID-228706",
+					"CSAFPID-229124",
+					"CSAFPID-229187",
+					"CSAFPID-230240",
+					"CSAFPID-230301",
+					"CSAFPID-230302",
+					"CSAFPID-230303",
+					"CSAFPID-230998",
+					"CSAFPID-231187",
+					"CSAFPID-231389",
+					"CSAFPID-231390",
+					"CSAFPID-231454",
+					"CSAFPID-231667",
+					"CSAFPID-231682",
+					"CSAFPID-231826",
+					"CSAFPID-232008",
+					"CSAFPID-232461",
+					"CSAFPID-232766",
+					"CSAFPID-232767",
+					"CSAFPID-232851",
+					"CSAFPID-233141",
+					"CSAFPID-233155",
+					"CSAFPID-233447",
+					"CSAFPID-234928",
+					"CSAFPID-235307",
+					"CSAFPID-235858",
+					"CSAFPID-236834",
+					"CSAFPID-236837",
+					"CSAFPID-237332",
+					"CSAFPID-237460",
+					"CSAFPID-238937",
+					"CSAFPID-239264",
+					"CSAFPID-241736",
+					"CSAFPID-242308",
+					"CSAFPID-242834",
+					"CSAFPID-243362",
+					"CSAFPID-244070",
+					"CSAFPID-244071",
+					"CSAFPID-244530",
+					"CSAFPID-244686",
+					"CSAFPID-244900",
+					"CSAFPID-244912",
+					"CSAFPID-245375",
+					"CSAFPID-245377",
+					"CSAFPID-246386",
+					"CSAFPID-247573",
+					"CSAFPID-247629",
+					"CSAFPID-248242",
+					"CSAFPID-249171",
+					"CSAFPID-250629",
+					"CSAFPID-251075",
+					"CSAFPID-251165",
+					"CSAFPID-251166",
+					"CSAFPID-251225",
+					"CSAFPID-252045",
+					"CSAFPID-252235",
+					"CSAFPID-252271",
+					"CSAFPID-252272",
+					"CSAFPID-252913",
+					"CSAFPID-252914",
+					"CSAFPID-254688",
+					"CSAFPID-254712",
+					"CSAFPID-257955",
+					"CSAFPID-257984",
+					"CSAFPID-258170",
+					"CSAFPID-258229",
+					"CSAFPID-258388",
+					"CSAFPID-258406",
+					"CSAFPID-258900",
+					"CSAFPID-260741",
+					"CSAFPID-260917",
+					"CSAFPID-261240",
+					"CSAFPID-261241",
+					"CSAFPID-261465",
+					"CSAFPID-262389",
+					"CSAFPID-262390",
+					"CSAFPID-262549",
+					"CSAFPID-262588",
+					"CSAFPID-262590",
+					"CSAFPID-262592",
+					"CSAFPID-262595",
+					"CSAFPID-263804",
+					"CSAFPID-264096",
+					"CSAFPID-264488",
+					"CSAFPID-265735",
+					"CSAFPID-265841",
+					"CSAFPID-266259",
+					"CSAFPID-267110",
+					"CSAFPID-267240",
+					"CSAFPID-267605",
+					"CSAFPID-268921",
+					"CSAFPID-270097",
+					"CSAFPID-271798",
+					"CSAFPID-271938",
+					"CSAFPID-272047",
+					"CSAFPID-272932",
+					"CSAFPID-273112",
+					"CSAFPID-273445",
+					"CSAFPID-273448",
+					"CSAFPID-273509",
+					"CSAFPID-273563",
+					"CSAFPID-273649",
+					"CSAFPID-274818",
+					"CSAFPID-274832",
+					"CSAFPID-275538",
+					"CSAFPID-276837",
+					"CSAFPID-277099",
+					"CSAFPID-277147",
+					"CSAFPID-277148",
+					"CSAFPID-277194",
+					"CSAFPID-277255",
+					"CSAFPID-277256",
+					"CSAFPID-277321",
+					"CSAFPID-277338",
+					"CSAFPID-277343",
+					"CSAFPID-277348",
+					"CSAFPID-277357",
+					"CSAFPID-277904",
+					"CSAFPID-277945",
+					"CSAFPID-278002",
+					"CSAFPID-278018",
+					"CSAFPID-278019",
+					"CSAFPID-278020",
+					"CSAFPID-278023",
+					"CSAFPID-278025",
+					"CSAFPID-278032",
+					"CSAFPID-278402",
+					"CSAFPID-278504",
+					"CSAFPID-278780",
+					"CSAFPID-278881",
+					"CSAFPID-279338",
+					"CSAFPID-279339",
+					"CSAFPID-280463",
+					"CSAFPID-280555",
+					"CSAFPID-280651",
+					"CSAFPID-280652",
+					"CSAFPID-280770",
+					"CSAFPID-280783",
+					"CSAFPID-280800",
+					"CSAFPID-280801",
+					"CSAFPID-280899",
+					"CSAFPID-280937",
+					"CSAFPID-280938",
+					"CSAFPID-280939",
+					"CSAFPID-281320",
+					"CSAFPID-281331",
+					"CSAFPID-281438",
+					"CSAFPID-281654",
+					"CSAFPID-282017",
+					"CSAFPID-282028",
+					"CSAFPID-282046",
+					"CSAFPID-282115",
+					"CSAFPID-282116",
+					"CSAFPID-282117",
+					"CSAFPID-283831",
+					"CSAFPID-283835",
+					"CSAFPID-284161",
+					"CSAFPID-284178",
+					"CSAFPID-284179",
+					"CSAFPID-284331",
+					"CSAFPID-284740",
+					"CSAFPID-285325",
+					"CSAFPID-285326",
+					"CSAFPID-285327",
+					"CSAFPID-285328",
+					"CSAFPID-285329",
+					"CSAFPID-286031",
+					"CSAFPID-286409",
+					"CSAFPID-286410",
+					"CSAFPID-286477",
+					"CSAFPID-286486",
+					"CSAFPID-286498",
+					"CSAFPID-286534",
+					"CSAFPID-286544",
+					"CSAFPID-286594",
+					"CSAFPID-286799",
+					"CSAFPID-286801",
+					"CSAFPID-286802",
+					"CSAFPID-287087",
+					"CSAFPID-287125",
+					"CSAFPID-288221",
+					"CSAFPID-288247",
+					"CSAFPID-289372",
+					"CSAFPID-290562",
+					"CSAFPID-290565",
+					"CSAFPID-290580",
+					"CSAFPID-290596",
+					"CSAFPID-290660",
+					"CSAFPID-290669",
+					"CSAFPID-290671",
+					"CSAFPID-290673",
+					"CSAFPID-290674",
+					"CSAFPID-290675",
+					"CSAFPID-292510",
+					"CSAFPID-292650",
+					"CSAFPID-292656",
+					"CSAFPID-292698",
+					"CSAFPID-292876",
+					"CSAFPID-294838",
+					"CSAFPID-295198",
+					"CSAFPID-295398",
+					"CSAFPID-295412",
+					"CSAFPID-295421",
+					"CSAFPID-296763",
+					"CSAFPID-296860",
+					"CSAFPID-299967",
+					"CSAFPID-300012",
+					"CSAFPID-300834",
+					"CSAFPID-300845",
+					"CSAFPID-300847",
+					"CSAFPID-300848",
+					"CSAFPID-300850",
+					"CSAFPID-300877",
+					"CSAFPID-300948"
+				]
+			},
+			"release_date": "2024-03-27T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-194730",
+						"CSAFPID-194731",
+						"CSAFPID-194732",
+						"CSAFPID-194735",
+						"CSAFPID-194736",
+						"CSAFPID-194737",
+						"CSAFPID-194842",
+						"CSAFPID-194843",
+						"CSAFPID-196216",
+						"CSAFPID-196218",
+						"CSAFPID-196221",
+						"CSAFPID-196222",
+						"CSAFPID-196223",
+						"CSAFPID-196925",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-198125",
+						"CSAFPID-200768",
+						"CSAFPID-200770",
+						"CSAFPID-200771",
+						"CSAFPID-201495",
+						"CSAFPID-202539",
+						"CSAFPID-202540",
+						"CSAFPID-202541",
+						"CSAFPID-202542",
+						"CSAFPID-202558",
+						"CSAFPID-203353",
+						"CSAFPID-206159",
+						"CSAFPID-206160",
+						"CSAFPID-206161",
+						"CSAFPID-206162",
+						"CSAFPID-206174",
+						"CSAFPID-206175",
+						"CSAFPID-206176",
+						"CSAFPID-206178",
+						"CSAFPID-206180",
+						"CSAFPID-206181",
+						"CSAFPID-206188",
+						"CSAFPID-206189",
+						"CSAFPID-206190",
+						"CSAFPID-206191",
+						"CSAFPID-206192",
+						"CSAFPID-206193",
+						"CSAFPID-206200",
+						"CSAFPID-206201",
+						"CSAFPID-206202",
+						"CSAFPID-206203",
+						"CSAFPID-206205",
+						"CSAFPID-206206",
+						"CSAFPID-206208",
+						"CSAFPID-206209",
+						"CSAFPID-210072",
+						"CSAFPID-210073",
+						"CSAFPID-210075",
+						"CSAFPID-210078",
+						"CSAFPID-210079",
+						"CSAFPID-210081",
+						"CSAFPID-210264",
+						"CSAFPID-212268",
+						"CSAFPID-212408",
+						"CSAFPID-212411",
+						"CSAFPID-212412",
+						"CSAFPID-212436",
+						"CSAFPID-213100",
+						"CSAFPID-213469",
+						"CSAFPID-213470",
+						"CSAFPID-213471",
+						"CSAFPID-213472",
+						"CSAFPID-213473",
+						"CSAFPID-213474",
+						"CSAFPID-213475",
+						"CSAFPID-213476",
+						"CSAFPID-213477",
+						"CSAFPID-213478",
+						"CSAFPID-213557",
+						"CSAFPID-213580",
+						"CSAFPID-213635",
+						"CSAFPID-213642",
+						"CSAFPID-213661",
+						"CSAFPID-213700",
+						"CSAFPID-213776",
+						"CSAFPID-213777",
+						"CSAFPID-213778",
+						"CSAFPID-213779",
+						"CSAFPID-213781",
+						"CSAFPID-213786",
+						"CSAFPID-213787",
+						"CSAFPID-213798",
+						"CSAFPID-213799",
+						"CSAFPID-213809",
+						"CSAFPID-213815",
+						"CSAFPID-213816",
+						"CSAFPID-213825",
+						"CSAFPID-213848",
+						"CSAFPID-213955",
+						"CSAFPID-213956",
+						"CSAFPID-213957",
+						"CSAFPID-213960",
+						"CSAFPID-214051",
+						"CSAFPID-214993",
+						"CSAFPID-217234",
+						"CSAFPID-217253",
+						"CSAFPID-217255",
+						"CSAFPID-217256",
+						"CSAFPID-217257",
+						"CSAFPID-217259",
+						"CSAFPID-217260",
+						"CSAFPID-217261",
+						"CSAFPID-217262",
+						"CSAFPID-217263",
+						"CSAFPID-217264",
+						"CSAFPID-217265",
+						"CSAFPID-217266",
+						"CSAFPID-217267",
+						"CSAFPID-217268",
+						"CSAFPID-217270",
+						"CSAFPID-217271",
+						"CSAFPID-217272",
+						"CSAFPID-217273",
+						"CSAFPID-217276",
+						"CSAFPID-217278",
+						"CSAFPID-218901",
+						"CSAFPID-218903",
+						"CSAFPID-218905",
+						"CSAFPID-220517",
+						"CSAFPID-220671",
+						"CSAFPID-220687",
+						"CSAFPID-220688",
+						"CSAFPID-220802",
+						"CSAFPID-220993",
+						"CSAFPID-222257",
+						"CSAFPID-222435",
+						"CSAFPID-222693",
+						"CSAFPID-222694",
+						"CSAFPID-222711",
+						"CSAFPID-222925",
+						"CSAFPID-222942",
+						"CSAFPID-223018",
+						"CSAFPID-223019",
+						"CSAFPID-223241",
+						"CSAFPID-223252",
+						"CSAFPID-224424",
+						"CSAFPID-224702",
+						"CSAFPID-225099",
+						"CSAFPID-225168",
+						"CSAFPID-225337",
+						"CSAFPID-225359",
+						"CSAFPID-225360",
+						"CSAFPID-225466",
+						"CSAFPID-225568",
+						"CSAFPID-225569",
+						"CSAFPID-225784",
+						"CSAFPID-225832",
+						"CSAFPID-225856",
+						"CSAFPID-225858",
+						"CSAFPID-226037",
+						"CSAFPID-226078",
+						"CSAFPID-226160",
+						"CSAFPID-226330",
+						"CSAFPID-226354",
+						"CSAFPID-227513",
+						"CSAFPID-227556",
+						"CSAFPID-227918",
+						"CSAFPID-227920",
+						"CSAFPID-227922",
+						"CSAFPID-227923",
+						"CSAFPID-228193",
+						"CSAFPID-228194",
+						"CSAFPID-228690",
+						"CSAFPID-228706",
+						"CSAFPID-229124",
+						"CSAFPID-229187",
+						"CSAFPID-230240",
+						"CSAFPID-230301",
+						"CSAFPID-230302",
+						"CSAFPID-230303",
+						"CSAFPID-230998",
+						"CSAFPID-231187",
+						"CSAFPID-231389",
+						"CSAFPID-231390",
+						"CSAFPID-231454",
+						"CSAFPID-231667",
+						"CSAFPID-231682",
+						"CSAFPID-231826",
+						"CSAFPID-232008",
+						"CSAFPID-232461",
+						"CSAFPID-232766",
+						"CSAFPID-232767",
+						"CSAFPID-232851",
+						"CSAFPID-233141",
+						"CSAFPID-233155",
+						"CSAFPID-233447",
+						"CSAFPID-234928",
+						"CSAFPID-235307",
+						"CSAFPID-235858",
+						"CSAFPID-236834",
+						"CSAFPID-236837",
+						"CSAFPID-237332",
+						"CSAFPID-237460",
+						"CSAFPID-238937",
+						"CSAFPID-239264",
+						"CSAFPID-241736",
+						"CSAFPID-242308",
+						"CSAFPID-242834",
+						"CSAFPID-243362",
+						"CSAFPID-244070",
+						"CSAFPID-244071",
+						"CSAFPID-244530",
+						"CSAFPID-244686",
+						"CSAFPID-244900",
+						"CSAFPID-244912",
+						"CSAFPID-245375",
+						"CSAFPID-245377",
+						"CSAFPID-246386",
+						"CSAFPID-247573",
+						"CSAFPID-247629",
+						"CSAFPID-248242",
+						"CSAFPID-249171",
+						"CSAFPID-250629",
+						"CSAFPID-251075",
+						"CSAFPID-251165",
+						"CSAFPID-251166",
+						"CSAFPID-251225",
+						"CSAFPID-252045",
+						"CSAFPID-252235",
+						"CSAFPID-252271",
+						"CSAFPID-252272",
+						"CSAFPID-252913",
+						"CSAFPID-252914",
+						"CSAFPID-254688",
+						"CSAFPID-254712",
+						"CSAFPID-257955",
+						"CSAFPID-257984",
+						"CSAFPID-258170",
+						"CSAFPID-258229",
+						"CSAFPID-258388",
+						"CSAFPID-258406",
+						"CSAFPID-258900",
+						"CSAFPID-260741",
+						"CSAFPID-260917",
+						"CSAFPID-261240",
+						"CSAFPID-261241",
+						"CSAFPID-261465",
+						"CSAFPID-262389",
+						"CSAFPID-262390",
+						"CSAFPID-262549",
+						"CSAFPID-262588",
+						"CSAFPID-262590",
+						"CSAFPID-262592",
+						"CSAFPID-262595",
+						"CSAFPID-263804",
+						"CSAFPID-264096",
+						"CSAFPID-264488",
+						"CSAFPID-265735",
+						"CSAFPID-265841",
+						"CSAFPID-266259",
+						"CSAFPID-267110",
+						"CSAFPID-267240",
+						"CSAFPID-267605",
+						"CSAFPID-268921",
+						"CSAFPID-270097",
+						"CSAFPID-271798",
+						"CSAFPID-271938",
+						"CSAFPID-272047",
+						"CSAFPID-272932",
+						"CSAFPID-273112",
+						"CSAFPID-273445",
+						"CSAFPID-273448",
+						"CSAFPID-273509",
+						"CSAFPID-273563",
+						"CSAFPID-273649",
+						"CSAFPID-274818",
+						"CSAFPID-274832",
+						"CSAFPID-275538",
+						"CSAFPID-276837",
+						"CSAFPID-277099",
+						"CSAFPID-277147",
+						"CSAFPID-277148",
+						"CSAFPID-277194",
+						"CSAFPID-277255",
+						"CSAFPID-277256",
+						"CSAFPID-277321",
+						"CSAFPID-277338",
+						"CSAFPID-277343",
+						"CSAFPID-277348",
+						"CSAFPID-277357",
+						"CSAFPID-277904",
+						"CSAFPID-277945",
+						"CSAFPID-278002",
+						"CSAFPID-278018",
+						"CSAFPID-278019",
+						"CSAFPID-278020",
+						"CSAFPID-278023",
+						"CSAFPID-278025",
+						"CSAFPID-278032",
+						"CSAFPID-278402",
+						"CSAFPID-278504",
+						"CSAFPID-278780",
+						"CSAFPID-278881",
+						"CSAFPID-279338",
+						"CSAFPID-279339",
+						"CSAFPID-280463",
+						"CSAFPID-280555",
+						"CSAFPID-280651",
+						"CSAFPID-280652",
+						"CSAFPID-280770",
+						"CSAFPID-280783",
+						"CSAFPID-280800",
+						"CSAFPID-280801",
+						"CSAFPID-280899",
+						"CSAFPID-280937",
+						"CSAFPID-280938",
+						"CSAFPID-280939",
+						"CSAFPID-281320",
+						"CSAFPID-281331",
+						"CSAFPID-281438",
+						"CSAFPID-281654",
+						"CSAFPID-282017",
+						"CSAFPID-282028",
+						"CSAFPID-282046",
+						"CSAFPID-282115",
+						"CSAFPID-282116",
+						"CSAFPID-282117",
+						"CSAFPID-283831",
+						"CSAFPID-283835",
+						"CSAFPID-284161",
+						"CSAFPID-284178",
+						"CSAFPID-284179",
+						"CSAFPID-284331",
+						"CSAFPID-284740",
+						"CSAFPID-285325",
+						"CSAFPID-285326",
+						"CSAFPID-285327",
+						"CSAFPID-285328",
+						"CSAFPID-285329",
+						"CSAFPID-286031",
+						"CSAFPID-286409",
+						"CSAFPID-286410",
+						"CSAFPID-286477",
+						"CSAFPID-286486",
+						"CSAFPID-286498",
+						"CSAFPID-286534",
+						"CSAFPID-286544",
+						"CSAFPID-286594",
+						"CSAFPID-286799",
+						"CSAFPID-286801",
+						"CSAFPID-286802",
+						"CSAFPID-287087",
+						"CSAFPID-287125",
+						"CSAFPID-288221",
+						"CSAFPID-288247",
+						"CSAFPID-289372",
+						"CSAFPID-290562",
+						"CSAFPID-290565",
+						"CSAFPID-290580",
+						"CSAFPID-290596",
+						"CSAFPID-290660",
+						"CSAFPID-290669",
+						"CSAFPID-290671",
+						"CSAFPID-290673",
+						"CSAFPID-290674",
+						"CSAFPID-290675",
+						"CSAFPID-292510",
+						"CSAFPID-292650",
+						"CSAFPID-292656",
+						"CSAFPID-292698",
+						"CSAFPID-292876",
+						"CSAFPID-294838",
+						"CSAFPID-295198",
+						"CSAFPID-295398",
+						"CSAFPID-295412",
+						"CSAFPID-295421",
+						"CSAFPID-296763",
+						"CSAFPID-296860",
+						"CSAFPID-299967",
+						"CSAFPID-300012",
+						"CSAFPID-300834",
+						"CSAFPID-300845",
+						"CSAFPID-300847",
+						"CSAFPID-300848",
+						"CSAFPID-300850",
+						"CSAFPID-300877",
+						"CSAFPID-300948"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.6,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-194730",
+						"CSAFPID-194731",
+						"CSAFPID-194732",
+						"CSAFPID-194735",
+						"CSAFPID-194736",
+						"CSAFPID-194737",
+						"CSAFPID-194842",
+						"CSAFPID-194843",
+						"CSAFPID-196216",
+						"CSAFPID-196218",
+						"CSAFPID-196221",
+						"CSAFPID-196222",
+						"CSAFPID-196223",
+						"CSAFPID-196925",
+						"CSAFPID-198123",
+						"CSAFPID-198124",
+						"CSAFPID-198125",
+						"CSAFPID-200768",
+						"CSAFPID-200770",
+						"CSAFPID-200771",
+						"CSAFPID-201495",
+						"CSAFPID-202539",
+						"CSAFPID-202540",
+						"CSAFPID-202541",
+						"CSAFPID-202542",
+						"CSAFPID-202558",
+						"CSAFPID-203353",
+						"CSAFPID-206159",
+						"CSAFPID-206160",
+						"CSAFPID-206161",
+						"CSAFPID-206162",
+						"CSAFPID-206174",
+						"CSAFPID-206175",
+						"CSAFPID-206176",
+						"CSAFPID-206178",
+						"CSAFPID-206180",
+						"CSAFPID-206181",
+						"CSAFPID-206188",
+						"CSAFPID-206189",
+						"CSAFPID-206190",
+						"CSAFPID-206191",
+						"CSAFPID-206192",
+						"CSAFPID-206193",
+						"CSAFPID-206200",
+						"CSAFPID-206201",
+						"CSAFPID-206202",
+						"CSAFPID-206203",
+						"CSAFPID-206205",
+						"CSAFPID-206206",
+						"CSAFPID-206208",
+						"CSAFPID-206209",
+						"CSAFPID-210072",
+						"CSAFPID-210073",
+						"CSAFPID-210075",
+						"CSAFPID-210078",
+						"CSAFPID-210079",
+						"CSAFPID-210081",
+						"CSAFPID-210264",
+						"CSAFPID-212268",
+						"CSAFPID-212408",
+						"CSAFPID-212411",
+						"CSAFPID-212412",
+						"CSAFPID-212436",
+						"CSAFPID-213100",
+						"CSAFPID-213469",
+						"CSAFPID-213470",
+						"CSAFPID-213471",
+						"CSAFPID-213472",
+						"CSAFPID-213473",
+						"CSAFPID-213474",
+						"CSAFPID-213475",
+						"CSAFPID-213476",
+						"CSAFPID-213477",
+						"CSAFPID-213478",
+						"CSAFPID-213557",
+						"CSAFPID-213580",
+						"CSAFPID-213635",
+						"CSAFPID-213642",
+						"CSAFPID-213661",
+						"CSAFPID-213700",
+						"CSAFPID-213776",
+						"CSAFPID-213777",
+						"CSAFPID-213778",
+						"CSAFPID-213779",
+						"CSAFPID-213781",
+						"CSAFPID-213786",
+						"CSAFPID-213787",
+						"CSAFPID-213798",
+						"CSAFPID-213799",
+						"CSAFPID-213809",
+						"CSAFPID-213815",
+						"CSAFPID-213816",
+						"CSAFPID-213825",
+						"CSAFPID-213848",
+						"CSAFPID-213955",
+						"CSAFPID-213956",
+						"CSAFPID-213957",
+						"CSAFPID-213960",
+						"CSAFPID-214051",
+						"CSAFPID-214993",
+						"CSAFPID-217234",
+						"CSAFPID-217253",
+						"CSAFPID-217255",
+						"CSAFPID-217256",
+						"CSAFPID-217257",
+						"CSAFPID-217259",
+						"CSAFPID-217260",
+						"CSAFPID-217261",
+						"CSAFPID-217262",
+						"CSAFPID-217263",
+						"CSAFPID-217264",
+						"CSAFPID-217265",
+						"CSAFPID-217266",
+						"CSAFPID-217267",
+						"CSAFPID-217268",
+						"CSAFPID-217270",
+						"CSAFPID-217271",
+						"CSAFPID-217272",
+						"CSAFPID-217273",
+						"CSAFPID-217276",
+						"CSAFPID-217278",
+						"CSAFPID-218901",
+						"CSAFPID-218903",
+						"CSAFPID-218905",
+						"CSAFPID-220517",
+						"CSAFPID-220671",
+						"CSAFPID-220687",
+						"CSAFPID-220688",
+						"CSAFPID-220802",
+						"CSAFPID-220993",
+						"CSAFPID-222257",
+						"CSAFPID-222435",
+						"CSAFPID-222693",
+						"CSAFPID-222694",
+						"CSAFPID-222711",
+						"CSAFPID-222925",
+						"CSAFPID-222942",
+						"CSAFPID-223018",
+						"CSAFPID-223019",
+						"CSAFPID-223241",
+						"CSAFPID-223252",
+						"CSAFPID-224424",
+						"CSAFPID-224702",
+						"CSAFPID-225099",
+						"CSAFPID-225168",
+						"CSAFPID-225337",
+						"CSAFPID-225359",
+						"CSAFPID-225360",
+						"CSAFPID-225466",
+						"CSAFPID-225568",
+						"CSAFPID-225569",
+						"CSAFPID-225784",
+						"CSAFPID-225832",
+						"CSAFPID-225856",
+						"CSAFPID-225858",
+						"CSAFPID-226037",
+						"CSAFPID-226078",
+						"CSAFPID-226160",
+						"CSAFPID-226330",
+						"CSAFPID-226354",
+						"CSAFPID-227513",
+						"CSAFPID-227556",
+						"CSAFPID-227918",
+						"CSAFPID-227920",
+						"CSAFPID-227922",
+						"CSAFPID-227923",
+						"CSAFPID-228193",
+						"CSAFPID-228194",
+						"CSAFPID-228690",
+						"CSAFPID-228706",
+						"CSAFPID-229124",
+						"CSAFPID-229187",
+						"CSAFPID-230240",
+						"CSAFPID-230301",
+						"CSAFPID-230302",
+						"CSAFPID-230303",
+						"CSAFPID-230998",
+						"CSAFPID-231187",
+						"CSAFPID-231389",
+						"CSAFPID-231390",
+						"CSAFPID-231454",
+						"CSAFPID-231667",
+						"CSAFPID-231682",
+						"CSAFPID-231826",
+						"CSAFPID-232008",
+						"CSAFPID-232461",
+						"CSAFPID-232766",
+						"CSAFPID-232767",
+						"CSAFPID-232851",
+						"CSAFPID-233141",
+						"CSAFPID-233155",
+						"CSAFPID-233447",
+						"CSAFPID-234928",
+						"CSAFPID-235307",
+						"CSAFPID-235858",
+						"CSAFPID-236834",
+						"CSAFPID-236837",
+						"CSAFPID-237332",
+						"CSAFPID-237460",
+						"CSAFPID-238937",
+						"CSAFPID-239264",
+						"CSAFPID-241736",
+						"CSAFPID-242308",
+						"CSAFPID-242834",
+						"CSAFPID-243362",
+						"CSAFPID-244070",
+						"CSAFPID-244071",
+						"CSAFPID-244530",
+						"CSAFPID-244686",
+						"CSAFPID-244900",
+						"CSAFPID-244912",
+						"CSAFPID-245375",
+						"CSAFPID-245377",
+						"CSAFPID-246386",
+						"CSAFPID-247573",
+						"CSAFPID-247629",
+						"CSAFPID-248242",
+						"CSAFPID-249171",
+						"CSAFPID-250629",
+						"CSAFPID-251075",
+						"CSAFPID-251165",
+						"CSAFPID-251166",
+						"CSAFPID-251225",
+						"CSAFPID-252045",
+						"CSAFPID-252235",
+						"CSAFPID-252271",
+						"CSAFPID-252272",
+						"CSAFPID-252913",
+						"CSAFPID-252914",
+						"CSAFPID-254688",
+						"CSAFPID-254712",
+						"CSAFPID-257955",
+						"CSAFPID-257984",
+						"CSAFPID-258170",
+						"CSAFPID-258229",
+						"CSAFPID-258388",
+						"CSAFPID-258406",
+						"CSAFPID-258900",
+						"CSAFPID-260741",
+						"CSAFPID-260917",
+						"CSAFPID-261240",
+						"CSAFPID-261241",
+						"CSAFPID-261465",
+						"CSAFPID-262389",
+						"CSAFPID-262390",
+						"CSAFPID-262549",
+						"CSAFPID-262588",
+						"CSAFPID-262590",
+						"CSAFPID-262592",
+						"CSAFPID-262595",
+						"CSAFPID-263804",
+						"CSAFPID-264096",
+						"CSAFPID-264488",
+						"CSAFPID-265735",
+						"CSAFPID-265841",
+						"CSAFPID-266259",
+						"CSAFPID-267110",
+						"CSAFPID-267240",
+						"CSAFPID-267605",
+						"CSAFPID-268921",
+						"CSAFPID-270097",
+						"CSAFPID-271798",
+						"CSAFPID-271938",
+						"CSAFPID-272047",
+						"CSAFPID-272932",
+						"CSAFPID-273112",
+						"CSAFPID-273445",
+						"CSAFPID-273448",
+						"CSAFPID-273509",
+						"CSAFPID-273563",
+						"CSAFPID-273649",
+						"CSAFPID-274818",
+						"CSAFPID-274832",
+						"CSAFPID-275538",
+						"CSAFPID-276837",
+						"CSAFPID-277099",
+						"CSAFPID-277147",
+						"CSAFPID-277148",
+						"CSAFPID-277194",
+						"CSAFPID-277255",
+						"CSAFPID-277256",
+						"CSAFPID-277321",
+						"CSAFPID-277338",
+						"CSAFPID-277343",
+						"CSAFPID-277348",
+						"CSAFPID-277357",
+						"CSAFPID-277904",
+						"CSAFPID-277945",
+						"CSAFPID-278002",
+						"CSAFPID-278018",
+						"CSAFPID-278019",
+						"CSAFPID-278020",
+						"CSAFPID-278023",
+						"CSAFPID-278025",
+						"CSAFPID-278032",
+						"CSAFPID-278402",
+						"CSAFPID-278504",
+						"CSAFPID-278780",
+						"CSAFPID-278881",
+						"CSAFPID-279338",
+						"CSAFPID-279339",
+						"CSAFPID-280463",
+						"CSAFPID-280555",
+						"CSAFPID-280651",
+						"CSAFPID-280652",
+						"CSAFPID-280770",
+						"CSAFPID-280783",
+						"CSAFPID-280800",
+						"CSAFPID-280801",
+						"CSAFPID-280899",
+						"CSAFPID-280937",
+						"CSAFPID-280938",
+						"CSAFPID-280939",
+						"CSAFPID-281320",
+						"CSAFPID-281331",
+						"CSAFPID-281438",
+						"CSAFPID-281654",
+						"CSAFPID-282017",
+						"CSAFPID-282028",
+						"CSAFPID-282046",
+						"CSAFPID-282115",
+						"CSAFPID-282116",
+						"CSAFPID-282117",
+						"CSAFPID-283831",
+						"CSAFPID-283835",
+						"CSAFPID-284161",
+						"CSAFPID-284178",
+						"CSAFPID-284179",
+						"CSAFPID-284331",
+						"CSAFPID-284740",
+						"CSAFPID-285325",
+						"CSAFPID-285326",
+						"CSAFPID-285327",
+						"CSAFPID-285328",
+						"CSAFPID-285329",
+						"CSAFPID-286031",
+						"CSAFPID-286409",
+						"CSAFPID-286410",
+						"CSAFPID-286477",
+						"CSAFPID-286486",
+						"CSAFPID-286498",
+						"CSAFPID-286534",
+						"CSAFPID-286544",
+						"CSAFPID-286594",
+						"CSAFPID-286799",
+						"CSAFPID-286801",
+						"CSAFPID-286802",
+						"CSAFPID-287087",
+						"CSAFPID-287125",
+						"CSAFPID-288221",
+						"CSAFPID-288247",
+						"CSAFPID-289372",
+						"CSAFPID-290562",
+						"CSAFPID-290565",
+						"CSAFPID-290580",
+						"CSAFPID-290596",
+						"CSAFPID-290660",
+						"CSAFPID-290669",
+						"CSAFPID-290671",
+						"CSAFPID-290673",
+						"CSAFPID-290674",
+						"CSAFPID-290675",
+						"CSAFPID-292510",
+						"CSAFPID-292650",
+						"CSAFPID-292656",
+						"CSAFPID-292698",
+						"CSAFPID-292876",
+						"CSAFPID-294838",
+						"CSAFPID-295198",
+						"CSAFPID-295398",
+						"CSAFPID-295412",
+						"CSAFPID-295421",
+						"CSAFPID-296763",
+						"CSAFPID-296860",
+						"CSAFPID-299967",
+						"CSAFPID-300012",
+						"CSAFPID-300834",
+						"CSAFPID-300845",
+						"CSAFPID-300847",
+						"CSAFPID-300848",
+						"CSAFPID-300850",
+						"CSAFPID-300877",
+						"CSAFPID-300948"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software Auxiliary ASYNC Port Denial of Service Vulnerability."
+		}
+	]
+}

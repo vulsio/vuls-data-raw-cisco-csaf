@@ -1,0 +1,747 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Snort rule evaluation function of Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition on an affected device.\r\n\r\nThe vulnerability is due to improper handling of the DNS reputation enforcement rule. An attacker could exploit this vulnerability by sending crafted UDP packets through an affected device to force a buildup of UDP connections. A successful exploit could allow the attacker to cause traffic that is going through the affected device to be dropped, resulting in a DoS condition.\r\n\r\nNote: This vulnerability only affects Cisco FTD devices that are running Snort 3.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the April 2022 release of the Cisco ASA, FTD, and FMC Security Advisory Bundled publication. For a complete list of the advisories and links to them, see Cisco Event Response: April 2022 Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74836\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco platforms if they are running a vulnerable release of Cisco FTD Software and both of the following conditions are met:\r\n\r\nThe device is running Snort 3.\r\nDNS reputation enforcement is enabled on the device.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n\r\nSnort 3 is running by default for new installations of Cisco FTD releases 7.0.0 and later. On devices that were running Cisco FTD Release 6.7.0 or earlier and were upgraded to Release 7.0.0 or later, Snort 2 is running by default.\r\n\r\nDNS reputation enforcement is enabled by default on Cisco FTD releases 6.7 and later. DNS reputation enforcement was introduced in Cisco FTD Release 6.7.\r\n  Determine Cisco FTD Configuration through the FTD CLI\r\nTo determine if Snort 3 is configured on a device, log in to the FTD CLI and use the show snort3 status command. If the command produces the following output, the device is running Snort 3 and may be affected by this vulnerability:\r\n\r\n\r\n> show snort3 status\r\nCurrently running Snort 3\r\n\r\nTo determine if DNS Reputation Enforcement is enabled, do the following:\r\n\r\nLog in to the FTD CLI.\r\nUse the expert command to enter expert mode.\r\nGo to the lua directory. This directory is located at /ngfw/var/sf/detection_engines/uuid/lua, where uuid is the universally unique identifier for the Cisco FTD installation.\r\nUse the grep command to search for dns_filter in the firewall.lua file in the lua directory.\r\nIf dns_filtering_enabled = true is in the file, the device is affected by this vulnerability.\r\nIf dns_filtering_enabled = false is in the file, the device is not affected by this vulnerability.\r\nIf dns_filtering_enabled is not in the file, the device is not affected by this vulnerability.\r\n\r\n\r\n\r\n>expert\r\nexpert admin@ftd700:~$ cd /ngfw/var/sf/detection_engines/e4dec56e-ef9e-11eb-b690-6843d4a521ed/lua/\r\nexpert admin@ftd700:~$ grep dns_filter firewall.lua\r\ndns_filtering_enabled = true\r\n\r\nNote: The show access-control-config command does not show the correct status of the DNS reputation enforcement setting due to defect CSCwb37077 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwb37077\"].\r\n  Determine Cisco FTD Configuration for Cisco Firepower Management Center (FMC) Managed Devices\r\nTo determine if Snort 3 is configured on a device, do the following:\r\n\r\nLog in to the FMC web interface.\r\nFrom the Devices menu, choose Device Management.\r\nChoose the appropriate FTD device.\r\nClick the Edit pencil icon.\r\nClick the Device tab and look in the Inspection Engine area.\r\nIf Snort 2 is listed, the device is not affected by this vulnerability.\r\nIf Snort 3 is listed, the device may be affected by this vulnerability.\r\n\r\n\r\nTo determine if DNS reputation enforcement is enabled, do the following:\r\n\r\nLog in to the FMC web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the policy to review.\r\nClick the Edit pencil icon.\r\nClick the Advanced tab.\r\nIn the General Settings area, look for Enable reputation enforcement on DNS traffic.\r\nIf the setting is Yes, the device is affected by this vulnerability.\r\nIf the setting is No, the device is not affected by this vulnerability.\r\n\r\n  Determine Cisco FTD Configuration for Cisco Firepower Device Management (FDM) Managed Devices\r\nTo determine if Snort 3 is configured on a device, do the following:\r\n\r\nLog in to the FTD web interface.\r\nFrom the main menu, choose Policies.\r\nClick the Intrusion tab.\r\nLook for the Inspection Engine version. The version will start with either a 2 for Snort 2 or a 3 for Snort 3.\r\nIf the version begins with a 2, the device is running a Snort 2 version and is not affected by this vulnerability.\r\nIf the version begins with a 3, the device is running a Snort 3 version and could be affected by this vulnerability.\r\n\r\n\r\nTo determine if DNS reputation enforcement is enabled, do the following:\r\n\r\nLog in to the FTD web interface.\r\nFrom the main menu, choose Policies.\r\nClick the Access Control tab.\r\nClick the Settings gear.\r\nLook for Reputation Enforcement on DNS traffic.\r\nIf the setting is on, the device is affected by this vulnerability.\r\nIf the setting is off, the device is not affected by this vulnerability.\r\n\r\n  Determine Cisco FTD Configuration for Cisco Defense Orchestrator Managed Devices\r\nTo determine if Snort 3 is configured, do the following:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Inventory menu, choose the appropriate FTD device.\r\nIn the Device Details area, look for Snort Version. The version will start with either a 2 for Snort 2 or a 3 for Snort 3.\r\nIf the version begins with a 2, the device is running a Snort 2 version and is not affected by this vulnerability.\r\nIf the version begins with a 3, the device is running a Snort 3 version and could be affected by this vulnerability.\r\n\r\n\r\nTo determine if DNS reputation enforcement is enabled, do the following:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Inventory menu, choose the appropriate FTD device.\r\nIn the Management area, click Policy.\r\nClick the Settings gear.\r\nLook for Reputation Enforcement on DNS traffic.\r\nIf the setting is on, the device is affected by this vulnerability.\r\nIf the setting is off, the device is not affected by this vulnerability.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nAdaptive Security Appliance (ASA) Software\r\nFMC Software\r\nFTD Software that is running Snort 2\r\nMeraki MX Series Software\r\nOpen source Snort 2 Project\r\nOpen source Snort 3 Project",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability. However, as a mitigation, administrators can disable DNS reputation enforcement. Disabling DNS reputation enforcement from the FTD CLI is not recommended because that process does not update the setting in the management device. This could cause instability in the system or unplanned reversion of the setting.\r\n\r\nTo disable DNS reputation enforcement for Cisco FMC managed devices, do the following:\r\n\r\nLog in to the FMC web interface.\r\nFrom the Policies menu, choose Access Control.\r\nChoose the policy to review.\r\nClick the Edit pencil icon.\r\nClick the Advanced tab.\r\nClick the Edit pencil icon for General Settings.\r\nUncheck the Enable reputation enforcement on DNS traffic check box to turn the setting off.\r\nClick OK.\r\nDeploy the change to the FTD devices.\r\n\r\nTo disable DNS reputation enforcement for Cisco FDM managed devices, do the following:\r\n\r\nLog in to the FTD web interface.\r\nFrom the main menu, click Policies.\r\nClick the Access Control tab.\r\nClick the Settings gear.\r\nLook for the Reputation Enforcement on DNS traffic.\r\nClick the switch to turn the setting off.\r\nClick OK.\r\n\r\nTo disable DNS Reputation Enforcement for Cisco Defense Orchestrator managed devices, do the following:\r\n\r\nLog in to the Cisco Defense Orchestrator web interface.\r\nFrom the Inventory menu, choose the appropriate FTD device.\r\nIn the Management area, click Policy.\r\nClick the Settings gear.\r\nLook for the Reputation Enforcement on DNS traffic.\r\nClick the switch to turn the setting off.\r\nClick OK.\r\nDeploy the change to the FTD device.\r\n\r\nWhile these mitigations have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu\"] that address the vulnerability described in this advisory. Customers with service contracts that entitle them to regular software updates should obtain security fixes through their usual update channels.\r\n\r\nCustomers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nThe Cisco Support and Downloads page [\"https://www.cisco.com/c/en/us/support/index.html\"] on Cisco.com provides information about licensing and downloads. This page can also display customer device support coverage for customers who use the My Devices tool.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n  Customers Without Service Contracts\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n      Fixed Releases\r\nIn the following table(s), the left column lists Cisco software releases. The center column indicates whether a release is affected by the vulnerability described in this advisory and the first release that includes the fix for this vulnerability. The right column indicates whether a release is affected by any of the Critical or High SIR vulnerabilities described in this bundle and which release includes fixes for those vulnerabilities.\r\n\r\nFTD Software\r\n        Cisco FTD Software Release  First Fixed Release for This Vulnerability  First Fixed Release for All Vulnerabilities Described in the Bundle of Advisories          6.2.2 and earlier1  Not vulnerable.2  Migrate to a fixed release.      6.2.3  Not vulnerable.2  Migrate to a fixed release.      6.3.01  Not vulnerable.2  Migrate to a fixed release.      6.4.0  Not vulnerable.2  6.4.0.15 (May 2022)      6.5.01  Not vulnerable.2  Migrate to a fixed release.      6.6.0  Not vulnerable.2  6.6.5.2      6.7.0  Migrate to a fixed release.3  Migrate to a fixed release.      7.0.0  7.0.2 (May 2022)  7.0.2 (May 2022)      7.1.0  7.1.0.1  7.1.0.1\r\n1. Cisco FMC and FTD Software releases 6.2.2 and earlier, as well as releases 6.3.0 and 6.5.0, have reached end of software maintenance [\"https://www.cisco.com/c/en/us/products/eos-eol-listing.html\"]. Customers are advised to migrate to a supported release that includes the fix for this vulnerability.\r\n2. Snort 3 was first included in Cisco FTD Release 6.7.0 for Cisco FDM and Cisco Defense Orchestrator managed devices. Snort 3 was first released in Cisco FTD Release 7.0.0 for Cisco FMC managed devices.\r\n3. Only Cisco FDM and Cisco Defense Orchestrator managed devices are vulnerable in Release 6.7.0. Cisco FMC managed devices are not vulnerable because Snort 3 was not released in Cisco FMC managed devices until Release 7.0.0.\r\n\r\nFor instructions on upgrading your FTD device, see Cisco Firepower Management Center Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html\"].\r\n\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firepower Threat Defense Software DNS Enforcement Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-FTD-snort3-DOS-Aq38LVdM"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: April 2022 Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-74836"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwb37077",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwb37077"
+			},
+			{
+				"category": "external",
+				"summary": "free software updates",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Support and Downloads page",
+				"url": "https://www.cisco.com/c/en/us/support/index.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "end of software maintenance",
+				"url": "https://www.cisco.com/c/en/us/products/eos-eol-listing.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Firepower Management Center Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html"
+			}
+		],
+		"title": "Cisco Firepower Threat Defense Software DNS Enforcement Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2022-04-27T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:15:23+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-FTD-snort3-DOS-Aq38LVdM",
+			"initial_release_date": "2022-04-27T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2022-04-27T15:53:05+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0.0",
+										"product": {
+											"name": "7.0.0",
+											"product_id": "CSAFPID-282695"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.0.1",
+										"product": {
+											"name": "7.0.0.1",
+											"product_id": "CSAFPID-284277"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1",
+										"product": {
+											"name": "7.0.1",
+											"product_id": "CSAFPID-284789"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1.1",
+										"product": {
+											"name": "7.0.1.1",
+											"product_id": "CSAFPID-286538"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1.0",
+										"product": {
+											"name": "7.1.0",
+											"product_id": "CSAFPID-286091"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco ASA 5500-X Series Firewalls",
+						"product": {
+							"name": "Cisco ASA 5500-X Series Firewalls",
+							"product_id": "CSAFPID-277437"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 4100 Series",
+						"product": {
+							"name": "Cisco Firepower 4100 Series",
+							"product_id": "CSAFPID-277441"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall Threat Defense Virtual",
+						"product": {
+							"name": "Cisco Secure Firewall Threat Defense Virtual",
+							"product_id": "CSAFPID-277464"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-282695:277392"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-282695:277393"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-282695:277437"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-282695:277438"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-282695:277440"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-282695:277441"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-282695:277464"
+				},
+				"product_reference": "CSAFPID-282695",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-284277:277392"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-284277:277393"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-284277:277437"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-284277:277438"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-284277:277440"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-284277:277441"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.0.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-284277:277464"
+				},
+				"product_reference": "CSAFPID-284277",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-284789:277392"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-284789:277393"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-284789:277437"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-284789:277438"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-284789:277440"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-284789:277441"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-284789:277464"
+				},
+				"product_reference": "CSAFPID-284789",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286538:277392"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-286538:277393"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-286538:277437"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286538:277438"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-286538:277440"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-286538:277441"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.0.1.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-286538:277464"
+				},
+				"product_reference": "CSAFPID-286538",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-286091:277392"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-286091:277393"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-286091:277438"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-286091:277440"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-286091:277441"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-286091:277464"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.1.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-286091:286865"
+				},
+				"product_reference": "CSAFPID-286091",
+				"relates_to_product_reference": "CSAFPID-286865"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2022-20767",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwa21016"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-282695:277392",
+					"CSAFPID-282695:277393",
+					"CSAFPID-282695:277437",
+					"CSAFPID-282695:277438",
+					"CSAFPID-282695:277440",
+					"CSAFPID-282695:277441",
+					"CSAFPID-282695:277464",
+					"CSAFPID-284277:277392",
+					"CSAFPID-284277:277393",
+					"CSAFPID-284277:277437",
+					"CSAFPID-284277:277438",
+					"CSAFPID-284277:277440",
+					"CSAFPID-284277:277441",
+					"CSAFPID-284277:277464",
+					"CSAFPID-284789:277392",
+					"CSAFPID-284789:277393",
+					"CSAFPID-284789:277437",
+					"CSAFPID-284789:277438",
+					"CSAFPID-284789:277440",
+					"CSAFPID-284789:277441",
+					"CSAFPID-284789:277464",
+					"CSAFPID-286091:277392",
+					"CSAFPID-286091:277393",
+					"CSAFPID-286091:277438",
+					"CSAFPID-286091:277440",
+					"CSAFPID-286091:277441",
+					"CSAFPID-286091:277464",
+					"CSAFPID-286091:286865",
+					"CSAFPID-286538:277392",
+					"CSAFPID-286538:277393",
+					"CSAFPID-286538:277437",
+					"CSAFPID-286538:277438",
+					"CSAFPID-286538:277440",
+					"CSAFPID-286538:277441",
+					"CSAFPID-286538:277464"
+				]
+			},
+			"release_date": "2022-04-27T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-282695:277392",
+						"CSAFPID-282695:277393",
+						"CSAFPID-282695:277437",
+						"CSAFPID-282695:277438",
+						"CSAFPID-282695:277440",
+						"CSAFPID-282695:277441",
+						"CSAFPID-282695:277464",
+						"CSAFPID-284277:277392",
+						"CSAFPID-284277:277393",
+						"CSAFPID-284277:277437",
+						"CSAFPID-284277:277438",
+						"CSAFPID-284277:277440",
+						"CSAFPID-284277:277441",
+						"CSAFPID-284277:277464",
+						"CSAFPID-284789:277392",
+						"CSAFPID-284789:277393",
+						"CSAFPID-284789:277437",
+						"CSAFPID-284789:277438",
+						"CSAFPID-284789:277440",
+						"CSAFPID-284789:277441",
+						"CSAFPID-284789:277464",
+						"CSAFPID-286091:277392",
+						"CSAFPID-286091:277393",
+						"CSAFPID-286091:277438",
+						"CSAFPID-286091:277440",
+						"CSAFPID-286091:277441",
+						"CSAFPID-286091:277464",
+						"CSAFPID-286091:286865",
+						"CSAFPID-286538:277392",
+						"CSAFPID-286538:277393",
+						"CSAFPID-286538:277437",
+						"CSAFPID-286538:277438",
+						"CSAFPID-286538:277440",
+						"CSAFPID-286538:277441",
+						"CSAFPID-286538:277464"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-282695:277392",
+						"CSAFPID-282695:277393",
+						"CSAFPID-282695:277437",
+						"CSAFPID-282695:277438",
+						"CSAFPID-282695:277440",
+						"CSAFPID-282695:277441",
+						"CSAFPID-282695:277464",
+						"CSAFPID-284277:277392",
+						"CSAFPID-284277:277393",
+						"CSAFPID-284277:277437",
+						"CSAFPID-284277:277438",
+						"CSAFPID-284277:277440",
+						"CSAFPID-284277:277441",
+						"CSAFPID-284277:277464",
+						"CSAFPID-284789:277392",
+						"CSAFPID-284789:277393",
+						"CSAFPID-284789:277437",
+						"CSAFPID-284789:277438",
+						"CSAFPID-284789:277440",
+						"CSAFPID-284789:277441",
+						"CSAFPID-284789:277464",
+						"CSAFPID-286091:277392",
+						"CSAFPID-286091:277393",
+						"CSAFPID-286091:277438",
+						"CSAFPID-286091:277440",
+						"CSAFPID-286091:277441",
+						"CSAFPID-286091:277464",
+						"CSAFPID-286091:286865",
+						"CSAFPID-286538:277392",
+						"CSAFPID-286538:277393",
+						"CSAFPID-286538:277437",
+						"CSAFPID-286538:277438",
+						"CSAFPID-286538:277440",
+						"CSAFPID-286538:277441",
+						"CSAFPID-286538:277464"
+					]
+				}
+			],
+			"title": "Cisco Firepower Threat Defense Software DNS Enforcement Denial of Service Vulnerability"
+		}
+	]
+}

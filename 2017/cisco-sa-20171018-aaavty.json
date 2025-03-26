@@ -1,0 +1,3466 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the authentication, authorization, and accounting (AAA) implementation of Cisco Firepower Extensible Operating System (FXOS) and NX-OS System Software could allow an unauthenticated, remote attacker to cause an affected device to reload.\r\n\r\nThe vulnerability occurs because AAA processes prevent the NX-OS System Manager from receiving keepalive messages when an affected device receives a high rate of login attempts, such as in a brute-force login attack. System memory can run low on the FXOS devices under the same conditions, which could cause the AAA process to unexpectedly restart or cause the device to reload.\r\n\r\nAn attacker could exploit this vulnerability by performing a brute-force login attack against a device that is configured with AAA security services. A successful exploit could allow the attacker to cause the affected device to reload.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\nNote: Previous versions of this advisory recommended upgrading the Cisco NX-OS Software Release and configuring the login block-for CLI command to prevent this vulnerability. Cisco has since become aware that the login block-for CLI command may not function as desired in all cases. This does not apply to Cisco FXOS. Please refer to the Details [\"#details\"] section for additional information.\r\n\r\nThis advisory is available at the following link:\r\nhttps://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171018-aaavty [\"https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171018-aaavty\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects the following Cisco products if they are running Cisco FXOS or NX-OS System Software that is configured for AAA services:\r\nFirepower 4100 Series Next-Generation Firewall\r\nFirepower 9300 Security Appliance\r\nMDS 9000 Series Multilayer Director Switches\r\nNexus 1000V Series Switches\r\nNexus 1100 Series Cloud Services Platforms\r\nNexus 2000 Series Switches\r\nNexus 3000 Series Switches\r\nNexus 3500 Platform Switches\r\nNexus 3600 Platform Switches\r\nNexus 5000 Series Switches\r\nNexus 5500 Platform Switches\r\nNexus 5600 Platform Switches\r\nNexus 6000 Series Switches\r\nNexus 7000 Series Switches\r\nNexus 7700 Series Switches\r\nNexus 9000 Series Switches in NX-OS mode\r\nNexus 9500 R-Series Line Cards and Fabric Modules\r\nUnified Computing System (UCS) 6100 Series Fabric Interconnects\r\nUCS 6200 Series Fabric Interconnects\r\nUCS 6300 Series Fabric Interconnects\r\n  Cisco NX-OS Software\r\n\r\nTo determine whether a device that is running Cisco NX-OS System Software is configured for AAA, administrators can use the show running-config | include aaa command from the Cisco NX-OS CLI and verify that there are aaa commands configured on the device. The following example shows sample output from a typical NX-OS AAA configuration:\r\nnx-os-switch# show running-config | include aaa\r\naaa group server tacacs+ <group name>\r\naaa authentication login default group <group name>\r\naaa authentication login console local\r\naaa accounting default group <group name>\r\nTo determine whether a device is running a vulnerable release of Cisco NX-OS System Software, administrators can use the show version command in the Cisco NX-OS CLI.  The following example shows the output of that command for a device that is running Cisco NX-OS System Software Release 6.2(10):\r\nnxos-switch# show version\r\n\r\nCisco Nexus Operating System (NX-OS) Software\r\nTAC support: http://www.cisco.com/tac\r\nDocuments:\r\nhttp://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.\r\nhtml\r\nCopyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.\r\nThe copyrights to certain works contained in this software are\r\nowned by other third parties and used and distributed under\r\nlicense. Certain components of this software are licensed under\r\nthe GNU General Public License (GPL) version 2.0 or the GNU\r\nLesser General Public License (LGPL) Version 2.1. A copy of each\r\nsuch license is available at\r\nhttp://www.opensource.org/licenses/gpl-2.0.php and\r\nhttp://www.opensource.org/licenses/lgpl-2.1.php\r\n\r\nSoftware\r\nBIOS:      version 2.12.0\r\nkickstart: version 6.2(10)\r\nsystem:    version 6.2(10)\r\n.\r\n.  .\r\n  Cisco FXOS\r\n\r\nIn Cisco FXOS, AAA authentication is configured with the scope tacacs, scope radius, or scope ldap CLI commands. The presence of these commands in the device configuration indicates that the device is vulnerable. For additional information about AAA configuration for FXOS-based devices, refer to Cisco FXOS CLI Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/fxos/fxos201/cli-config/b_CLI_ConfigGuide_FXOS_201/platform_settings.html#topic_105C66CC3C7F4D99B08A413FEF5BCEF4\"].\r\n\r\nTo determine whether a device is running a vulnerable release of Cisco FXOS, administrators can use the show version command in the Cisco FXOS CLI. The following example shows the output of that command for a device that is running Cisco FXOS Release 2.2(1.70) on the Firepower 4100 Series Next-Generation Firewall hardware platform:\r\nfp4100# show version\r\nFPRM:\r\nRunning-Vers: 4.2(1.65)\r\nPackage-Vers: 2.2(1.70)\r\nActivate-Status: Ready",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nFirepower 2100 Series\r\nNexus 4000 Series Switches\r\nNexus 9000 Series Switches in Application Centric Infrastructure (ACI) mode\r\n  Note: The Nexus 4000 Series Switch has entered the end-of-life phase. Refer to End-of-Sale and End-of-Life Announcement for the Cisco Nexus 4000 Series Switch Modules for IBM BladeCenter [\"https://www.cisco.com/c/en/us/products/collateral/switches/nexus-4000-series-switches/eos-eol-notice-c51-733205.html\"] for additional information.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco NX-OS System Software\r\n\r\nTo prevent exploitation of this vulnerability, customers should upgrade to a release of Cisco NX-OS System Software that supports secure login enhancements and configure login parameters for the software by using the login block-for command in the Cisco NX-OS CLI. Customers who cannot upgrade to or access a Cisco NX-OS System Software image that supports secure login enhancements should implement the workarounds described in this advisory.\r\n\r\nThe following example shows how to use the login block-for command to configure a device to go into quiet mode for 45 seconds if three failed interactive attempts are made within 60 seconds:\r\nlogin block-for 45 attempts 3 within 60\r\n  The system keyword is needed on the Cisco Nexus 3000 and 9000 Series Switches:\r\n\r\nsystem login block-for 45 attempts 3 within 60\r\n  For more information about configuring login parameters and the login block-for command, see the Cisco Nexus 7000 Series NX-OS Security Configuration Guide [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/6_x/nx-os/security/configuration/guide/b_Cisco_Nexus_7000_NX-OS_Security_Configuration_Guide__Release_6-x/b_Cisco_Nexus_7000_NX-OS_Security_Configuration_Guide__Release_6-x_chapter_0100.html#task_81E1559B0A0348D29A9FF0106AA2806E\"] or Cisco Nexus 9000 Series NX-OS Security Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/security/configuration/guide/b_Cisco_Nexus_9000_Series_NX-OS_Security_Configuration_Guide_7x/b_Cisco_Nexus_9000_Series_NX-OS_Security_Configuration_Guide_7x_chapter_011.html\"].\r\n\r\nThis vulnerability is prevented only by configuring the login block-for CLI command; otherwise, the device remains vulnerable regardless of the software release the Cisco NX-OS platform is running.\r\n\r\nUpdate: The login block-for CLI command may not function as desired on the following Cisco NX-OS platforms.\r\n\r\nNexus 2000 Series Switches\r\n    Nexus 3500 Platform Switches\r\n    Nexus 5000 Series Switches\r\n    Nexus 5500 Platform Switches\r\n    Nexus 5600 Platform Switches\r\n    Nexus 6000 Series Switches\r\n    Nexus 7000 Series Switches\r\n    Nexus 7700 Series Switches\r\n  For these platforms, it is recommended to not configure the login block-for CLI command and instead refer to the Workarounds [\"#workarounds\"] section until fixed software becomes available.\r\n\r\nThe login block-for command does work as expected on the following Cisco NX-OS platforms as of the first fixed release recommended in this advisory:\r\n\r\nMDS 9000 Series Multilayer Director Switches\r\nNexus 3000 Series Switches\r\nNexus 3600 Platform Switches\r\nNexus 9000 Series Switches in NX-OS mode\r\nNexus 9500 R-Series Line Cards and Fabric Modules\r\nUnified Computing System (UCS) 6100 Series Fabric Interconnects\r\nUCS 6200 Series Fabric Interconnects\r\nUCS 6300 Series Fabric Interconnects\r\n  Cisco FXOS\r\n\r\nOn Cisco FXOS platforms, Firepower 4100 Series Next-Generation Firewall, and 9300 Security Appliance, the DoS condition was prevented by adding an internal throttling mechanism for the remote brute-force attack condition. This mechanism does not require users to configure it.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "On both Cisco FXOS and NX-OS System Software, the AAA-related processes could restart and generate a core file. This indicator will be accompanied by many failed login attempts, indicating that a brute-force attack may be underway. Contact the Cisco Technical Assistance Center (TAC) to review any AAA-related core and system log files to determine whether the device has been compromised by exploitation of this vulnerability.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "Cisco NX-OS System Software\r\n\r\nConfiguring a vty Access Class\r\n\r\nOn some platforms that are running Cisco NX-OS System Software, it is possible to limit exposure of an affected device by creating a vty access-control list (ACL) on the device and configuring the ACL to permit only known, trusted devices to connect to the device via Telnet and Secure Shell (SSH).\r\n\r\nNote:\r\n\r\nThis workaround is not available on some platforms that are running Cisco NX-OS, and should be used only where applicable.\r\nThere is no Cisco UCS workaround that addresses this vulnerability.\r\nThe ACL in this example is for IPv4. This vulnerability can also be exploited against IPv6 interfaces. If the NX-OS device is configured for IPv6, the same ACL should be configured for the IPv6 address range.\r\n  The following example shows an ACL that permits access to vtys from the 192.168.1.0/24 netblock and the single IP address 172.16.1.2 while denying access from all other addresses:\r\nip access-list vtyacl\r\n  10 permit tcp 192.168.1.0/24 172.16.1.2/32\r\n  line vty\r\n  access-class vtyacl in\r\n    For more information about restricting traffic to vtys, see the Cisco Nexus 7000 Series NX-OS Security Configuration Guide [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/6_x/nx-os/security/configuration/guide/b_Cisco_Nexus_7000_NX-OS_Security_Configuration_Guide__Release_6-x/b_Cisco_Nexus_7000_NX-OS_Security_Configuration_Guide__Release_6-x_chapter_01110.html#task_1452624\"]. It is considered a best practice for an NX-OS device to have a vty ACL configured. Refer to Cisco Guide to Securing Cisco NX-OS Software Devices [\"http://www.cisco.com/c/en/us/about/security-center/securing-nx-os.html\"] for additional information about hardening Cisco NX-OS devices.\r\n\r\nCisco FXOS\r\n\r\nOn Cisco FXOS platforms, it is possible to limit the exposure of an affected device by using the ip-block command to permit only known, trusted hosts to connect to the device via SSH. The following example show only a subset of IPv4 and IPv6 hosts being permitted to connect via SSH.\r\nscope system\r\n  scope services\r\n    create ip-block 11.1.1.1 24 ssh\r\n    create ipv6-block 2014::10:76:78:107 64 ssh\r\n    commit-buffer\r\nFor more information about configuring Cisco FXOS IP Access Lists see the \"Configure the IP Access List\" section of the Cisco FXOS CLI Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/fxos/fxos211/cli-config/b_CLI_ConfigGuide_FXOS_211/security_certifications_compliance.html\"].",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates that address the vulnerability described in this advisory. Customers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license: http://www.cisco.com/c/en/us/td/docs/general/warranty/English/EU1KEN_.html [\"http://www.cisco.com/c/en/us/td/docs/general/warranty/English/EU1KEN_.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nWhen considering software upgrades, customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n\r\nCustomers Without Service Contracts\r\n\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html [\"http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html\"].\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n\r\nFixed Releases\r\n\r\nCustomers should upgrade to an appropriate release as indicated in the following Cisco product tables.  Please note that on the Cisco NX-OS platforms, this vulnerability can still be exploited unless the CLI command login block-for is configured. The login block-for command should be configured only on the NX-OS platforms that have fixed software available in the following tables.\r\n\r\nFirepower 4100 Series Next-Generation Firewall: CSCve03660 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCve03660\"]\r\n\r\n                              Cisco FXOS Major Release - Firepower 4100\r\n              First Fixed Release                                  Prior to 2.3               Affected; migrate to 2.3.1                                  2.3               2.3.1 (future release)\r\nFirepower 9300 Security Appliance: CSCve03660 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCve03660\"]\r\n\r\n                              Cisco FXOS Major Release - Firepower 9300\r\n              First Fixed Release                                  Prior to 2.3              Affected; migrate to 2.3.1                                  2.3              2.3.1 (future release)\r\n\r\nMDS 9000 Series Multilayer Director Switches: CSCvc33141 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvc33141\"] and CSCvf64888 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvf64888\"]\r\n\r\n                              Cisco NX-OS Software Major Release - MDS              First Fixed Release                                  5.2              Affected; migrate to 6.2(23)\r\n                                  6.2              6.2(23)                                  6.3              Affected; migrate to 7.3(1)DY(1)                                   7.3              7.3(1)DY(1)                                  8.1               Not vulnerable when the login block-for command is configured.\r\n                                  8.2              Not vulnerable when the login block-for command is configured.\r\n\r\nNexus 1000V Series Switches and Nexus 1100 Series Cloud Services Platforms: CSCux54898 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCux54898\"]\r\n\r\n                              Cisco NX-OS Software Major Release - Nexus 1000V Series Switches and Nexus 1100 Series Cloud Services Platforms              First Fixed Release                                  Prior to 4.2              No fix available                                  5.2              No fix available\r\nNexus 3000 Series Switches: CSCus05214 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCus05214\"] and CSCvb93995 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvb93995\"]\r\n [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCus05214\"]\r\n                              Cisco NX-OS Software Major Release - Nexus 3000 Series Switches              First Fixed Release                                  Prior to 6.0              Affected; migrate to 7.0(3)I6(1) or later                                  6.0              7.0(3)I6(1) or later                                  7.0              7.0(3)I6(1) or later\r\n\r\nNexus 3500 Platform Switches: CSCus05214 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCus05214\"] and CSCvb93995 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvb93995\"]\r\n\r\n                                Cisco NX-OS Software Major Release - Nexus 3500 Platform Switches              First Fixed Release                                  Prior to 6.0              Affected; migrate to 6.0(2)A8(8) or later                                  6.0              6.0(2)A8(8) [Target November 2017]\r\nNexus 2000, 5000, 5500, 5600, and 6000 Series Switches: CSCuq71257 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuq71257\"] and CSCvg41173 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg41173\"]\r\n\r\n                              Cisco NX-OS Software Major Release - Nexus 5000 Series Switches                            First Fixed Release                                                Prior to 5.2              No fix available                                  5.2\r\n              No fix available\r\n\r\n                              Cisco NX-OS Software Major Release - Nexus 2000, 5500, 5600, and 6000 Series Switches                            First Fixed Release                                                Prior to 5.2               Affected; migrate to 7.3(3)N1(1)\r\n                                  5.2\r\n              Affected; migrate to 7.3(3)N1(1)\r\n                                  6.0\r\n              Affected; migrate to 7.3(3)N1(1)\r\n                                  7.0               Affected; migrate to 7.3(3)N1(1)\r\n                                  7.1               Affected; migrate to 7.3(3)N1(1)\r\n                                  7.2               Affected; migrate to 7.3(3)N1(1)\r\n                                  7.3              7.3(3)N1(1) [Target April 2018]\r\n\r\nNexus 7000 and 7700 Series Switches:  CSCuq58760  [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuq58760\"]and CSCvb93995 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvb93995\"]\r\n\r\n                              Cisco NX-OS Software Major Release - Nexus 7000 and 7700 Series Switches              First Fixed Release                                  Prior to 5.2              Affected; migrate to 6.2(20) or 7.3(2)D1(2)\r\n                                  5.2              Affected; migrate to 6.2(20) or 7.3(2)D1(2)\r\n                                  6.0              Affected; migrate to 6.2(20) or 7.3(2)D1(2)\r\n                                  6.1               Affected; migrate to 6.2(20) or 7.3(2)D1(2)\r\n                                  6.2               6.2(20) [Target November 2017]\r\n                                  7.2               Affected; migrate to 7.2(3)D1(1) [Target March 2018] or 7.3(2)D1(2)                                   7.3               7.3(2)D1(2) [Target November 2017]                                   8.0               8.0(2) [Target March 2018]                                  8.1               8.1(2) [Target January 2018]                                  8.2               8.2(2) [Target April 2018]\r\n\r\n\r\nNexus 9000 Series Switches: CSCuq58760  [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuq58760\"]and CSCvb93995 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvb93995\"]\r\n\r\n                              Cisco NX-OS Software Major Release - Nexus 9000 Series Switches              First Fixed Release                                  6.1              Affected; migrate to 7.0(3)I6(1) or later                                  7.0              7.0(3)I6(1) or later\r\nNexus 9500 R-Series Line Cards and Fabric Modules and Nexus 3600 Platform Switches: CSCuq58760 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuq58760\"]\r\n\r\n                              Cisco NX-OS Software Major Release - Nexus 9500 R-Series and Nexus 3600 Platform Switches\r\n              First Fixed Release                                  7.0              7.0(3)F3(1) or later\r\nUCS 6100, 6200, and 6300 Fabric Interconnects: CSCur97432 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCur97432\"]1\r\n\r\n                              Cisco NX-OS Software Major Release - UCS              First Fixed Release                                  Prior to 2.2              Affected; migrate to 2.2(6c) or later                                  2.2              2.2(6c) or later\r\n                                  2.5               Not vulnerable when the login block-for command is configured.\r\n                                  3.0              Affected; migrate to 3.1(2b) or later                                  3.1              3.1(2b) or later                                  3.2               Not vulnerable when the login block-for command is configured.\r\n\r\n1The fix for Cisco bug ID CSCur97432 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCur97432\"] for Cisco UCS 6100, 6200, and 6300 Fabric Interconnects implemented the login block-for command. This fix was found to be incomplete, and brute-force attacks that occur over many hours could still cause a device to reset. Cisco bug ID CSCvd36971 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvd36971\"] tracks this remaining vulnerability, and the full fix is targeted for future software release 3.2(3).\r\n\r\nCisco NX-OS Release Recommendations\r\n\r\nFor additional assistance in determining the best Cisco NX-OS System Software release for a Cisco Nexus Switch, refer to the recommended release document for the switch:\r\n\r\nCisco Multilayer Director Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html\"]\r\nCisco Nexus 1000V for VMware Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus1000/sw/recommended_releases/b_Cisco_N1KV_VMware_MinRecommendedReleases.html\"]\r\nCisco Nexus 3000 Series and 3500 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html\"]\r\nCisco Nexus 5000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5000/sw/release/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 5500 Platform Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html\"]\r\nCisco Nexus 6000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 7000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 9000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html\"]\r\n  To determine the best Cisco NX-OS System Software release for Cisco UCS, refer to the Recommended Releases documents in the release notes for the device.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco FXOS and NX-OS System Software Authentication, Authorization, and Accounting Denial of Service Vulnerability",
+				"url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171018-aaavty"
+			}
+		],
+		"title": "Cisco FXOS and NX-OS System Software Authentication, Authorization, and Accounting Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2018-05-08T13:55:00+00:00",
+			"generator": {
+				"date": "2022-07-15T01:02:25+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20171018-aaavty",
+			"initial_release_date": "2017-10-18T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2017-10-18T13:51:57+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2017-10-18T20:37:21+00:00",
+					"number": "1.1.0",
+					"summary": "Added information about the use of the CLI command to prevent the device from being vulnerable. Added a workaround for Cisco FXOS."
+				},
+				{
+					"date": "2017-10-27T19:26:57+00:00",
+					"number": "2.0.0",
+					"summary": "Added information about new bugs to track fixes to the login block-for command."
+				},
+				{
+					"date": "2017-11-01T16:36:38+00:00",
+					"number": "2.1.0",
+					"summary": "Added fixed software for N3K and N9K. Removed the fixed release tables for platforms without fixes."
+				},
+				{
+					"date": "2017-11-03T16:49:54+00:00",
+					"number": "2.2.0",
+					"summary": "Clarified further that the login block-for command is required to not be vulnerable."
+				},
+				{
+					"date": "2017-11-09T19:37:42+00:00",
+					"number": "2.3.0",
+					"summary": "Added the 3600 platform to vulnerable products. Added target dates for some platforms that do not have current code fixes."
+				},
+				{
+					"date": "2018-05-08T13:55:13+00:00",
+					"number": "2.4.0",
+					"summary": "Added CDETS CSCvf64888 for MDS. Changed the naming for the MDS product and updated the fixed releases for MDS."
+				}
+			],
+			"status": "final",
+			"version": "2.4.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco MDS SAN-OS Software",
+						"product": {
+							"name": "Cisco MDS SAN-OS Software ",
+							"product_id": "CSAFPID-5348"
+						}
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.1(2)",
+										"product": {
+											"name": "4.1(2)",
+											"product_id": "CSAFPID-191429"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.1(3)",
+										"product": {
+											"name": "4.1(3)",
+											"product_id": "CSAFPID-191430"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.1(4)",
+										"product": {
+											"name": "4.1(4)",
+											"product_id": "CSAFPID-191431"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.1(5)",
+										"product": {
+											"name": "4.1(5)",
+											"product_id": "CSAFPID-191432"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(2a)",
+										"product": {
+											"name": "5.0(2a)",
+											"product_id": "CSAFPID-191438"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)",
+										"product": {
+											"name": "5.0(3)",
+											"product_id": "CSAFPID-191439"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(5)",
+										"product": {
+											"name": "5.0(5)",
+											"product_id": "CSAFPID-191440"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.2(2a)",
+										"product": {
+											"name": "4.2(2a)",
+											"product_id": "CSAFPID-191433"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(3)",
+										"product": {
+											"name": "4.2(3)",
+											"product_id": "CSAFPID-191434"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(4)",
+										"product": {
+											"name": "4.2(4)",
+											"product_id": "CSAFPID-191435"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(6)",
+										"product": {
+											"name": "4.2(6)",
+											"product_id": "CSAFPID-191436"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(8)",
+										"product": {
+											"name": "4.2(8)",
+											"product_id": "CSAFPID-191437"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.1(1)",
+										"product": {
+											"name": "5.1(1)",
+											"product_id": "CSAFPID-191441"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(1a)",
+										"product": {
+											"name": "5.1(1a)",
+											"product_id": "CSAFPID-191442"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(3)",
+										"product": {
+											"name": "5.1(3)",
+											"product_id": "CSAFPID-191443"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(4)",
+										"product": {
+											"name": "5.1(4)",
+											"product_id": "CSAFPID-191444"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(5)",
+										"product": {
+											"name": "5.1(5)",
+											"product_id": "CSAFPID-191445"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(6)",
+										"product": {
+											"name": "5.1(6)",
+											"product_id": "CSAFPID-191446"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.2(1)",
+										"product": {
+											"name": "5.2(1)",
+											"product_id": "CSAFPID-191447"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(3a)",
+										"product": {
+											"name": "5.2(3a)",
+											"product_id": "CSAFPID-191448"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(4)",
+										"product": {
+											"name": "5.2(4)",
+											"product_id": "CSAFPID-191449"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(5)",
+										"product": {
+											"name": "5.2(5)",
+											"product_id": "CSAFPID-191450"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(7)",
+										"product": {
+											"name": "5.2(7)",
+											"product_id": "CSAFPID-191451"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(9)",
+										"product": {
+											"name": "5.2(9)",
+											"product_id": "CSAFPID-191452"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.1(1)",
+										"product": {
+											"name": "6.1(1)",
+											"product_id": "CSAFPID-191457"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)",
+										"product": {
+											"name": "6.1(2)",
+											"product_id": "CSAFPID-191458"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(3)",
+										"product": {
+											"name": "6.1(3)",
+											"product_id": "CSAFPID-191459"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(4)",
+										"product": {
+											"name": "6.1(4)",
+											"product_id": "CSAFPID-196607"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(4a)",
+										"product": {
+											"name": "6.1(4a)",
+											"product_id": "CSAFPID-196608"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(5)",
+										"product": {
+											"name": "6.1(5)",
+											"product_id": "CSAFPID-212033"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(3)S5",
+										"product": {
+											"name": "6.1(3)S5",
+											"product_id": "CSAFPID-225656"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(3)S6",
+										"product": {
+											"name": "6.1(3)S6",
+											"product_id": "CSAFPID-225657"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.0(0)N1(1a)",
+										"product": {
+											"name": "4.0(0)N1(1a)",
+											"product_id": "CSAFPID-191394"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.0(0)N1(2)",
+										"product": {
+											"name": "4.0(0)N1(2)",
+											"product_id": "CSAFPID-191395"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.0(0)N1(2a)",
+										"product": {
+											"name": "4.0(0)N1(2a)",
+											"product_id": "CSAFPID-191396"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.0(0)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.0(1a)N1(1)",
+										"product": {
+											"name": "4.0(1a)N1(1)",
+											"product_id": "CSAFPID-191397"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.0(1a)N1(1a)",
+										"product": {
+											"name": "4.0(1a)N1(1a)",
+											"product_id": "CSAFPID-191398"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.0(1a)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.0(1a)N2(1)",
+										"product": {
+											"name": "4.0(1a)N2(1)",
+											"product_id": "CSAFPID-191399"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.0(1a)N2(1a)",
+										"product": {
+											"name": "4.0(1a)N2(1a)",
+											"product_id": "CSAFPID-191400"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.0(1a)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.1(3)N1(1)",
+										"product": {
+											"name": "4.1(3)N1(1)",
+											"product_id": "CSAFPID-191401"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.1(3)N1(1a)",
+										"product": {
+											"name": "4.1(3)N1(1a)",
+											"product_id": "CSAFPID-191402"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.1(3)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.1(3)N2(1)",
+										"product": {
+											"name": "4.1(3)N2(1)",
+											"product_id": "CSAFPID-191403"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.1(3)N2(1a)",
+										"product": {
+											"name": "4.1(3)N2(1a)",
+											"product_id": "CSAFPID-191404"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.1(3)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.2(1)N1(1)",
+										"product": {
+											"name": "4.2(1)N1(1)",
+											"product_id": "CSAFPID-191405"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.2(1)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.2(1)N2(1)",
+										"product": {
+											"name": "4.2(1)N2(1)",
+											"product_id": "CSAFPID-191406"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)N2(1a)",
+										"product": {
+											"name": "4.2(1)N2(1a)",
+											"product_id": "CSAFPID-191407"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.2(1)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(4)",
+										"product": {
+											"name": "4.2(1)SV1(4)",
+											"product_id": "CSAFPID-191557"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(4a)",
+										"product": {
+											"name": "4.2(1)SV1(4a)",
+											"product_id": "CSAFPID-191558"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(4b)",
+										"product": {
+											"name": "4.2(1)SV1(4b)",
+											"product_id": "CSAFPID-191559"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(5.1)",
+										"product": {
+											"name": "4.2(1)SV1(5.1)",
+											"product_id": "CSAFPID-191560"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(5.1a)",
+										"product": {
+											"name": "4.2(1)SV1(5.1a)",
+											"product_id": "CSAFPID-191561"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(5.2)",
+										"product": {
+											"name": "4.2(1)SV1(5.2)",
+											"product_id": "CSAFPID-191562"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV1(5.2b)",
+										"product": {
+											"name": "4.2(1)SV1(5.2b)",
+											"product_id": "CSAFPID-191563"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.2(1)SV1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV2(1.1)",
+										"product": {
+											"name": "4.2(1)SV2(1.1)",
+											"product_id": "CSAFPID-191380"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV2(1.1a)",
+										"product": {
+											"name": "4.2(1)SV2(1.1a)",
+											"product_id": "CSAFPID-191381"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV2(2.1)",
+										"product": {
+											"name": "4.2(1)SV2(2.1)",
+											"product_id": "CSAFPID-196618"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "4.2(1)SV2(2.1a)",
+										"product": {
+											"name": "4.2(1)SV2(2.1a)",
+											"product_id": "CSAFPID-196619"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "4.2(1)SV2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(2)N1(1)",
+										"product": {
+											"name": "5.0(2)N1(1)",
+											"product_id": "CSAFPID-191408"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(2)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(2)N2(1)",
+										"product": {
+											"name": "5.0(2)N2(1)",
+											"product_id": "CSAFPID-191410"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(2)N2(1a)",
+										"product": {
+											"name": "5.0(2)N2(1a)",
+											"product_id": "CSAFPID-191411"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(2)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)N1(1c)",
+										"product": {
+											"name": "5.0(3)N1(1c)",
+											"product_id": "CSAFPID-191409"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)N2(1)",
+										"product": {
+											"name": "5.0(3)N2(1)",
+											"product_id": "CSAFPID-191412"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)N2(2)",
+										"product": {
+											"name": "5.0(3)N2(2)",
+											"product_id": "CSAFPID-191413"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)N2(2a)",
+										"product": {
+											"name": "5.0(3)N2(2a)",
+											"product_id": "CSAFPID-191414"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)N2(2b)",
+										"product": {
+											"name": "5.0(3)N2(2b)",
+											"product_id": "CSAFPID-191415"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U1(1)",
+										"product": {
+											"name": "5.0(3)U1(1)",
+											"product_id": "CSAFPID-191391"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U1(1a)",
+										"product": {
+											"name": "5.0(3)U1(1a)",
+											"product_id": "CSAFPID-191392"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U1(1b)",
+										"product": {
+											"name": "5.0(3)U1(1b)",
+											"product_id": "CSAFPID-191393"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U1(1d)",
+										"product": {
+											"name": "5.0(3)U1(1d)",
+											"product_id": "CSAFPID-191466"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U1(2)",
+										"product": {
+											"name": "5.0(3)U1(2)",
+											"product_id": "CSAFPID-191467"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U1(2a)",
+										"product": {
+											"name": "5.0(3)U1(2a)",
+											"product_id": "CSAFPID-191468"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)U1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U2(1)",
+										"product": {
+											"name": "5.0(3)U2(1)",
+											"product_id": "CSAFPID-191469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U2(2)",
+										"product": {
+											"name": "5.0(3)U2(2)",
+											"product_id": "CSAFPID-191470"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U2(2a)",
+										"product": {
+											"name": "5.0(3)U2(2a)",
+											"product_id": "CSAFPID-191471"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U2(2b)",
+										"product": {
+											"name": "5.0(3)U2(2b)",
+											"product_id": "CSAFPID-191472"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U2(2c)",
+										"product": {
+											"name": "5.0(3)U2(2c)",
+											"product_id": "CSAFPID-191473"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U2(2d)",
+										"product": {
+											"name": "5.0(3)U2(2d)",
+											"product_id": "CSAFPID-191474"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)U2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U3(1)",
+										"product": {
+											"name": "5.0(3)U3(1)",
+											"product_id": "CSAFPID-191475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U3(2)",
+										"product": {
+											"name": "5.0(3)U3(2)",
+											"product_id": "CSAFPID-191476"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U3(2a)",
+										"product": {
+											"name": "5.0(3)U3(2a)",
+											"product_id": "CSAFPID-191477"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U3(2b)",
+										"product": {
+											"name": "5.0(3)U3(2b)",
+											"product_id": "CSAFPID-191478"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)U3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U4(1)",
+										"product": {
+											"name": "5.0(3)U4(1)",
+											"product_id": "CSAFPID-191479"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)U4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1)",
+										"product": {
+											"name": "5.0(3)U5(1)",
+											"product_id": "CSAFPID-191480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1a)",
+										"product": {
+											"name": "5.0(3)U5(1a)",
+											"product_id": "CSAFPID-191481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1b)",
+										"product": {
+											"name": "5.0(3)U5(1b)",
+											"product_id": "CSAFPID-191482"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1c)",
+										"product": {
+											"name": "5.0(3)U5(1c)",
+											"product_id": "CSAFPID-191483"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1d)",
+										"product": {
+											"name": "5.0(3)U5(1d)",
+											"product_id": "CSAFPID-191484"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1e)",
+										"product": {
+											"name": "5.0(3)U5(1e)",
+											"product_id": "CSAFPID-191485"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1f)",
+										"product": {
+											"name": "5.0(3)U5(1f)",
+											"product_id": "CSAFPID-196613"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1g)",
+										"product": {
+											"name": "5.0(3)U5(1g)",
+											"product_id": "CSAFPID-196614"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.0(3)U5(1h)",
+										"product": {
+											"name": "5.0(3)U5(1h)",
+											"product_id": "CSAFPID-196615"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.0(3)U5"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.1(3)N1(1)",
+										"product": {
+											"name": "5.1(3)N1(1)",
+											"product_id": "CSAFPID-191416"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(3)N1(1a)",
+										"product": {
+											"name": "5.1(3)N1(1a)",
+											"product_id": "CSAFPID-191417"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.1(3)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.1(3)N2(1)",
+										"product": {
+											"name": "5.1(3)N2(1)",
+											"product_id": "CSAFPID-191418"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(3)N2(1a)",
+										"product": {
+											"name": "5.1(3)N2(1a)",
+											"product_id": "CSAFPID-191419"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(3)N2(1b)",
+										"product": {
+											"name": "5.1(3)N2(1b)",
+											"product_id": "CSAFPID-191420"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.1(3)N2(1c)",
+										"product": {
+											"name": "5.1(3)N2(1c)",
+											"product_id": "CSAFPID-191421"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.1(3)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(1)",
+										"product": {
+											"name": "5.2(1)N1(1)",
+											"product_id": "CSAFPID-191422"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(1a)",
+										"product": {
+											"name": "5.2(1)N1(1a)",
+											"product_id": "CSAFPID-191423"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(1b)",
+										"product": {
+											"name": "5.2(1)N1(1b)",
+											"product_id": "CSAFPID-191424"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(2)",
+										"product": {
+											"name": "5.2(1)N1(2)",
+											"product_id": "CSAFPID-191425"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(2a)",
+										"product": {
+											"name": "5.2(1)N1(2a)",
+											"product_id": "CSAFPID-191426"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(3)",
+										"product": {
+											"name": "5.2(1)N1(3)",
+											"product_id": "CSAFPID-191427"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(4)",
+										"product": {
+											"name": "5.2(1)N1(4)",
+											"product_id": "CSAFPID-191428"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(5)",
+										"product": {
+											"name": "5.2(1)N1(5)",
+											"product_id": "CSAFPID-196611"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(6)",
+										"product": {
+											"name": "5.2(1)N1(6)",
+											"product_id": "CSAFPID-196612"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(7)",
+										"product": {
+											"name": "5.2(1)N1(7)",
+											"product_id": "CSAFPID-198539"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(8a)",
+										"product": {
+											"name": "5.2(1)N1(8a)",
+											"product_id": "CSAFPID-201874"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)N1(8)",
+										"product": {
+											"name": "5.2(1)N1(8)",
+											"product_id": "CSAFPID-201888"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.2(1)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SM1(5.1)",
+										"product": {
+											"name": "5.2(1)SM1(5.1)",
+											"product_id": "CSAFPID-195841"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.2(1)SM1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.4)",
+										"product": {
+											"name": "5.2(1)SV3(1.4)",
+											"product_id": "CSAFPID-210024"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.1)",
+										"product": {
+											"name": "5.2(1)SV3(1.1)",
+											"product_id": "CSAFPID-217747"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.3)",
+										"product": {
+											"name": "5.2(1)SV3(1.3)",
+											"product_id": "CSAFPID-217748"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.5a)",
+										"product": {
+											"name": "5.2(1)SV3(1.5a)",
+											"product_id": "CSAFPID-220693"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.5b)",
+										"product": {
+											"name": "5.2(1)SV3(1.5b)",
+											"product_id": "CSAFPID-220694"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.6)",
+										"product": {
+											"name": "5.2(1)SV3(1.6)",
+											"product_id": "CSAFPID-220695"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.10)",
+										"product": {
+											"name": "5.2(1)SV3(1.10)",
+											"product_id": "CSAFPID-220696"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(1.15)",
+										"product": {
+											"name": "5.2(1)SV3(1.15)",
+											"product_id": "CSAFPID-220697"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(2.1)",
+										"product": {
+											"name": "5.2(1)SV3(2.1)",
+											"product_id": "CSAFPID-220698"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(2.5)",
+										"product": {
+											"name": "5.2(1)SV3(2.5)",
+											"product_id": "CSAFPID-230579"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(2.8)",
+										"product": {
+											"name": "5.2(1)SV3(2.8)",
+											"product_id": "CSAFPID-230580"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "5.2(1)SV3(3.1)",
+										"product": {
+											"name": "5.2(1)SV3(3.1)",
+											"product_id": "CSAFPID-230581"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.2(1)SV3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "5.2(9)N1(1)",
+										"product": {
+											"name": "5.2(9)N1(1)",
+											"product_id": "CSAFPID-212073"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "5.2(9)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(1)",
+										"product": {
+											"name": "6.0(1)",
+											"product_id": "CSAFPID-191453"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)",
+										"product": {
+											"name": "6.0(2)",
+											"product_id": "CSAFPID-191454"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(3)",
+										"product": {
+											"name": "6.0(3)",
+											"product_id": "CSAFPID-191455"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(4)",
+										"product": {
+											"name": "6.0(4)",
+											"product_id": "CSAFPID-191456"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N1(1)",
+										"product": {
+											"name": "6.0(2)N1(1)",
+											"product_id": "CSAFPID-201875"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N1(2)",
+										"product": {
+											"name": "6.0(2)N1(2)",
+											"product_id": "CSAFPID-201876"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N1(2a)",
+										"product": {
+											"name": "6.0(2)N1(2a)",
+											"product_id": "CSAFPID-201877"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(1)",
+										"product": {
+											"name": "6.0(2)N2(1)",
+											"product_id": "CSAFPID-201878"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(1b)",
+										"product": {
+											"name": "6.0(2)N2(1b)",
+											"product_id": "CSAFPID-201879"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(2)",
+										"product": {
+											"name": "6.0(2)N2(2)",
+											"product_id": "CSAFPID-201880"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(3)",
+										"product": {
+											"name": "6.0(2)N2(3)",
+											"product_id": "CSAFPID-201881"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(4)",
+										"product": {
+											"name": "6.0(2)N2(4)",
+											"product_id": "CSAFPID-201882"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(5)",
+										"product": {
+											"name": "6.0(2)N2(5)",
+											"product_id": "CSAFPID-201883"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(5a)",
+										"product": {
+											"name": "6.0(2)N2(5a)",
+											"product_id": "CSAFPID-212034"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(6)",
+										"product": {
+											"name": "6.0(2)N2(6)",
+											"product_id": "CSAFPID-212035"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)N2(7)",
+										"product": {
+											"name": "6.0(2)N2(7)",
+											"product_id": "CSAFPID-212036"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)N2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U1(1)",
+										"product": {
+											"name": "6.0(2)U1(1)",
+											"product_id": "CSAFPID-194693"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U1(2)",
+										"product": {
+											"name": "6.0(2)U1(2)",
+											"product_id": "CSAFPID-194694"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U1(1a)",
+										"product": {
+											"name": "6.0(2)U1(1a)",
+											"product_id": "CSAFPID-196616"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U1(3)",
+										"product": {
+											"name": "6.0(2)U1(3)",
+											"product_id": "CSAFPID-196617"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U1(4)",
+										"product": {
+											"name": "6.0(2)U1(4)",
+											"product_id": "CSAFPID-205076"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)U1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U2(1)",
+										"product": {
+											"name": "6.0(2)U2(1)",
+											"product_id": "CSAFPID-205077"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U2(2)",
+										"product": {
+											"name": "6.0(2)U2(2)",
+											"product_id": "CSAFPID-205078"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U2(3)",
+										"product": {
+											"name": "6.0(2)U2(3)",
+											"product_id": "CSAFPID-205079"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U2(4)",
+										"product": {
+											"name": "6.0(2)U2(4)",
+											"product_id": "CSAFPID-205080"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U2(5)",
+										"product": {
+											"name": "6.0(2)U2(5)",
+											"product_id": "CSAFPID-205081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U2(6)",
+										"product": {
+											"name": "6.0(2)U2(6)",
+											"product_id": "CSAFPID-205082"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)U2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U3(1)",
+										"product": {
+											"name": "6.0(2)U3(1)",
+											"product_id": "CSAFPID-205083"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U3(2)",
+										"product": {
+											"name": "6.0(2)U3(2)",
+											"product_id": "CSAFPID-205084"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U3(3)",
+										"product": {
+											"name": "6.0(2)U3(3)",
+											"product_id": "CSAFPID-205085"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U3(4)",
+										"product": {
+											"name": "6.0(2)U3(4)",
+											"product_id": "CSAFPID-205086"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U3(5)",
+										"product": {
+											"name": "6.0(2)U3(5)",
+											"product_id": "CSAFPID-205087"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)U3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U4(1)",
+										"product": {
+											"name": "6.0(2)U4(1)",
+											"product_id": "CSAFPID-203349"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U4(2)",
+										"product": {
+											"name": "6.0(2)U4(2)",
+											"product_id": "CSAFPID-205088"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U4(3)",
+										"product": {
+											"name": "6.0(2)U4(3)",
+											"product_id": "CSAFPID-205089"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)U4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U5(1)",
+										"product": {
+											"name": "6.0(2)U5(1)",
+											"product_id": "CSAFPID-205090"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U5(2)",
+										"product": {
+											"name": "6.0(2)U5(2)",
+											"product_id": "CSAFPID-220702"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U5(3)",
+										"product": {
+											"name": "6.0(2)U5(3)",
+											"product_id": "CSAFPID-220703"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U5(4)",
+										"product": {
+											"name": "6.0(2)U5(4)",
+											"product_id": "CSAFPID-220704"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)U5"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U6(1)",
+										"product": {
+											"name": "6.0(2)U6(1)",
+											"product_id": "CSAFPID-213569"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U6(2)",
+										"product": {
+											"name": "6.0(2)U6(2)",
+											"product_id": "CSAFPID-213570"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U6(3)",
+										"product": {
+											"name": "6.0(2)U6(3)",
+											"product_id": "CSAFPID-213571"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U6(4)",
+										"product": {
+											"name": "6.0(2)U6(4)",
+											"product_id": "CSAFPID-213572"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U6(5)",
+										"product": {
+											"name": "6.0(2)U6(5)",
+											"product_id": "CSAFPID-213573"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.0(2)U6(6)",
+										"product": {
+											"name": "6.0(2)U6(6)",
+											"product_id": "CSAFPID-220699"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.0(2)U6"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I2(1)",
+										"product": {
+											"name": "6.1(2)I2(1)",
+											"product_id": "CSAFPID-201604"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I2(2)",
+										"product": {
+											"name": "6.1(2)I2(2)",
+											"product_id": "CSAFPID-201605"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I2(2a)",
+										"product": {
+											"name": "6.1(2)I2(2a)",
+											"product_id": "CSAFPID-201606"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I2(3)",
+										"product": {
+											"name": "6.1(2)I2(3)",
+											"product_id": "CSAFPID-201607"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I2(2b)",
+										"product": {
+											"name": "6.1(2)I2(2b)",
+											"product_id": "CSAFPID-202737"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.1(2)I2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I3(1)",
+										"product": {
+											"name": "6.1(2)I3(1)",
+											"product_id": "CSAFPID-205091"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I3(2)",
+										"product": {
+											"name": "6.1(2)I3(2)",
+											"product_id": "CSAFPID-205092"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I3(3)",
+										"product": {
+											"name": "6.1(2)I3(3)",
+											"product_id": "CSAFPID-205093"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I3(3.78)",
+										"product": {
+											"name": "6.1(2)I3(3.78)",
+											"product_id": "CSAFPID-208867"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.1(2)I3(4)",
+										"product": {
+											"name": "6.1(2)I3(4)",
+											"product_id": "CSAFPID-210263"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.1(2)I3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "6.2(2)",
+										"product": {
+											"name": "6.2(2)",
+											"product_id": "CSAFPID-196609"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(2a)",
+										"product": {
+											"name": "6.2(2a)",
+											"product_id": "CSAFPID-196610"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(6)",
+										"product": {
+											"name": "6.2(6)",
+											"product_id": "CSAFPID-202738"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(6b)",
+										"product": {
+											"name": "6.2(6b)",
+											"product_id": "CSAFPID-205071"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(8)",
+										"product": {
+											"name": "6.2(8)",
+											"product_id": "CSAFPID-205072"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(8a)",
+										"product": {
+											"name": "6.2(8a)",
+											"product_id": "CSAFPID-205073"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(8b)",
+										"product": {
+											"name": "6.2(8b)",
+											"product_id": "CSAFPID-205074"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(10)",
+										"product": {
+											"name": "6.2(10)",
+											"product_id": "CSAFPID-205075"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(12)",
+										"product": {
+											"name": "6.2(12)",
+											"product_id": "CSAFPID-208194"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(14b)",
+										"product": {
+											"name": "6.2(14b)",
+											"product_id": "CSAFPID-230443"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(14)",
+										"product": {
+											"name": "6.2(14)",
+											"product_id": "CSAFPID-230527"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "6.2(14a)",
+										"product": {
+											"name": "6.2(14a)",
+											"product_id": "CSAFPID-230528"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "6.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(3)",
+										"product": {
+											"name": "7.0(3)",
+											"product_id": "CSAFPID-208195"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(0)N1(1)",
+										"product": {
+											"name": "7.0(0)N1(1)",
+											"product_id": "CSAFPID-201884"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(0)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(1)N1(1)",
+										"product": {
+											"name": "7.0(1)N1(1)",
+											"product_id": "CSAFPID-201885"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(1)N1(3)",
+										"product": {
+											"name": "7.0(1)N1(3)",
+											"product_id": "CSAFPID-213631"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(1)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(2)N1(1)",
+										"product": {
+											"name": "7.0(2)N1(1)",
+											"product_id": "CSAFPID-201886"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(2)N1(1a)",
+										"product": {
+											"name": "7.0(2)N1(1a)",
+											"product_id": "CSAFPID-230508"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(2)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(1)",
+										"product": {
+											"name": "7.0(3)I1(1)",
+											"product_id": "CSAFPID-208580"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(1a)",
+										"product": {
+											"name": "7.0(3)I1(1a)",
+											"product_id": "CSAFPID-208581"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(1b)",
+										"product": {
+											"name": "7.0(3)I1(1b)",
+											"product_id": "CSAFPID-208582"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(2)",
+										"product": {
+											"name": "7.0(3)I1(2)",
+											"product_id": "CSAFPID-208583"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(3)",
+										"product": {
+											"name": "7.0(3)I1(3)",
+											"product_id": "CSAFPID-220738"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(3a)",
+										"product": {
+											"name": "7.0(3)I1(3a)",
+											"product_id": "CSAFPID-220739"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I1(3b)",
+										"product": {
+											"name": "7.0(3)I1(3b)",
+											"product_id": "CSAFPID-220740"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(3)I1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I2(1)",
+										"product": {
+											"name": "7.0(3)I2(1)",
+											"product_id": "CSAFPID-230567"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I2(1a)",
+										"product": {
+											"name": "7.0(3)I2(1a)",
+											"product_id": "CSAFPID-230568"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(3)I2(2)",
+										"product": {
+											"name": "7.0(3)I2(2)",
+											"product_id": "CSAFPID-230569"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(3)I2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(3)N1(1)",
+										"product": {
+											"name": "7.0(3)N1(1)",
+											"product_id": "CSAFPID-201887"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(3)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(4)N1(1)",
+										"product": {
+											"name": "7.0(4)N1(1)",
+											"product_id": "CSAFPID-212037"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(4)N1(1a)",
+										"product": {
+											"name": "7.0(4)N1(1a)",
+											"product_id": "CSAFPID-230505"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(4)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(5)N1(1)",
+										"product": {
+											"name": "7.0(5)N1(1)",
+											"product_id": "CSAFPID-212038"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(5)N1(1a)",
+										"product": {
+											"name": "7.0(5)N1(1a)",
+											"product_id": "CSAFPID-212039"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(5)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(6)N1(1)",
+										"product": {
+											"name": "7.0(6)N1(1)",
+											"product_id": "CSAFPID-208805"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(6)N1(4s)",
+										"product": {
+											"name": "7.0(6)N1(4s)",
+											"product_id": "CSAFPID-230498"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(6)N1(3s)",
+										"product": {
+											"name": "7.0(6)N1(3s)",
+											"product_id": "CSAFPID-230499"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(6)N1(2s)",
+										"product": {
+											"name": "7.0(6)N1(2s)",
+											"product_id": "CSAFPID-230500"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(6)N1(1c)",
+										"product": {
+											"name": "7.0(6)N1(1c)",
+											"product_id": "CSAFPID-230501"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(6)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(7)N1(1)",
+										"product": {
+											"name": "7.0(7)N1(1)",
+											"product_id": "CSAFPID-212040"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(7)N1(1b)",
+										"product": {
+											"name": "7.0(7)N1(1b)",
+											"product_id": "CSAFPID-230495"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(7)N1(1a)",
+										"product": {
+											"name": "7.0(7)N1(1a)",
+											"product_id": "CSAFPID-230496"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(7)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0(8)N1(1)",
+										"product": {
+											"name": "7.0(8)N1(1)",
+											"product_id": "CSAFPID-220727"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0(8)N1(1a)",
+										"product": {
+											"name": "7.0(8)N1(1a)",
+											"product_id": "CSAFPID-230493"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0(8)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1(0)N1(1a)",
+										"product": {
+											"name": "7.1(0)N1(1a)",
+											"product_id": "CSAFPID-212041"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(0)N1(1b)",
+										"product": {
+											"name": "7.1(0)N1(1b)",
+											"product_id": "CSAFPID-212042"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(0)N1(2)",
+										"product": {
+											"name": "7.1(0)N1(2)",
+											"product_id": "CSAFPID-230489"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(0)N1(1)",
+										"product": {
+											"name": "7.1(0)N1(1)",
+											"product_id": "CSAFPID-230492"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1(0)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1(1)N1(1)",
+										"product": {
+											"name": "7.1(1)N1(1)",
+											"product_id": "CSAFPID-208806"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(1)N1(1a)",
+										"product": {
+											"name": "7.1(1)N1(1a)",
+											"product_id": "CSAFPID-230487"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1(1)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1(2)N1(1)",
+										"product": {
+											"name": "7.1(2)N1(1)",
+											"product_id": "CSAFPID-212043"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(2)N1(1a)",
+										"product": {
+											"name": "7.1(2)N1(1a)",
+											"product_id": "CSAFPID-230485"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1(2)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(1)",
+										"product": {
+											"name": "7.1(3)N1(1)",
+											"product_id": "CSAFPID-212044"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(2)",
+										"product": {
+											"name": "7.1(3)N1(2)",
+											"product_id": "CSAFPID-220733"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(2.1)",
+										"product": {
+											"name": "7.1(3)N1(2.1)",
+											"product_id": "CSAFPID-224614"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(3.12)",
+										"product": {
+											"name": "7.1(3)N1(3.12)",
+											"product_id": "CSAFPID-224615"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(5)",
+										"product": {
+											"name": "7.1(3)N1(5)",
+											"product_id": "CSAFPID-230478"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(4)",
+										"product": {
+											"name": "7.1(3)N1(4)",
+											"product_id": "CSAFPID-230479"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(3)",
+										"product": {
+											"name": "7.1(3)N1(3)",
+											"product_id": "CSAFPID-230480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(2a)",
+										"product": {
+											"name": "7.1(3)N1(2a)",
+											"product_id": "CSAFPID-230481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(3)N1(1b)",
+										"product": {
+											"name": "7.1(3)N1(1b)",
+											"product_id": "CSAFPID-230483"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1(3)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1(4)N1(1)",
+										"product": {
+											"name": "7.1(4)N1(1)",
+											"product_id": "CSAFPID-220734"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(4)N1(1d)",
+										"product": {
+											"name": "7.1(4)N1(1d)",
+											"product_id": "CSAFPID-230474"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(4)N1(1c)",
+										"product": {
+											"name": "7.1(4)N1(1c)",
+											"product_id": "CSAFPID-230475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1(4)N1(1a)",
+										"product": {
+											"name": "7.1(4)N1(1a)",
+											"product_id": "CSAFPID-230476"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1(4)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1(5)N1(1)",
+										"product": {
+											"name": "7.1(5)N1(1)",
+											"product_id": "CSAFPID-230473"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1(5)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2(0)D1(0.437)",
+										"product": {
+											"name": "7.2(0)D1(0.437)",
+											"product_id": "CSAFPID-209820"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2(0)D1(1)",
+										"product": {
+											"name": "7.2(0)D1(1)",
+											"product_id": "CSAFPID-230440"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2(0)D1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2(0)N1(1)",
+										"product": {
+											"name": "7.2(0)N1(1)",
+											"product_id": "CSAFPID-212045"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2(0)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2(0)ZZ(99.1)",
+										"product": {
+											"name": "7.2(0)ZZ(99.1)",
+											"product_id": "CSAFPID-208640"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2(0)ZZ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2(1)D1(1)",
+										"product": {
+											"name": "7.2(1)D1(1)",
+											"product_id": "CSAFPID-225659"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2(1)D1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2(1)N1(1)",
+										"product": {
+											"name": "7.2(1)N1(1)",
+											"product_id": "CSAFPID-212046"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2(1)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3(0.2)",
+										"product": {
+											"name": "7.3(0.2)",
+											"product_id": "CSAFPID-208866"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3(0)N1(1)",
+										"product": {
+											"name": "7.3(0)N1(1)",
+											"product_id": "CSAFPID-220737"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3(0)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3(1)N1(1)",
+										"product": {
+											"name": "7.3(1)N1(1)",
+											"product_id": "CSAFPID-227352"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3(1)N1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3(2)D1(1A)",
+										"product": {
+											"name": "7.3(2)D1(1A)",
+											"product_id": "CSAFPID-230432"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3(2)D1(1)",
+										"product": {
+											"name": "7.3(2)D1(1)",
+											"product_id": "CSAFPID-230433"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3(2)D1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3(2)N1(0.296)",
+										"product": {
+											"name": "7.3(2)N1(0.296)",
+											"product_id": "CSAFPID-224616"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3(2)N1"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco NX-OS Software"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "2.0.1.68",
+										"product": {
+											"name": "2.0.1.68",
+											"product_id": "CSAFPID-225891"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "2.0"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Extensible Operating System (FXOS)"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2017-3883",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuq71257,CSCuq58760,CSCur97432,CSCux54898,CSCus05214,CSCvd36971,CSCvb93995,CSCvg41173,CSCve03660,CSCvc33141,CSCvf64888",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-191380",
+					"CSAFPID-191381",
+					"CSAFPID-191391",
+					"CSAFPID-191392",
+					"CSAFPID-191393",
+					"CSAFPID-191394",
+					"CSAFPID-191395",
+					"CSAFPID-191396",
+					"CSAFPID-191397",
+					"CSAFPID-191398",
+					"CSAFPID-191399",
+					"CSAFPID-191400",
+					"CSAFPID-191401",
+					"CSAFPID-191402",
+					"CSAFPID-191403",
+					"CSAFPID-191404",
+					"CSAFPID-191405",
+					"CSAFPID-191406",
+					"CSAFPID-191407",
+					"CSAFPID-191408",
+					"CSAFPID-191409",
+					"CSAFPID-191410",
+					"CSAFPID-191411",
+					"CSAFPID-191412",
+					"CSAFPID-191413",
+					"CSAFPID-191414",
+					"CSAFPID-191415",
+					"CSAFPID-191416",
+					"CSAFPID-191417",
+					"CSAFPID-191418",
+					"CSAFPID-191419",
+					"CSAFPID-191420",
+					"CSAFPID-191421",
+					"CSAFPID-191422",
+					"CSAFPID-191423",
+					"CSAFPID-191424",
+					"CSAFPID-191425",
+					"CSAFPID-191426",
+					"CSAFPID-191427",
+					"CSAFPID-191428",
+					"CSAFPID-191429",
+					"CSAFPID-191430",
+					"CSAFPID-191431",
+					"CSAFPID-191432",
+					"CSAFPID-191433",
+					"CSAFPID-191434",
+					"CSAFPID-191435",
+					"CSAFPID-191436",
+					"CSAFPID-191437",
+					"CSAFPID-191438",
+					"CSAFPID-191439",
+					"CSAFPID-191440",
+					"CSAFPID-191441",
+					"CSAFPID-191442",
+					"CSAFPID-191443",
+					"CSAFPID-191444",
+					"CSAFPID-191445",
+					"CSAFPID-191446",
+					"CSAFPID-191447",
+					"CSAFPID-191448",
+					"CSAFPID-191449",
+					"CSAFPID-191450",
+					"CSAFPID-191451",
+					"CSAFPID-191452",
+					"CSAFPID-191453",
+					"CSAFPID-191454",
+					"CSAFPID-191455",
+					"CSAFPID-191456",
+					"CSAFPID-191457",
+					"CSAFPID-191458",
+					"CSAFPID-191459",
+					"CSAFPID-191466",
+					"CSAFPID-191467",
+					"CSAFPID-191468",
+					"CSAFPID-191469",
+					"CSAFPID-191470",
+					"CSAFPID-191471",
+					"CSAFPID-191472",
+					"CSAFPID-191473",
+					"CSAFPID-191474",
+					"CSAFPID-191475",
+					"CSAFPID-191476",
+					"CSAFPID-191477",
+					"CSAFPID-191478",
+					"CSAFPID-191479",
+					"CSAFPID-191480",
+					"CSAFPID-191481",
+					"CSAFPID-191482",
+					"CSAFPID-191483",
+					"CSAFPID-191484",
+					"CSAFPID-191485",
+					"CSAFPID-191557",
+					"CSAFPID-191558",
+					"CSAFPID-191559",
+					"CSAFPID-191560",
+					"CSAFPID-191561",
+					"CSAFPID-191562",
+					"CSAFPID-191563",
+					"CSAFPID-194693",
+					"CSAFPID-194694",
+					"CSAFPID-195841",
+					"CSAFPID-196607",
+					"CSAFPID-196608",
+					"CSAFPID-196609",
+					"CSAFPID-196610",
+					"CSAFPID-196611",
+					"CSAFPID-196612",
+					"CSAFPID-196613",
+					"CSAFPID-196614",
+					"CSAFPID-196615",
+					"CSAFPID-196616",
+					"CSAFPID-196617",
+					"CSAFPID-196618",
+					"CSAFPID-196619",
+					"CSAFPID-198539",
+					"CSAFPID-201604",
+					"CSAFPID-201605",
+					"CSAFPID-201606",
+					"CSAFPID-201607",
+					"CSAFPID-201874",
+					"CSAFPID-201875",
+					"CSAFPID-201876",
+					"CSAFPID-201877",
+					"CSAFPID-201878",
+					"CSAFPID-201879",
+					"CSAFPID-201880",
+					"CSAFPID-201881",
+					"CSAFPID-201882",
+					"CSAFPID-201883",
+					"CSAFPID-201884",
+					"CSAFPID-201885",
+					"CSAFPID-201886",
+					"CSAFPID-201887",
+					"CSAFPID-201888",
+					"CSAFPID-202737",
+					"CSAFPID-202738",
+					"CSAFPID-203349",
+					"CSAFPID-205071",
+					"CSAFPID-205072",
+					"CSAFPID-205073",
+					"CSAFPID-205074",
+					"CSAFPID-205075",
+					"CSAFPID-205076",
+					"CSAFPID-205077",
+					"CSAFPID-205078",
+					"CSAFPID-205079",
+					"CSAFPID-205080",
+					"CSAFPID-205081",
+					"CSAFPID-205082",
+					"CSAFPID-205083",
+					"CSAFPID-205084",
+					"CSAFPID-205085",
+					"CSAFPID-205086",
+					"CSAFPID-205087",
+					"CSAFPID-205088",
+					"CSAFPID-205089",
+					"CSAFPID-205090",
+					"CSAFPID-205091",
+					"CSAFPID-205092",
+					"CSAFPID-205093",
+					"CSAFPID-208194",
+					"CSAFPID-208195",
+					"CSAFPID-208580",
+					"CSAFPID-208581",
+					"CSAFPID-208582",
+					"CSAFPID-208583",
+					"CSAFPID-208640",
+					"CSAFPID-208805",
+					"CSAFPID-208806",
+					"CSAFPID-208866",
+					"CSAFPID-208867",
+					"CSAFPID-209820",
+					"CSAFPID-210024",
+					"CSAFPID-210263",
+					"CSAFPID-212033",
+					"CSAFPID-212034",
+					"CSAFPID-212035",
+					"CSAFPID-212036",
+					"CSAFPID-212037",
+					"CSAFPID-212038",
+					"CSAFPID-212039",
+					"CSAFPID-212040",
+					"CSAFPID-212041",
+					"CSAFPID-212042",
+					"CSAFPID-212043",
+					"CSAFPID-212044",
+					"CSAFPID-212045",
+					"CSAFPID-212046",
+					"CSAFPID-212073",
+					"CSAFPID-213569",
+					"CSAFPID-213570",
+					"CSAFPID-213571",
+					"CSAFPID-213572",
+					"CSAFPID-213573",
+					"CSAFPID-213631",
+					"CSAFPID-217747",
+					"CSAFPID-217748",
+					"CSAFPID-220693",
+					"CSAFPID-220694",
+					"CSAFPID-220695",
+					"CSAFPID-220696",
+					"CSAFPID-220697",
+					"CSAFPID-220698",
+					"CSAFPID-220699",
+					"CSAFPID-220702",
+					"CSAFPID-220703",
+					"CSAFPID-220704",
+					"CSAFPID-220727",
+					"CSAFPID-220733",
+					"CSAFPID-220734",
+					"CSAFPID-220737",
+					"CSAFPID-220738",
+					"CSAFPID-220739",
+					"CSAFPID-220740",
+					"CSAFPID-224614",
+					"CSAFPID-224615",
+					"CSAFPID-224616",
+					"CSAFPID-225656",
+					"CSAFPID-225657",
+					"CSAFPID-225659",
+					"CSAFPID-227352",
+					"CSAFPID-230432",
+					"CSAFPID-230433",
+					"CSAFPID-230440",
+					"CSAFPID-230443",
+					"CSAFPID-230473",
+					"CSAFPID-230474",
+					"CSAFPID-230475",
+					"CSAFPID-230476",
+					"CSAFPID-230478",
+					"CSAFPID-230479",
+					"CSAFPID-230480",
+					"CSAFPID-230481",
+					"CSAFPID-230483",
+					"CSAFPID-230485",
+					"CSAFPID-230487",
+					"CSAFPID-230489",
+					"CSAFPID-230492",
+					"CSAFPID-230493",
+					"CSAFPID-230495",
+					"CSAFPID-230496",
+					"CSAFPID-230498",
+					"CSAFPID-230499",
+					"CSAFPID-230500",
+					"CSAFPID-230501",
+					"CSAFPID-230505",
+					"CSAFPID-230508",
+					"CSAFPID-230527",
+					"CSAFPID-230528",
+					"CSAFPID-230567",
+					"CSAFPID-230568",
+					"CSAFPID-230569",
+					"CSAFPID-230579",
+					"CSAFPID-230580",
+					"CSAFPID-230581",
+					"CSAFPID-225891",
+					"CSAFPID-5348"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco FXOS and NX-OS System Software Authentication, Authorization, and Accounting Denial of Service Vulnerability",
+					"url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171018-aaavty"
+				}
+			],
+			"release_date": "2017-10-18T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Cisco NX-OS System Software\r\n\r\nConfiguring a vty Access Class\r\n\r\nOn some platforms that are running Cisco NX-OS System Software, it is possible to limit exposure of an affected device by creating a vty access-control list (ACL) on the device and configuring the ACL to permit only known, trusted devices to connect to the device via Telnet and Secure Shell (SSH).\r\n\r\nNote:\r\n\r\nThis workaround is not available on some platforms that are running Cisco NX-OS, and should be used only where applicable.\r\nThere is no Cisco UCS workaround that addresses this vulnerability.\r\nThe ACL in this example is for IPv4. This vulnerability can also be exploited against IPv6 interfaces. If the NX-OS device is configured for IPv6, the same ACL should be configured for the IPv6 address range.\r\n  The following example shows an ACL that permits access to vtys from the 192.168.1.0/24 netblock and the single IP address 172.16.1.2 while denying access from all other addresses:\r\nip access-list vtyacl\r\n  10 permit tcp 192.168.1.0/24 172.16.1.2/32\r\n  line vty\r\n  access-class vtyacl in\r\n    For more information about restricting traffic to vtys, see the Cisco Nexus 7000 Series NX-OS Security Configuration Guide [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/6_x/nx-os/security/configuration/guide/b_Cisco_Nexus_7000_NX-OS_Security_Configuration_Guide__Release_6-x/b_Cisco_Nexus_7000_NX-OS_Security_Configuration_Guide__Release_6-x_chapter_01110.html#task_1452624\"]. It is considered a best practice for an NX-OS device to have a vty ACL configured. Refer to Cisco Guide to Securing Cisco NX-OS Software Devices [\"http://www.cisco.com/c/en/us/about/security-center/securing-nx-os.html\"] for additional information about hardening Cisco NX-OS devices.\r\n\r\nCisco FXOS\r\n\r\nOn Cisco FXOS platforms, it is possible to limit the exposure of an affected device by using the ip-block command to permit only known, trusted hosts to connect to the device via SSH. The following example show only a subset of IPv4 and IPv6 hosts being permitted to connect via SSH.\r\nscope system\r\n  scope services\r\n    create ip-block 11.1.1.1 24 ssh\r\n    create ipv6-block 2014::10:76:78:107 64 ssh\r\n    commit-buffer\r\nFor more information about configuring Cisco FXOS IP Access Lists see the \"Configure the IP Access List\" section of the Cisco FXOS CLI Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/fxos/fxos211/cli-config/b_CLI_ConfigGuide_FXOS_211/security_certifications_compliance.html\"]."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "CRITICAL",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-191380",
+						"CSAFPID-191381",
+						"CSAFPID-191391",
+						"CSAFPID-191392",
+						"CSAFPID-191393",
+						"CSAFPID-191394",
+						"CSAFPID-191395",
+						"CSAFPID-191396",
+						"CSAFPID-191397",
+						"CSAFPID-191398",
+						"CSAFPID-191399",
+						"CSAFPID-191400",
+						"CSAFPID-191401",
+						"CSAFPID-191402",
+						"CSAFPID-191403",
+						"CSAFPID-191404",
+						"CSAFPID-191405",
+						"CSAFPID-191406",
+						"CSAFPID-191407",
+						"CSAFPID-191408",
+						"CSAFPID-191409",
+						"CSAFPID-191410",
+						"CSAFPID-191411",
+						"CSAFPID-191412",
+						"CSAFPID-191413",
+						"CSAFPID-191414",
+						"CSAFPID-191415",
+						"CSAFPID-191416",
+						"CSAFPID-191417",
+						"CSAFPID-191418",
+						"CSAFPID-191419",
+						"CSAFPID-191420",
+						"CSAFPID-191421",
+						"CSAFPID-191422",
+						"CSAFPID-191423",
+						"CSAFPID-191424",
+						"CSAFPID-191425",
+						"CSAFPID-191426",
+						"CSAFPID-191427",
+						"CSAFPID-191428",
+						"CSAFPID-191429",
+						"CSAFPID-191430",
+						"CSAFPID-191431",
+						"CSAFPID-191432",
+						"CSAFPID-191433",
+						"CSAFPID-191434",
+						"CSAFPID-191435",
+						"CSAFPID-191436",
+						"CSAFPID-191437",
+						"CSAFPID-191438",
+						"CSAFPID-191439",
+						"CSAFPID-191440",
+						"CSAFPID-191441",
+						"CSAFPID-191442",
+						"CSAFPID-191443",
+						"CSAFPID-191444",
+						"CSAFPID-191445",
+						"CSAFPID-191446",
+						"CSAFPID-191447",
+						"CSAFPID-191448",
+						"CSAFPID-191449",
+						"CSAFPID-191450",
+						"CSAFPID-191451",
+						"CSAFPID-191452",
+						"CSAFPID-191453",
+						"CSAFPID-191454",
+						"CSAFPID-191455",
+						"CSAFPID-191456",
+						"CSAFPID-191457",
+						"CSAFPID-191458",
+						"CSAFPID-191459",
+						"CSAFPID-191466",
+						"CSAFPID-191467",
+						"CSAFPID-191468",
+						"CSAFPID-191469",
+						"CSAFPID-191470",
+						"CSAFPID-191471",
+						"CSAFPID-191472",
+						"CSAFPID-191473",
+						"CSAFPID-191474",
+						"CSAFPID-191475",
+						"CSAFPID-191476",
+						"CSAFPID-191477",
+						"CSAFPID-191478",
+						"CSAFPID-191479",
+						"CSAFPID-191480",
+						"CSAFPID-191481",
+						"CSAFPID-191482",
+						"CSAFPID-191483",
+						"CSAFPID-191484",
+						"CSAFPID-191485",
+						"CSAFPID-191557",
+						"CSAFPID-191558",
+						"CSAFPID-191559",
+						"CSAFPID-191560",
+						"CSAFPID-191561",
+						"CSAFPID-191562",
+						"CSAFPID-191563",
+						"CSAFPID-194693",
+						"CSAFPID-194694",
+						"CSAFPID-195841",
+						"CSAFPID-196607",
+						"CSAFPID-196608",
+						"CSAFPID-196609",
+						"CSAFPID-196610",
+						"CSAFPID-196611",
+						"CSAFPID-196612",
+						"CSAFPID-196613",
+						"CSAFPID-196614",
+						"CSAFPID-196615",
+						"CSAFPID-196616",
+						"CSAFPID-196617",
+						"CSAFPID-196618",
+						"CSAFPID-196619",
+						"CSAFPID-198539",
+						"CSAFPID-201604",
+						"CSAFPID-201605",
+						"CSAFPID-201606",
+						"CSAFPID-201607",
+						"CSAFPID-201874",
+						"CSAFPID-201875",
+						"CSAFPID-201876",
+						"CSAFPID-201877",
+						"CSAFPID-201878",
+						"CSAFPID-201879",
+						"CSAFPID-201880",
+						"CSAFPID-201881",
+						"CSAFPID-201882",
+						"CSAFPID-201883",
+						"CSAFPID-201884",
+						"CSAFPID-201885",
+						"CSAFPID-201886",
+						"CSAFPID-201887",
+						"CSAFPID-201888",
+						"CSAFPID-202737",
+						"CSAFPID-202738",
+						"CSAFPID-203349",
+						"CSAFPID-205071",
+						"CSAFPID-205072",
+						"CSAFPID-205073",
+						"CSAFPID-205074",
+						"CSAFPID-205075",
+						"CSAFPID-205076",
+						"CSAFPID-205077",
+						"CSAFPID-205078",
+						"CSAFPID-205079",
+						"CSAFPID-205080",
+						"CSAFPID-205081",
+						"CSAFPID-205082",
+						"CSAFPID-205083",
+						"CSAFPID-205084",
+						"CSAFPID-205085",
+						"CSAFPID-205086",
+						"CSAFPID-205087",
+						"CSAFPID-205088",
+						"CSAFPID-205089",
+						"CSAFPID-205090",
+						"CSAFPID-205091",
+						"CSAFPID-205092",
+						"CSAFPID-205093",
+						"CSAFPID-208194",
+						"CSAFPID-208195",
+						"CSAFPID-208580",
+						"CSAFPID-208581",
+						"CSAFPID-208582",
+						"CSAFPID-208583",
+						"CSAFPID-208640",
+						"CSAFPID-208805",
+						"CSAFPID-208806",
+						"CSAFPID-208866",
+						"CSAFPID-208867",
+						"CSAFPID-209820",
+						"CSAFPID-210024",
+						"CSAFPID-210263",
+						"CSAFPID-212033",
+						"CSAFPID-212034",
+						"CSAFPID-212035",
+						"CSAFPID-212036",
+						"CSAFPID-212037",
+						"CSAFPID-212038",
+						"CSAFPID-212039",
+						"CSAFPID-212040",
+						"CSAFPID-212041",
+						"CSAFPID-212042",
+						"CSAFPID-212043",
+						"CSAFPID-212044",
+						"CSAFPID-212045",
+						"CSAFPID-212046",
+						"CSAFPID-212073",
+						"CSAFPID-213569",
+						"CSAFPID-213570",
+						"CSAFPID-213571",
+						"CSAFPID-213572",
+						"CSAFPID-213573",
+						"CSAFPID-213631",
+						"CSAFPID-217747",
+						"CSAFPID-217748",
+						"CSAFPID-220693",
+						"CSAFPID-220694",
+						"CSAFPID-220695",
+						"CSAFPID-220696",
+						"CSAFPID-220697",
+						"CSAFPID-220698",
+						"CSAFPID-220699",
+						"CSAFPID-220702",
+						"CSAFPID-220703",
+						"CSAFPID-220704",
+						"CSAFPID-220727",
+						"CSAFPID-220733",
+						"CSAFPID-220734",
+						"CSAFPID-220737",
+						"CSAFPID-220738",
+						"CSAFPID-220739",
+						"CSAFPID-220740",
+						"CSAFPID-224614",
+						"CSAFPID-224615",
+						"CSAFPID-224616",
+						"CSAFPID-225656",
+						"CSAFPID-225657",
+						"CSAFPID-225659",
+						"CSAFPID-227352",
+						"CSAFPID-230432",
+						"CSAFPID-230433",
+						"CSAFPID-230440",
+						"CSAFPID-230443",
+						"CSAFPID-230473",
+						"CSAFPID-230474",
+						"CSAFPID-230475",
+						"CSAFPID-230476",
+						"CSAFPID-230478",
+						"CSAFPID-230479",
+						"CSAFPID-230480",
+						"CSAFPID-230481",
+						"CSAFPID-230483",
+						"CSAFPID-230485",
+						"CSAFPID-230487",
+						"CSAFPID-230489",
+						"CSAFPID-230492",
+						"CSAFPID-230493",
+						"CSAFPID-230495",
+						"CSAFPID-230496",
+						"CSAFPID-230498",
+						"CSAFPID-230499",
+						"CSAFPID-230500",
+						"CSAFPID-230501",
+						"CSAFPID-230505",
+						"CSAFPID-230508",
+						"CSAFPID-230527",
+						"CSAFPID-230528",
+						"CSAFPID-230567",
+						"CSAFPID-230568",
+						"CSAFPID-230569",
+						"CSAFPID-230579",
+						"CSAFPID-230580",
+						"CSAFPID-230581",
+						"CSAFPID-225891",
+						"CSAFPID-5348"
+					]
+				},
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "CRITICAL",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-191380",
+						"CSAFPID-191381",
+						"CSAFPID-191391",
+						"CSAFPID-191392",
+						"CSAFPID-191393",
+						"CSAFPID-191394",
+						"CSAFPID-191395",
+						"CSAFPID-191396",
+						"CSAFPID-191397",
+						"CSAFPID-191398",
+						"CSAFPID-191399",
+						"CSAFPID-191400",
+						"CSAFPID-191401",
+						"CSAFPID-191402",
+						"CSAFPID-191403",
+						"CSAFPID-191404",
+						"CSAFPID-191405",
+						"CSAFPID-191406",
+						"CSAFPID-191407",
+						"CSAFPID-191408",
+						"CSAFPID-191409",
+						"CSAFPID-191410",
+						"CSAFPID-191411",
+						"CSAFPID-191412",
+						"CSAFPID-191413",
+						"CSAFPID-191414",
+						"CSAFPID-191415",
+						"CSAFPID-191416",
+						"CSAFPID-191417",
+						"CSAFPID-191418",
+						"CSAFPID-191419",
+						"CSAFPID-191420",
+						"CSAFPID-191421",
+						"CSAFPID-191422",
+						"CSAFPID-191423",
+						"CSAFPID-191424",
+						"CSAFPID-191425",
+						"CSAFPID-191426",
+						"CSAFPID-191427",
+						"CSAFPID-191428",
+						"CSAFPID-191429",
+						"CSAFPID-191430",
+						"CSAFPID-191431",
+						"CSAFPID-191432",
+						"CSAFPID-191433",
+						"CSAFPID-191434",
+						"CSAFPID-191435",
+						"CSAFPID-191436",
+						"CSAFPID-191437",
+						"CSAFPID-191438",
+						"CSAFPID-191439",
+						"CSAFPID-191440",
+						"CSAFPID-191441",
+						"CSAFPID-191442",
+						"CSAFPID-191443",
+						"CSAFPID-191444",
+						"CSAFPID-191445",
+						"CSAFPID-191446",
+						"CSAFPID-191447",
+						"CSAFPID-191448",
+						"CSAFPID-191449",
+						"CSAFPID-191450",
+						"CSAFPID-191451",
+						"CSAFPID-191452",
+						"CSAFPID-191453",
+						"CSAFPID-191454",
+						"CSAFPID-191455",
+						"CSAFPID-191456",
+						"CSAFPID-191457",
+						"CSAFPID-191458",
+						"CSAFPID-191459",
+						"CSAFPID-191466",
+						"CSAFPID-191467",
+						"CSAFPID-191468",
+						"CSAFPID-191469",
+						"CSAFPID-191470",
+						"CSAFPID-191471",
+						"CSAFPID-191472",
+						"CSAFPID-191473",
+						"CSAFPID-191474",
+						"CSAFPID-191475",
+						"CSAFPID-191476",
+						"CSAFPID-191477",
+						"CSAFPID-191478",
+						"CSAFPID-191479",
+						"CSAFPID-191480",
+						"CSAFPID-191481",
+						"CSAFPID-191482",
+						"CSAFPID-191483",
+						"CSAFPID-191484",
+						"CSAFPID-191485",
+						"CSAFPID-191557",
+						"CSAFPID-191558",
+						"CSAFPID-191559",
+						"CSAFPID-191560",
+						"CSAFPID-191561",
+						"CSAFPID-191562",
+						"CSAFPID-191563",
+						"CSAFPID-194693",
+						"CSAFPID-194694",
+						"CSAFPID-195841",
+						"CSAFPID-196607",
+						"CSAFPID-196608",
+						"CSAFPID-196609",
+						"CSAFPID-196610",
+						"CSAFPID-196611",
+						"CSAFPID-196612",
+						"CSAFPID-196613",
+						"CSAFPID-196614",
+						"CSAFPID-196615",
+						"CSAFPID-196616",
+						"CSAFPID-196617",
+						"CSAFPID-196618",
+						"CSAFPID-196619",
+						"CSAFPID-198539",
+						"CSAFPID-201604",
+						"CSAFPID-201605",
+						"CSAFPID-201606",
+						"CSAFPID-201607",
+						"CSAFPID-201874",
+						"CSAFPID-201875",
+						"CSAFPID-201876",
+						"CSAFPID-201877",
+						"CSAFPID-201878",
+						"CSAFPID-201879",
+						"CSAFPID-201880",
+						"CSAFPID-201881",
+						"CSAFPID-201882",
+						"CSAFPID-201883",
+						"CSAFPID-201884",
+						"CSAFPID-201885",
+						"CSAFPID-201886",
+						"CSAFPID-201887",
+						"CSAFPID-201888",
+						"CSAFPID-202737",
+						"CSAFPID-202738",
+						"CSAFPID-203349",
+						"CSAFPID-205071",
+						"CSAFPID-205072",
+						"CSAFPID-205073",
+						"CSAFPID-205074",
+						"CSAFPID-205075",
+						"CSAFPID-205076",
+						"CSAFPID-205077",
+						"CSAFPID-205078",
+						"CSAFPID-205079",
+						"CSAFPID-205080",
+						"CSAFPID-205081",
+						"CSAFPID-205082",
+						"CSAFPID-205083",
+						"CSAFPID-205084",
+						"CSAFPID-205085",
+						"CSAFPID-205086",
+						"CSAFPID-205087",
+						"CSAFPID-205088",
+						"CSAFPID-205089",
+						"CSAFPID-205090",
+						"CSAFPID-205091",
+						"CSAFPID-205092",
+						"CSAFPID-205093",
+						"CSAFPID-208194",
+						"CSAFPID-208195",
+						"CSAFPID-208580",
+						"CSAFPID-208581",
+						"CSAFPID-208582",
+						"CSAFPID-208583",
+						"CSAFPID-208640",
+						"CSAFPID-208805",
+						"CSAFPID-208806",
+						"CSAFPID-208866",
+						"CSAFPID-208867",
+						"CSAFPID-209820",
+						"CSAFPID-210024",
+						"CSAFPID-210263",
+						"CSAFPID-212033",
+						"CSAFPID-212034",
+						"CSAFPID-212035",
+						"CSAFPID-212036",
+						"CSAFPID-212037",
+						"CSAFPID-212038",
+						"CSAFPID-212039",
+						"CSAFPID-212040",
+						"CSAFPID-212041",
+						"CSAFPID-212042",
+						"CSAFPID-212043",
+						"CSAFPID-212044",
+						"CSAFPID-212045",
+						"CSAFPID-212046",
+						"CSAFPID-212073",
+						"CSAFPID-213569",
+						"CSAFPID-213570",
+						"CSAFPID-213571",
+						"CSAFPID-213572",
+						"CSAFPID-213573",
+						"CSAFPID-213631",
+						"CSAFPID-217747",
+						"CSAFPID-217748",
+						"CSAFPID-220693",
+						"CSAFPID-220694",
+						"CSAFPID-220695",
+						"CSAFPID-220696",
+						"CSAFPID-220697",
+						"CSAFPID-220698",
+						"CSAFPID-220699",
+						"CSAFPID-220702",
+						"CSAFPID-220703",
+						"CSAFPID-220704",
+						"CSAFPID-220727",
+						"CSAFPID-220733",
+						"CSAFPID-220734",
+						"CSAFPID-220737",
+						"CSAFPID-220738",
+						"CSAFPID-220739",
+						"CSAFPID-220740",
+						"CSAFPID-224614",
+						"CSAFPID-224615",
+						"CSAFPID-224616",
+						"CSAFPID-225656",
+						"CSAFPID-225657",
+						"CSAFPID-225659",
+						"CSAFPID-227352",
+						"CSAFPID-230432",
+						"CSAFPID-230433",
+						"CSAFPID-230440",
+						"CSAFPID-230443",
+						"CSAFPID-230473",
+						"CSAFPID-230474",
+						"CSAFPID-230475",
+						"CSAFPID-230476",
+						"CSAFPID-230478",
+						"CSAFPID-230479",
+						"CSAFPID-230480",
+						"CSAFPID-230481",
+						"CSAFPID-230483",
+						"CSAFPID-230485",
+						"CSAFPID-230487",
+						"CSAFPID-230489",
+						"CSAFPID-230492",
+						"CSAFPID-230493",
+						"CSAFPID-230495",
+						"CSAFPID-230496",
+						"CSAFPID-230498",
+						"CSAFPID-230499",
+						"CSAFPID-230500",
+						"CSAFPID-230501",
+						"CSAFPID-230505",
+						"CSAFPID-230508",
+						"CSAFPID-230527",
+						"CSAFPID-230528",
+						"CSAFPID-230567",
+						"CSAFPID-230568",
+						"CSAFPID-230569",
+						"CSAFPID-230579",
+						"CSAFPID-230580",
+						"CSAFPID-230581",
+						"CSAFPID-225891",
+						"CSAFPID-5348"
+					]
+				}
+			],
+			"title": "Cisco FXOS and NX-OS Software Authentication, Authorization, and Accounting Denial of Service Vulnerability"
+		}
+	]
+}

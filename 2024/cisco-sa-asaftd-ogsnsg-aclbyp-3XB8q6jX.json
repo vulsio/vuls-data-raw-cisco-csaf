@@ -1,0 +1,1476 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the activation of an access control list (ACL) on Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to bypass the protection that is offered by a configured ACL on an affected device.\r\n\r\nThis vulnerability is due to a logic error that occurs when an ACL changes from inactive to active in the running configuration of an affected device. An attacker could exploit this vulnerability by sending traffic through the affected device that should be denied by the configured ACL. The reverse condition is also true���traffic that should be permitted could be denied by the configured ACL. A successful exploit could allow the attacker to bypass configured ACL protections on the affected device, allowing the attacker to access trusted networks that the device might be protecting.\r\n\r\nNote: This vulnerability applies to both IPv4 and IPv6 traffic as well as dual-stack ACL configurations in which both IPv4 and IPv6 ACLs are configured on an interface.\r\n\r\nCisco has released software updates that address this vulnerability. There is a workaround that addresses this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the May 2024 release of the Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: May 2024 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75298\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco products if they were running one of the following Cisco software releases with a vulnerable configuration:\r\n\r\nASA Software releases 9.19.1 to 9.19.1.24, 9.20.1, or 9.20.1.5\r\nFTD Software releases 7.3.0 to 7.4.0\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n  Determine Whether the Device Has a Vulnerable Configuration\r\nThis ACL bypass vulnerability is the result of a specific configuration and requires changing an access list from inactive to active. A vulnerable configuration must meet the following conditions:\r\n\r\nThe object group search (OGS) ACL optimization feature is enabled, as shown by the object-group-search access-control command in the running-config example that follows this bulleted list.\r\nAn access list that is configured as inactive does not have object group network service (NSG)1 but does contain a network object group. In the following example, the network object group is sample1.\r\n\r\nIf the above two conditions are met and the access list is changed from inactive to active, the change does not take effect, and there is no warning to the user. In the following example, the access list is CSM_FW_ACL_.\r\n\r\nIn the following example, which shows a snippet of this configuration, access list CSM_FW_ACL_ would fail to become active, which would result in traffic failing to match that rule.\r\n\r\n\r\ndevice# show running-config\r\n.\r\n.\r\n.\r\nobject-group-search access-control\r\n.\r\n.\r\n.\r\nobject-group network sample1\r\nnetwork-object host 192.168.1.2\r\n.\r\n.\r\n.\r\naccess-group CSM_FW_ACL_ global\r\n.\r\n.\r\n.\r\naccess-list CSM_FW_ACL_ extended permit ip host 192.168.1.1 object-group sample1 inactive\r\naccess-group CSM_FW_ACL_ global\r\n.\r\n.\r\n.\r\n\r\n1. For information about the NSG configuration, see Cisco Secure Firewall ASA Series Command Reference, I - R Commands : object network-service [\"https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp1308434842\"].",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect Cisco Firepower Management Center (FMC) Software.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability. The access list that is not working can be removed and reconfigured to work around this vulnerability. Use the example configuration from the Vulnerable Products [\"#vp\"] section of this advisory to execute the following CLI commands:\r\n\r\n\r\ndevice# no access-list CSM_FW_ACL_ extended permit ip host 192.168.1.1 object-group sample1\r\ndevice# access-list CSM_FW_ACL_ extended permit ip host 192.168.1.1 object-group sample1\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\nCisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (���First Fixed���). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (���Combined First Fixed���).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search���all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number���for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n    Only this advisory All Critical and High advisories All advisories  Cisco ASA Software Cisco FMC Software Cisco FTD Software  Any Platform 3000 Series Industrial Security Appliances (ISA) ASA 5500-X Series Firewalls ASA Service Module Adaptive Security Virtual Appliance (ASAv) Firepower 1000 Series Firepower 2100 Series Firepower 4100 Series Firepower 9000 Series Firepower NGFW Virtual Secure Firewall 3100 Series Firepower Management Center Appliances\r\n\r\n\r\n\r\n\r\nFor instructions on upgrading an FTD device, see Cisco Firepower Management Center Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html\"].\r\n\r\n Additional Resources\r\nFor help determining the best Cisco ASA, FMC, or FTD Software release, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\nCisco ASA Compatibility [\"https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html\"]\r\nCisco Secure Firewall ASA Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html\"]\r\nCisco Secure Firewall Threat Defense Compatibility Guide [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html\"]",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Adaptive Security Appliance and Firepower Threat Defense Software Inactive-to-Active ACL Bypass Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asaftd-ogsnsg-aclbyp-3XB8q6jX"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: May 2024 Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75298"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall ASA Series Command Reference, I - R Commands : object network-service",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp1308434842"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Firepower Management Center Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/firepower/upgrade/fpmc-upgrade-guide/getting_started.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco ASA Compatibility",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall ASA Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall Threat Defense Compatibility Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Adaptive Security Appliance and Firepower Threat Defense Software Inactive-to-Active ACL Bypass Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-05-22T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-22T15:57:20+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-asaftd-ogsnsg-aclbyp-3XB8q6jX",
+			"initial_release_date": "2024-05-22T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-05-22T15:57:07+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.19.1",
+										"product": {
+											"name": "9.19.1",
+											"product_id": "CSAFPID-292442"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.19.1.5",
+										"product": {
+											"name": "9.19.1.5",
+											"product_id": "CSAFPID-294796"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.19.1.9",
+										"product": {
+											"name": "9.19.1.9",
+											"product_id": "CSAFPID-295329"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.19.1.12",
+										"product": {
+											"name": "9.19.1.12",
+											"product_id": "CSAFPID-295516"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.19.1.18",
+										"product": {
+											"name": "9.19.1.18",
+											"product_id": "CSAFPID-300240"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.19.1.22",
+										"product": {
+											"name": "9.19.1.22",
+											"product_id": "CSAFPID-300822"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.19.1.24",
+										"product": {
+											"name": "9.19.1.24",
+											"product_id": "CSAFPID-300902"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.19"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.20.1",
+										"product": {
+											"name": "9.20.1",
+											"product_id": "CSAFPID-300766"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.20.1.5",
+										"product": {
+											"name": "9.20.1.5",
+											"product_id": "CSAFPID-300898"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.20"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.3.0",
+										"product": {
+											"name": "7.3.0",
+											"product_id": "CSAFPID-292363"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1",
+										"product": {
+											"name": "7.3.1",
+											"product_id": "CSAFPID-294962"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1.1",
+										"product": {
+											"name": "7.3.1.1",
+											"product_id": "CSAFPID-300512"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.3.1.2",
+										"product": {
+											"name": "7.3.1.2",
+											"product_id": "CSAFPID-301705"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.4.0",
+										"product": {
+											"name": "7.4.0",
+											"product_id": "CSAFPID-300737"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.4"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Firepower Threat Defense Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 4100 Series",
+						"product": {
+							"name": "Cisco Firepower 4100 Series",
+							"product_id": "CSAFPID-277441"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Adaptive Security Virtual Appliance (ASAv)",
+						"product": {
+							"name": "Cisco Adaptive Security Virtual Appliance (ASAv)",
+							"product_id": "CSAFPID-277511"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 4200 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 4200 Series",
+							"product_id": "CSAFPID-300754"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall Threat Defense Virtual",
+						"product": {
+							"name": "Cisco Secure Firewall Threat Defense Virtual",
+							"product_id": "CSAFPID-277464"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-292442:277392"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-292442:277393"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-292442:277438"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-292442:277440"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-292442:277441"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-292442:277511"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-292442:286865"
+				},
+				"product_reference": "CSAFPID-292442",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-294796:277392"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-294796:277393"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-294796:277438"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-294796:277440"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-294796:277441"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-294796:277511"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.5 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-294796:286865"
+				},
+				"product_reference": "CSAFPID-294796",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-295329:277392"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-295329:277393"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-295329:277438"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-295329:277440"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-295329:277441"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-295329:277511"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.9 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-295329:286865"
+				},
+				"product_reference": "CSAFPID-295329",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-295516:277392"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-295516:277393"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-295516:277438"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-295516:277440"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-295516:277441"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-295516:277511"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.12 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-295516:286865"
+				},
+				"product_reference": "CSAFPID-295516",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300240:277392"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300240:277393"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300240:277438"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-300240:277440"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-300240:277441"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-300240:277511"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.18 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-300240:286865"
+				},
+				"product_reference": "CSAFPID-300240",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300822:277392"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300822:277393"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300822:277438"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-300822:277440"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-300822:277441"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-300822:277511"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.22 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-300822:286865"
+				},
+				"product_reference": "CSAFPID-300822",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300902:277392"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300902:277393"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300902:277438"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-300902:277440"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-300902:277441"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-300902:277511"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.19.1.24 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-300902:286865"
+				},
+				"product_reference": "CSAFPID-300902",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.1 when installed on Cisco Secure Firewall 4200 Series",
+					"product_id": "CSAFPID-300766:300754"
+				},
+				"product_reference": "CSAFPID-300766",
+				"relates_to_product_reference": "CSAFPID-300754"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.1.5 when installed on Cisco Secure Firewall 4200 Series",
+					"product_id": "CSAFPID-300898:300754"
+				},
+				"product_reference": "CSAFPID-300898",
+				"relates_to_product_reference": "CSAFPID-300754"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-292363:277392"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-292363:277393"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-292363:277438"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-292363:277440"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-292363:277441"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-292363:277464"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.0 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-292363:286865"
+				},
+				"product_reference": "CSAFPID-292363",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-294962:277392"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-294962:277393"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-294962:277438"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-294962:277440"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-294962:277441"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-294962:277464"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-294962:286865"
+				},
+				"product_reference": "CSAFPID-294962",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-300512:277392"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-300512:277393"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-300512:277438"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-300512:277440"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-300512:277441"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-300512:277464"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.1 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-300512:286865"
+				},
+				"product_reference": "CSAFPID-300512",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-301705:277392"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-301705:277393"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-301705:277438"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-301705:277440"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-301705:277441"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Secure Firewall Threat Defense Virtual",
+					"product_id": "CSAFPID-301705:277464"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-277464"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.3.1.2 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-301705:286865"
+				},
+				"product_reference": "CSAFPID-301705",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Firepower Threat Defense Software 7.4.0 when installed on Cisco Secure Firewall 4200 Series",
+					"product_id": "CSAFPID-300737:300754"
+				},
+				"product_reference": "CSAFPID-300737",
+				"relates_to_product_reference": "CSAFPID-300754"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20293",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwi17713"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-292363:277392",
+					"CSAFPID-292363:277393",
+					"CSAFPID-292363:277438",
+					"CSAFPID-292363:277440",
+					"CSAFPID-292363:277441",
+					"CSAFPID-292363:277464",
+					"CSAFPID-292363:286865",
+					"CSAFPID-294962:277392",
+					"CSAFPID-294962:277393",
+					"CSAFPID-294962:277438",
+					"CSAFPID-294962:277440",
+					"CSAFPID-294962:277441",
+					"CSAFPID-294962:277464",
+					"CSAFPID-294962:286865",
+					"CSAFPID-300512:277392",
+					"CSAFPID-300512:277393",
+					"CSAFPID-300512:277438",
+					"CSAFPID-300512:277440",
+					"CSAFPID-300512:277441",
+					"CSAFPID-300512:277464",
+					"CSAFPID-300512:286865",
+					"CSAFPID-300737:300754",
+					"CSAFPID-301705:277392",
+					"CSAFPID-301705:277393",
+					"CSAFPID-301705:277438",
+					"CSAFPID-301705:277440",
+					"CSAFPID-301705:277441",
+					"CSAFPID-301705:277464",
+					"CSAFPID-301705:286865",
+					"CSAFPID-292442:277392",
+					"CSAFPID-292442:277393",
+					"CSAFPID-292442:277438",
+					"CSAFPID-292442:277440",
+					"CSAFPID-292442:277441",
+					"CSAFPID-292442:277511",
+					"CSAFPID-292442:286865",
+					"CSAFPID-294796:277392",
+					"CSAFPID-294796:277393",
+					"CSAFPID-294796:277438",
+					"CSAFPID-294796:277440",
+					"CSAFPID-294796:277441",
+					"CSAFPID-294796:277511",
+					"CSAFPID-294796:286865",
+					"CSAFPID-295329:277392",
+					"CSAFPID-295329:277393",
+					"CSAFPID-295329:277438",
+					"CSAFPID-295329:277440",
+					"CSAFPID-295329:277441",
+					"CSAFPID-295329:277511",
+					"CSAFPID-295329:286865",
+					"CSAFPID-295516:277392",
+					"CSAFPID-295516:277393",
+					"CSAFPID-295516:277438",
+					"CSAFPID-295516:277440",
+					"CSAFPID-295516:277441",
+					"CSAFPID-295516:277511",
+					"CSAFPID-295516:286865",
+					"CSAFPID-300240:277392",
+					"CSAFPID-300240:277393",
+					"CSAFPID-300240:277438",
+					"CSAFPID-300240:277440",
+					"CSAFPID-300240:277441",
+					"CSAFPID-300240:277511",
+					"CSAFPID-300240:286865",
+					"CSAFPID-300766:300754",
+					"CSAFPID-300822:277392",
+					"CSAFPID-300822:277393",
+					"CSAFPID-300822:277438",
+					"CSAFPID-300822:277440",
+					"CSAFPID-300822:277441",
+					"CSAFPID-300822:277511",
+					"CSAFPID-300822:286865",
+					"CSAFPID-300898:300754",
+					"CSAFPID-300902:277392",
+					"CSAFPID-300902:277393",
+					"CSAFPID-300902:277438",
+					"CSAFPID-300902:277440",
+					"CSAFPID-300902:277441",
+					"CSAFPID-300902:277511",
+					"CSAFPID-300902:286865"
+				]
+			},
+			"release_date": "2024-05-22T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-292363:277392",
+						"CSAFPID-292363:277393",
+						"CSAFPID-292363:277438",
+						"CSAFPID-292363:277440",
+						"CSAFPID-292363:277441",
+						"CSAFPID-292363:277464",
+						"CSAFPID-292363:286865",
+						"CSAFPID-294962:277392",
+						"CSAFPID-294962:277393",
+						"CSAFPID-294962:277438",
+						"CSAFPID-294962:277440",
+						"CSAFPID-294962:277441",
+						"CSAFPID-294962:277464",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:277440",
+						"CSAFPID-300512:277441",
+						"CSAFPID-300512:277464",
+						"CSAFPID-300512:286865",
+						"CSAFPID-300737:300754",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:277440",
+						"CSAFPID-301705:277441",
+						"CSAFPID-301705:277464",
+						"CSAFPID-301705:286865",
+						"CSAFPID-292442:277392",
+						"CSAFPID-292442:277393",
+						"CSAFPID-292442:277438",
+						"CSAFPID-292442:277440",
+						"CSAFPID-292442:277441",
+						"CSAFPID-292442:277511",
+						"CSAFPID-292442:286865",
+						"CSAFPID-294796:277392",
+						"CSAFPID-294796:277393",
+						"CSAFPID-294796:277438",
+						"CSAFPID-294796:277440",
+						"CSAFPID-294796:277441",
+						"CSAFPID-294796:277511",
+						"CSAFPID-294796:286865",
+						"CSAFPID-295329:277392",
+						"CSAFPID-295329:277393",
+						"CSAFPID-295329:277438",
+						"CSAFPID-295329:277440",
+						"CSAFPID-295329:277441",
+						"CSAFPID-295329:277511",
+						"CSAFPID-295329:286865",
+						"CSAFPID-295516:277392",
+						"CSAFPID-295516:277393",
+						"CSAFPID-295516:277438",
+						"CSAFPID-295516:277440",
+						"CSAFPID-295516:277441",
+						"CSAFPID-295516:277511",
+						"CSAFPID-295516:286865",
+						"CSAFPID-300240:277392",
+						"CSAFPID-300240:277393",
+						"CSAFPID-300240:277438",
+						"CSAFPID-300240:277440",
+						"CSAFPID-300240:277441",
+						"CSAFPID-300240:277511",
+						"CSAFPID-300240:286865",
+						"CSAFPID-300766:300754",
+						"CSAFPID-300822:277392",
+						"CSAFPID-300822:277393",
+						"CSAFPID-300822:277438",
+						"CSAFPID-300822:277440",
+						"CSAFPID-300822:277441",
+						"CSAFPID-300822:277511",
+						"CSAFPID-300822:286865",
+						"CSAFPID-300898:300754",
+						"CSAFPID-300902:277392",
+						"CSAFPID-300902:277393",
+						"CSAFPID-300902:277438",
+						"CSAFPID-300902:277440",
+						"CSAFPID-300902:277441",
+						"CSAFPID-300902:277511",
+						"CSAFPID-300902:286865"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There is a workaround that addresses this vulnerability. The access list that is not working can be removed and reconfigured to work around this vulnerability. Use the example configuration from the Vulnerable Products [\"#vp\"] section of this advisory to execute the following CLI commands:\r\n\r\n\r\ndevice# no access-list CSM_FW_ACL_ extended permit ip host 192.168.1.1 object-group sample1\r\ndevice# access-list CSM_FW_ACL_ extended permit ip host 192.168.1.1 object-group sample1\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-292363:277392",
+						"CSAFPID-292363:277393",
+						"CSAFPID-292363:277438",
+						"CSAFPID-292363:277440",
+						"CSAFPID-292363:277441",
+						"CSAFPID-292363:277464",
+						"CSAFPID-292363:286865",
+						"CSAFPID-294962:277392",
+						"CSAFPID-294962:277393",
+						"CSAFPID-294962:277438",
+						"CSAFPID-294962:277440",
+						"CSAFPID-294962:277441",
+						"CSAFPID-294962:277464",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:277440",
+						"CSAFPID-300512:277441",
+						"CSAFPID-300512:277464",
+						"CSAFPID-300512:286865",
+						"CSAFPID-300737:300754",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:277440",
+						"CSAFPID-301705:277441",
+						"CSAFPID-301705:277464",
+						"CSAFPID-301705:286865",
+						"CSAFPID-292442:277392",
+						"CSAFPID-292442:277393",
+						"CSAFPID-292442:277438",
+						"CSAFPID-292442:277440",
+						"CSAFPID-292442:277441",
+						"CSAFPID-292442:277511",
+						"CSAFPID-292442:286865",
+						"CSAFPID-294796:277392",
+						"CSAFPID-294796:277393",
+						"CSAFPID-294796:277438",
+						"CSAFPID-294796:277440",
+						"CSAFPID-294796:277441",
+						"CSAFPID-294796:277511",
+						"CSAFPID-294796:286865",
+						"CSAFPID-295329:277392",
+						"CSAFPID-295329:277393",
+						"CSAFPID-295329:277438",
+						"CSAFPID-295329:277440",
+						"CSAFPID-295329:277441",
+						"CSAFPID-295329:277511",
+						"CSAFPID-295329:286865",
+						"CSAFPID-295516:277392",
+						"CSAFPID-295516:277393",
+						"CSAFPID-295516:277438",
+						"CSAFPID-295516:277440",
+						"CSAFPID-295516:277441",
+						"CSAFPID-295516:277511",
+						"CSAFPID-295516:286865",
+						"CSAFPID-300240:277392",
+						"CSAFPID-300240:277393",
+						"CSAFPID-300240:277438",
+						"CSAFPID-300240:277440",
+						"CSAFPID-300240:277441",
+						"CSAFPID-300240:277511",
+						"CSAFPID-300240:286865",
+						"CSAFPID-300766:300754",
+						"CSAFPID-300822:277392",
+						"CSAFPID-300822:277393",
+						"CSAFPID-300822:277438",
+						"CSAFPID-300822:277440",
+						"CSAFPID-300822:277441",
+						"CSAFPID-300822:277511",
+						"CSAFPID-300822:286865",
+						"CSAFPID-300898:300754",
+						"CSAFPID-300902:277392",
+						"CSAFPID-300902:277393",
+						"CSAFPID-300902:277438",
+						"CSAFPID-300902:277440",
+						"CSAFPID-300902:277441",
+						"CSAFPID-300902:277511",
+						"CSAFPID-300902:286865"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-292363:277392",
+						"CSAFPID-292363:277393",
+						"CSAFPID-292363:277438",
+						"CSAFPID-292363:277440",
+						"CSAFPID-292363:277441",
+						"CSAFPID-292363:277464",
+						"CSAFPID-292363:286865",
+						"CSAFPID-294962:277392",
+						"CSAFPID-294962:277393",
+						"CSAFPID-294962:277438",
+						"CSAFPID-294962:277440",
+						"CSAFPID-294962:277441",
+						"CSAFPID-294962:277464",
+						"CSAFPID-294962:286865",
+						"CSAFPID-300512:277392",
+						"CSAFPID-300512:277393",
+						"CSAFPID-300512:277438",
+						"CSAFPID-300512:277440",
+						"CSAFPID-300512:277441",
+						"CSAFPID-300512:277464",
+						"CSAFPID-300512:286865",
+						"CSAFPID-300737:300754",
+						"CSAFPID-301705:277392",
+						"CSAFPID-301705:277393",
+						"CSAFPID-301705:277438",
+						"CSAFPID-301705:277440",
+						"CSAFPID-301705:277441",
+						"CSAFPID-301705:277464",
+						"CSAFPID-301705:286865",
+						"CSAFPID-292442:277392",
+						"CSAFPID-292442:277393",
+						"CSAFPID-292442:277438",
+						"CSAFPID-292442:277440",
+						"CSAFPID-292442:277441",
+						"CSAFPID-292442:277511",
+						"CSAFPID-292442:286865",
+						"CSAFPID-294796:277392",
+						"CSAFPID-294796:277393",
+						"CSAFPID-294796:277438",
+						"CSAFPID-294796:277440",
+						"CSAFPID-294796:277441",
+						"CSAFPID-294796:277511",
+						"CSAFPID-294796:286865",
+						"CSAFPID-295329:277392",
+						"CSAFPID-295329:277393",
+						"CSAFPID-295329:277438",
+						"CSAFPID-295329:277440",
+						"CSAFPID-295329:277441",
+						"CSAFPID-295329:277511",
+						"CSAFPID-295329:286865",
+						"CSAFPID-295516:277392",
+						"CSAFPID-295516:277393",
+						"CSAFPID-295516:277438",
+						"CSAFPID-295516:277440",
+						"CSAFPID-295516:277441",
+						"CSAFPID-295516:277511",
+						"CSAFPID-295516:286865",
+						"CSAFPID-300240:277392",
+						"CSAFPID-300240:277393",
+						"CSAFPID-300240:277438",
+						"CSAFPID-300240:277440",
+						"CSAFPID-300240:277441",
+						"CSAFPID-300240:277511",
+						"CSAFPID-300240:286865",
+						"CSAFPID-300766:300754",
+						"CSAFPID-300822:277392",
+						"CSAFPID-300822:277393",
+						"CSAFPID-300822:277438",
+						"CSAFPID-300822:277440",
+						"CSAFPID-300822:277441",
+						"CSAFPID-300822:277511",
+						"CSAFPID-300822:286865",
+						"CSAFPID-300898:300754",
+						"CSAFPID-300902:277392",
+						"CSAFPID-300902:277393",
+						"CSAFPID-300902:277438",
+						"CSAFPID-300902:277440",
+						"CSAFPID-300902:277441",
+						"CSAFPID-300902:277511",
+						"CSAFPID-300902:286865"
+					]
+				}
+			],
+			"title": "Cisco Adaptive Security Appliance Software and Firepower Threat Defense Software Inactive to Active ACL Bypass Vulnerability"
+		}
+	]
+}

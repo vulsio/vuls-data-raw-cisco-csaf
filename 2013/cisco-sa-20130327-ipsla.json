@@ -1,0 +1,353 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "<!--- IP SLA 010-summary 0.4  --->\r\nThe Cisco IOS Software implementation of the IP Service Level Agreement (IP SLA) feature contains a vulnerability in the validation of IP SLA packets that could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition. \r\n\r\nCisco has released software updates that address this vulnerability. Mitigations for this vulnerability are available. \r\n\r\nThis advisory is available at the following link: http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ipsla[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ipsla\"] \r\n\r\nNote: The March 27, 2013, Cisco IOS Software Security Advisory bundled publication includes seven Cisco Security Advisories. All advisories address vulnerabilities in Cisco IOS Software. Each Cisco IOS Software Security Advisory lists the Cisco IOS Software releases that correct the vulnerability or vulnerabilities detailed in the advisory as well as the Cisco IOS Software releases that correct all Cisco IOS Software vulnerabilities in the March 2013 bundled publication. \r\n\r\nIndividual publication links are in \"Cisco Event Response: Semiannual Cisco IOS Software Security Advisory Bundled Publication\" at the following link: \r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar13.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar13.html\"]\r\n \r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "<!--- IP SLA 020 AFFECTED 0.4  --->\r\nThis vulnerability affects a device that is running an affected version of Cisco IOS Software and has a vulnerable IP SLA general responder configuration. \r\n",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "<!--- IP SLA 030-vuln 0.5   --->\r\nCisco devices that are running Cisco IOS Software are vulnerable when they are configured for the IP SLA general responder feature.\r\n\r\nThere are two methods to determine whether a device is configured for the IP SLA general responder: \r\n\r\n\r\n    Determine whether the IP SLA general responder command is included in the device configuration. \r\n    Determine whether the IP SLA general responder is active on a running device. \r\n\r\nThe preferred method to verify whether IP SLA is enabled on a Cisco IOS device is to inspect the device configuration to determine whether IP SLA general responder is configured.\r\nDetermine Whether IP SLA General Responder Command Is Included in the Device Configuration \r\nTo determine whether the IP SLA general responder has been enabled in the Cisco IOS Software configuration. The ip sla responder global configuration command must be present The show running-config | include ip sla responder command can be used to determine whether IP SLA is present in the configuration, as illustrated in the following example:\r\n\r\n\r\nRouter> show running-config | include ip sla responder$\r\nip sla responder\r\nRouter>\r\n\r\n\r\nDetermine Whether IP SLA General Responder Is Active on a Running Device \r\nThe administrator can establish whether the IP SLA general responder is enabled on a Cisco IOS device by using the show ip sla responder | include ^General command. If the vulnerable IP SLA general responder is active, the output will include a line with Enabled. \r\n\r\nThe following example shows a device on which the vulnerable IP SLA responder is active: \r\n\r\n\r\n\r\n\r\n\r\nRouter# show ip sla responder | include ^General\r\nGeneral IP SLA Responder is: Enabled\r\nRouter# \r\n\r\n\r\nDetermine the Cisco IOS Software Release \r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.0(1)M1 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.0(1)M1, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\nCompiled Wed 02-Dec-09 17:17 by prod_rel_team\r\n!--- output truncated \r\nAdditional information about Cisco IOS Software release naming conventions is available in \"White Paper: Cisco IOS and NX-OS Software Reference Guide\" at http://www.cisco.com/web/about/security/intelligence/ios-ref.html[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "<!--- IP SLA 040-not-vuln 0.1 a --->A Cisco IOS device is not vulnerable if the IP SLA general responder feature is not configured.\r\nThe following products have been confirmed not vulnerable:\r\n\r\n\r\n    Cisco IOS XR Software \r\n    Cisco NX-OS Software \r\n    Cisco ASA Software \r\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "\r\nThe IP SLA Responder is a component embedded in a Cisco routing device that allows the system to anticipate and respond to IP SLA request packets.\r\nThere are two types of IP SLA responders:\r\n\r\n\r\n\r\n    \r\n    IP SLA general responder uses the IP SLA Control Protocol to set up IP SLA operations and receives packets on UDP port 1167 or on UDP port 1967.\r\n    \r\n    IP SLA permanent responder receives either UDP or TCP packets on a user-configurable port.\r\n    \r\n\r\n\r\nA vulnerability in the implementation of the IP Service Level Agreement general responder feature of\r\nCisco IOS Software could allow an unauthenticated, remote attacker to cause a reload of the vulnerable device.\r\nThe vulnerability is due to improper validation of IP SLA packets only when they are received on UDP port 1167.\r\nAn attacker could exploit this vulnerability by sending malformed IP SLA packets addressed to the affected device.\r\nAn exploit could allow the attacker to cause an extended DoS condition.\r\n\r\n\r\n\r\nThis vulnerability can be exploited via IP version 4 (IPv4) or IP version 6 (IPv6).\r\n\r\n\r\n\r\nNeither the IP SLA general responder on UDP port 1967 nor the permanent UDP responder are affected by this vulnerability.\r\n\r\n\r\n\r\nThis vulnerability has been documented in Cisco bug ID\r\nCSCuc72594[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc72594\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nand has been assigned the Common Vulnerabilities and Exposures (CVE) ID\r\nCVE-2013-1148.\r\n\r\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "<!---  IP SLA 090  WORKAROUNDS    0.4   --->\r\nThere are no workarounds for this vulnerability but there are mitigations that can be deployed on a general IP SLA responder to reduce the exposure to this vulnerability such as infrastructure access lists. \r\n\r\nConventional mitigation techniques such as IP SLA key chains or control plane protection are not an effective mitigation for this vulnerability. \r\n\r\nFor devices configured as general responders, mitigation techniques that can be deployed on Cisco devices within the network are available in the companion document \"Identifying and Mitigating Exploitation of the Cisco IOS Software IP Service Level Agreement Vulnerability,\" which is available at http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27842[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27842\"].\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "<!--- IP SLA 080 SOFTWARE 0.4  --->\r\nWhen considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\nCisco IOS Software\r\nEach row of the following Cisco IOS Software table corresponds to a Cisco IOS Software train. If a particular train is vulnerable, the earliest releases that contain the fix are listed in the First Fixed Release column. The First Fixed Release for All Advisories in the March 2013 Bundled Publication column lists the earliest possible releases that correct all the published vulnerabilities in the Cisco IOS Software Security Advisory bundled publication. Cisco recommends upgrading to the latest available release where possible.\r\n\r\nThe Cisco IOS Software Checker allows customers to search for Cisco Security Advisories that address specific Cisco IOS Software releases. This tool is available on the Cisco Security (SIO) portal at http://tools.cisco.com/security/center/selectIOSVersion.x[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] \r\n \n\r\n <!-- IPSLA 05 bundle+sed -->\r\n\r\n    \r\n        \r\n            Major Release\r\n                 Availability of Repaired Releases\r\n        \r\n        \r\n            Affected 12.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.0 based releases\r\n        \r\n        \r\n            Affected 12.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.2 based releases\r\n        \r\n        \r\n            Affected 12.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.3 based releases\r\n        \r\n        \r\n            Affected 12.4-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.4 based releases\r\n        \r\n        \r\n            Affected 15.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.0 based releases\r\n        \r\n        \r\n            Affected 15.1-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.1 based releases\r\n        \r\n        \r\n            Affected 15.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            15.2GC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; migrate to any release in 15.4T\n\r\n            \r\n        \r\n        \r\n            15.2GCA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; migrate to any release in 15.4T\n\r\n            \r\n        \r\n        \r\n            15.2JA\r\n            Not vulnerable\n\r\n            \r\n            15.2(2)JA\n\r\n            \r\n        \r\n        \r\n            15.2JAX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.2JB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.2JN\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.2M\r\n            15.2(4)M3\n\r\n            \r\n            15.2(4)M3\n\r\n            \r\n        \r\n        \r\n            15.2S\r\n            Vulnerable. Only releases 15.2(4)S through 15.2(4)S1 are vulnerable.\n\r\n            \n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=32784&Version=1&Revision=2#iosxe\"]\n\r\n            \r\n            \n\r\n            15.2(4)S2 Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=32784&Version=1&Revision=2#iosxe\"] \r\n        \r\n        \r\n            15.2SA\r\n            Not vulnerable\n\r\n            \r\n            15.2(2)SA\n\r\n            \r\n        \r\n        \r\n            15.2SNG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in\r\n            Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n            15.2SNH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in\r\n            Obtaining Fixed Software[\"#fixes\"] section of this advisory.\r\n        \r\n        \r\n            15.2SNI\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            15.2T\r\n            Not vulnerable\n\r\n            \r\n            15.2(1)T4; Available on 03-MAY-13 \n\r\n            15.2(2)T3 \n\r\n            15.2(3)T3\n\r\n            \r\n        \r\n        \r\n            Affected 15.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.3 based releases\r\n        \r\n    \r\n\r\nCisco IOS XE Software \r\nCisco IOS XE Software is affected by the vulnerability that is disclosed in this document. \r\n\r\n<!-- IPSLA 1.0 -->\r\n\r\n\r\n    \r\n        \r\n            Cisco IOS XE Software Release \r\n            First Fixed Release \r\n            First Fixed Release for All Advisories in the March 2013 Cisco IOS Software Security Advisory Bundled Publication \r\n        \r\n        \r\n            2.1.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.2.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.3.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.4.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.5.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            2.6.x \r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.1.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.5S or later.\r\n        \r\n        \r\n            3.1.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.5S or later.\r\n        \r\n        \r\n            3.2xSE\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.XO\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.3.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.5S or later.\r\n        \r\n        \r\n            3.3xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.4.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.4.5S or later.\r\n        \r\n        \r\n            3.4.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.5.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.2S or later.\r\n        \r\n        \r\n            3.6.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.2S or later.\r\n        \r\n        \r\n            3.7.xS\r\n            3.7.2S\r\n            3.7.2S\r\n        \r\n        \r\n            3.8.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.9.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n\r\n  \r\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected. \r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found during internal Cisco testing.\r\n\r\ngg",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "external",
+				"summary": "Identifying and Mitigating Exploitation of the Cisco IOS Software IP Service Level Agreement Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27842"
+			},
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software IP Service Level Agreement Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ipsla"
+			}
+		],
+		"title": "Cisco IOS Software IP Service Level Agreement Vulnerability",
+		"tracking": {
+			"current_release_date": "2013-04-12T14:44:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:45+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130327-ipsla",
+			"initial_release_date": "2013-03-27T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-03-27T15:15:42+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2013-03-28T00:02:44+00:00",
+					"number": "1.1.0",
+					"summary": "Updated \"Details\" section."
+				},
+				{
+					"date": "2013-03-28T17:39:54+00:00",
+					"number": "1.2.0",
+					"summary": "Updated \"Software Versions and Fixes\" section, corrected software table."
+				},
+				{
+					"date": "2013-04-12T14:44:06+00:00",
+					"number": "1.3.0",
+					"summary": "Advisory republished to update metadata. The advisory content was not changed."
+				}
+			],
+			"status": "final",
+			"version": "1.3.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S",
+										"product": {
+											"name": "15.2(4)S",
+											"product_id": "CSAFPID-112424"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S1",
+										"product": {
+											"name": "15.2(4)S1",
+											"product_id": "CSAFPID-183813"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)S0c",
+										"product": {
+											"name": "15.2(4)S0c",
+											"product_id": "CSAFPID-184933"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M",
+										"product": {
+											"name": "15.2(4)M",
+											"product_id": "CSAFPID-106899"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M1",
+										"product": {
+											"name": "15.2(4)M1",
+											"product_id": "CSAFPID-116774"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(4)M2",
+										"product": {
+											"name": "15.2(4)M2",
+											"product_id": "CSAFPID-117681"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(4)JAZ1",
+										"product": {
+											"name": "15.2(4)JAZ1",
+											"product_id": "CSAFPID-200503"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JAZ"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.7.0S",
+										"product": {
+											"name": "3.7.0S",
+											"product_id": "CSAFPID-184480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1S",
+										"product": {
+											"name": "3.7.1S",
+											"product_id": "CSAFPID-184481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.0bS",
+										"product": {
+											"name": "3.7.0bS",
+											"product_id": "CSAFPID-213955"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.7.1aS",
+										"product": {
+											"name": "3.7.1aS",
+											"product_id": "CSAFPID-213957"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.7S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.9.1",
+										"product": {
+											"name": "17.9.1",
+											"product_id": "CSAFPID-278025"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.9"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2013-1148",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuc72594",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-106899",
+					"CSAFPID-112424",
+					"CSAFPID-116774",
+					"CSAFPID-117681",
+					"CSAFPID-183813",
+					"CSAFPID-184933",
+					"CSAFPID-200503",
+					"CSAFPID-184480",
+					"CSAFPID-184481",
+					"CSAFPID-213955",
+					"CSAFPID-213957",
+					"CSAFPID-278025"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software IP Service Level Agreement Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ipsla"
+				}
+			],
+			"release_date": "2013-02-08T11:30:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "<!---  IP SLA 090  WORKAROUNDS    0.4   --->\r\nThere are no workarounds for this vulnerability but there are mitigations that can be deployed on a general IP SLA responder to reduce the exposure to this vulnerability such as infrastructure access lists. \r\n\r\nConventional mitigation techniques such as IP SLA key chains or control plane protection are not an effective mitigation for this vulnerability. \r\n\r\nFor devices configured as general responders, mitigation techniques that can be deployed on Cisco devices within the network are available in the companion document \"Identifying and Mitigating Exploitation of the Cisco IOS Software IP Service Level Agreement Vulnerability,\" which is available at http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27842[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=27842\"].\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-106899",
+						"CSAFPID-112424",
+						"CSAFPID-116774",
+						"CSAFPID-117681",
+						"CSAFPID-183813",
+						"CSAFPID-184933",
+						"CSAFPID-200503",
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-213955",
+						"CSAFPID-213957",
+						"CSAFPID-278025"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-106899",
+						"CSAFPID-112424",
+						"CSAFPID-116774",
+						"CSAFPID-117681",
+						"CSAFPID-183813",
+						"CSAFPID-184933",
+						"CSAFPID-200503",
+						"CSAFPID-184480",
+						"CSAFPID-184481",
+						"CSAFPID-213955",
+						"CSAFPID-213957",
+						"CSAFPID-278025"
+					]
+				}
+			],
+			"title": "Cisco IOS Software IP Service Level Agreement Vulnerability"
+		}
+	]
+}

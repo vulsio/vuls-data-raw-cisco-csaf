@@ -1,0 +1,282 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "Cisco would like to thank Quentin Rhoads-Herrera and Rich Mirch of the State Farm Penetration Testing Team for reporting this vulnerability."
+			}
+		],
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the upgrade mechanism of Cisco collaboration products based on the Cisco Voice Operating System software platform could allow an unauthenticated, remote attacker to gain unauthorized, elevated access to an affected device.\r\n\r\nThe vulnerability occurs when a refresh upgrade or Prime Collaboration Deployment (PCD) migration is performed on an affected device. When a refresh upgrade or PCD migration is completed successfully, an engineering flag remains enabled and could allow root access to the device with a known password.\r\n\r\nIf the vulnerable device is subsequently upgraded using the standard upgrade method to an Engineering Special Release, service update, or a new major release of the affected product, this vulnerability is remediated by that action.\r\n\r\nNote: Engineering Special Releases that are installed as COP files, as opposed to the standard upgrade method, do not remediate this vulnerability.\r\n\r\nAn attacker who can access an affected device over SFTP while it is in a vulnerable state could gain root access to the device. This access could allow the attacker to compromise the affected system completely.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\nThis advisory is available at the following link:\r\nhttps://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171115-vos [\"https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171115-vos\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects the following Cisco Voice Operating System (VOS)–based products when they have been upgraded by using the refresh upgrade (RU) method or migrated by using the Prime Collaboration Deployment (PCD) method:\r\n\r\nCisco Unified Communications Manager (UCM)\r\nCisco Unified Communication Manager Session Management Edition (SME)\r\nCisco Emergency Responder\r\nCisco Unity Connection\r\nCisco Unified Communications Manager IM and Presence Service (IM&P; earlier releases were known as Cisco Unified Presence)\r\nCisco Prime License Manager\r\nCisco Hosted Collaboration Mediation Fulfillment\r\nCisco Unified Contact Center Express (UCCx)\r\nCisco SocialMiner\r\nCisco Unified Intelligence Center (UIC)\r\nCisco Finesse\r\nCisco MediaSense\r\n  The PCD migration method affects only Cisco UCM, SME, and IM&P.\r\nDetermining the Upgrade or Migration Method  The Cisco VOS-based products identified in the preceding vulnerable products list are affected by this vulnerability if they were refresh upgraded or migrated by using the PCD methods. Note that a VOS-based product must go through a refresh upgrade if the underlying operating system is also being upgraded to a new major release.\r\n\r\nIf the VOS-based product was standard upgraded to an Engineering Special, service update, or a new major release of the affected product that does not require major upgrades to the underlying operating system, this vulnerability will be remediated by that standard upgrade action.\r\n\r\nRefresh Upgrade Method Verification\r\n\r\nTo verify whether the product has been exposed to the vulnerability by the refresh upgrade method, issue the following command at the CLI to view the system-history.log file:\r\nadmin: file view install system-history.log\r\n\r\nThe following example shows a refresh upgrade entry in the system-history.log file:\r\n02/28/2013 14:56:05 | root: Upgrade (refresh) 10.0.0.97016-27 Success\r\n\r\nThe following example shows a standard upgrade entry in the system-history.log file:\r\n10/13/2017 18:56:07 | root: Upgrade 12.0.1.20000-3 Success\r\n\r\nPCD Migration Method Verification\r\n\r\nTo verify whether the product has been exposed to this vulnerability by the PCD migration method, issue the following command at the CLI to view the install.log file:\r\nadmin: file view install install.log\r\n\r\nThe following example shows a PCD migration log entry in the install.log file:\r\n10/16/2017 13:59:13 post_install|Starting post_install processing - VOS_INSTALL_CONTEXT = M1|\r\n\r\nThe following example shows a normal fresh install log entry in the install.log file:\r\n08/15/2011 08:56:03 post_install|Starting post_install processing - VOS_INSTALL_CONTEXT = install|\r\n\r\nUnderlying Operating System Upgraded to a New Major Release\r\n\r\nA VOS-based product will undergo a refresh upgrade if the underlying operating system is also upgraded to a new major release.\r\n\r\nThe following examples show major operating system releases that are associated with major affected product releases:\r\n\r\n                              Cisco  UCM, Cisco Unity Connection, and Cisco Unified Presence Server/Cisco IM&P  Major Release              Operating System Major Release                                  8.6              RHEL 5 Update 5                                  9.x              RHEL 5 Update 7                                  10.x              RHEL 6 Update 2                                  11.x              RHEL 6 Update 5                                  12.x              CentOS 6 Update 6\r\nBecause an upgrade from RHEL 6 to CentOS 6 is not considered a major operating system release change, product updates between these operating system releases will use the standard upgrade method.\r\n\r\nPrime Collaboration Deployment Cluster Migration\r\n\r\nPrime Collaboration Deployment is a free application that is designed to assist in the management of various Cisco Unified Communications applications. The PCD migrate cluster task is supported only for the following Cisco products and to only certain cluster migration destination versions.\r\n\r\nUCM destination version 10.x, 11.0(1), 11.5(x), 12.0(1)\r\nIM&P destination version 10.x, 11.0(1), 11.5(x), 12.0(1)\r\nRefer to the product documentation for information about specific upgrade and migration methods.  Determining the Current Software Release for the Cisco Unified Platform  The following Cisco products run on the Cisco Unified platform:\r\n\r\nUnified Communications Manager\r\nUnified Communications Manager Session Management Edition\r\nEmergency Responder\r\nUnity Connection\r\nUnified Communications Manager IM and Presence Service\r\nPrime License Manager\r\nHosted Collaboration Mediation Fulfillment\r\nTo determine which Cisco VOS-based product software release is running on the Cisco Unified platform, an administrator can issue the show version active command at the CLI.\r\n\r\nIn the following example, the software release is 11.5.1.10000-86.\r\nciscocm: show version active\r\nActive Master Version: 11.5.1.10000-86\r\n\r\nAn administrator can use the user interface to determine which Cisco VOS-based product software release is running:\r\n\r\nLog in to the web-based interface\r\nClick the Help menu\r\nClick About to view the system software release\r\nDetermining the Current Software Release for the Cisco Contact Center Platform  The following Cisco products run on the Cisco Contact Center platform:\r\nUnified Contact Center Express\r\nSocialMiner\r\nUnified Intelligence Center\r\nFinesse\r\nMediaSense\r\nTo determine which Cisco VOS-based product software release is running on the Contact Center platform, an administrator can issue the show version active command at the CLI.\r\n\r\nIn the following example, the software release is 11.5.1.10000-86.\r\nadmin: show version active\r\nActive Master Version: 11.5.1.10000-86\r\n\r\nAn administrator can use the user interface to determine which Cisco Contact Center platform–based product software release is running:\r\n\r\nLog in to the Contact Center Express server\r\nGo to the Cisco Unified Communications operating system administration window\r\nChoose Show > Software",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following products:\r\n\r\nCisco Identity Service (IdS) 11.5 and 11.6\r\nCisco Prime Collaboration Deployment\r\nCisco Prime Collaboration Provisioning\r\nCisco Prime Collaboration Assurance\r\nCisco Virtualized Voice Browser",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates that address the vulnerability described in this advisory. Customers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttp://www.cisco.com/en/US/docs/general/warranty/English/EU1KEN_.html [\"http://www.cisco.com/en/US/docs/general/warranty/English/EU1KEN_.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nWhen considering software upgrades, customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n\r\n  Customers Without Service Contracts   Customers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC:\r\nhttp://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html [\"http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n\r\nFixed Releases and Software Downloads  Cisco Unified Communications Manager - Cisco Bug ID CSCvg22923 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg22923\"]\r\n\r\nCisco Unified Communications Manager software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Call Control > Unified Communications Manager (CallManager).\r\n\r\n\r\nCisco Unified Communications Manager Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.6\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.1\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update\r\n\r\n10.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n12.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn\r\n\r\n\r\nCisco Unified Communications Manager Session Management Edition - Cisco Bug ID CSCvg22923 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg22923\"]\r\n\r\nCisco Unified Communications Manager Session Management Edition (SME) software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Call Control > Unified Communications Manager Session Management Edition > Unified Communications Manager / Cisco Unity Connection Utilities.\r\n\r\n\r\nCisco Unified Communications Manager SME Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.6\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.1\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n10.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n12.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.0.k3.cop.sgn\r\n\r\n\r\nCisco Emergency Responder - Cisco Bug ID CSCvg55112 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg55112\"]\r\n\r\nCisco Emergency Responder software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Telephony Extensions > Emergency Responder.\r\n\r\n\r\nCisco Emergency Responder Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.6\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n8.7\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n10.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n12.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn.\r\n\r\n\r\nCisco Unity Connection - Cisco Bug ID CSCvg55128 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg55128\"]\r\n\r\nCisco Unity Connection software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Unified Communications Applications > Messaging > Unity Connection.\r\n\r\n\r\nCisco Unity Connection Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.6\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.1\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n10.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n12.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n\r\nCisco Unified Communications Manager IM and Presence Service - Cisco Bug ID CSCvg22923 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg22923\"]\r\n\r\nCisco Unified Communications Manager IM and Presence Service software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Unified Communications Applications > Presence Software > Unified Communications Manager IM & Presence Service.\r\n\r\n\r\nCisco Unified IM and Presence Service Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.6 (Unified Presence)\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.1\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n10.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n12.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n\r\nCisco Prime License Manager - Cisco Bug ID CSCvg58619 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg58619\"]\r\n\r\nCisco Prime License Manager software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Unified Communications Management > Prime License Manager > Prime License Manager Software Updates.\r\n\r\n\r\nCisco Prime License Manager Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n9.0 (Enterprise License Manager)\r\n\r\nNot vulnerable\r\n\r\n10.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n\r\nCisco Hosted Collaboration Mediation Fulfillment - Cisco Bug ID CSCvg68797 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg68797\"]\r\n\r\nCisco Hosted Collaboration Mediation Fulfillment software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Unified Communications > Call Control > Hosted Collaboration > Hosted Collaboration Solution (HCS).\r\n\r\n\r\nCisco Hosted Collaboration Solution Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n9.2\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.2(1)\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n9.2(1)SU1\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.cop.sgn or perform a service update.\r\n\r\n10.0(1)\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.1(1)\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.1(2)\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n10.6(1)\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ciscocm.CSCvg22923-v1.2.k3.cop.sgn\r\n\r\n\r\nCisco Unified Contact Center Express - Cisco Bug ID CSCvg55145 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg55145\"]\r\n\r\nCisco Unified Contact Center Express software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Customer Collaboration > Contact Center Solutions > Unified Contact Center Express.\r\n\r\n\r\nCisco Unified Contact Center Express Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.5(1)\r\n\r\nNot vulnerable\r\n\r\n9.0(1)\r\n\r\nNot vulnerable\r\n\r\n9.0(2)\r\n\r\nNot vulnerable\r\n\r\n10.0(1)\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n10.5(1)\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n10.6(1)\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.0(1)\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.5(1)\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.6(1)\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn\r\n\r\n\r\nCisco SocialMiner - Cisco Bug ID CSCvg64453 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg64453\"]\r\n\r\nCisco SocialMiner software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Customer Collaboration > Options for Contact Center Solutions > SocialMiner > SocialMiner Software.\r\n\r\n\r\nCisco SocialMiner Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.5\r\n\r\nNot vulnerable\r\n\r\n9.0\r\n\r\nNot vulnerable\r\n\r\n10.0\r\n\r\nNot vulnerable\r\n\r\n10.5\r\n\r\nNot vulnerable\r\n\r\n10.6\r\n\r\nVulnerable; apply COP file ciscosm-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ciscosm-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn\r\n\r\n\r\nCisco Unified Intelligence Center and Cisco Unified Intelligence Center with Live Data - Cisco Bug ID CSCvg64464 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg64464\"]\r\n\r\nCisco Unified Intelligence Center software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Customer Collaboration > Options for Contact Center Solutions > Unified Intelligence Center > Unified Intelligence Center Software.\r\n\r\n\r\nCisco Unified Intelligence Center Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.5\r\n\r\nNot vulnerable\r\n\r\n9.0\r\n\r\nNot vulnerable\r\n\r\n9.1\r\n\r\nNot vulnerable\r\n\r\n10.0\r\n\r\nNot vulnerable\r\n\r\n10.5\r\n\r\nNot vulnerable\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file  ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.6\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn\r\n\r\n\r\n  Cisco Finesse - Cisco Bug ID CSCvg64475 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg64475\"]\r\n\r\nCisco Finesse software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Customer Collaboration > Options for Contact Center Solutions > Finesse > Finesse Software.\r\n\r\n\r\nCisco Finesse Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.5\r\n\r\nNot vulnerable\r\n\r\n9.0\r\n\r\nNot vulnerable\r\n\r\n10.0\r\n\r\nNot vulnerable\r\n\r\n10.5\r\n\r\nNot vulnerable\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file  ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file  ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.6\r\n\r\nVulnerable; apply COP file  ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn\r\n\r\n\r\nCisco MediaSense - Cisco Bug ID CSCvg64456 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCvg64456\"]\r\n\r\nCisco MediaSense software can be downloaded from the Software Center [\"https://software.cisco.com/download/navigator.html\"] on Cisco.com by navigating to Products > Customer Collaboration > Options for Contact Center Solutions > MediaSense > MediaSense Software.\r\n\r\n\r\nCisco MediaSense Major Release\r\n\r\nRemediation Solutions for This Advisory\r\n\r\n8.5\r\n\r\nNot vulnerable\r\n\r\n9.0\r\n\r\nNot vulnerable\r\n\r\n10.0\r\n\r\nNot vulnerable\r\n\r\n10.5\r\n\r\nNot vulnerable\r\n\r\n11.0\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn or perform a service update.\r\n\r\n11.5\r\n\r\nVulnerable; apply COP file ucos-psirt-root-access-CSCvg55145-k3-1.1.cop.sgn",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "Cisco would like to thank Quentin Rhoads-Herrera and Rich Mirch of the State Farm Penetration Testing Team for reporting this vulnerability.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Voice Operating System-Based Products Unauthorized Access Vulnerability",
+				"url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171115-vos"
+			}
+		],
+		"title": "Cisco Voice Operating System-Based Products Unauthorized Access Vulnerability",
+		"tracking": {
+			"current_release_date": "2017-11-15T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T02:17:01+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20171115-vos",
+			"initial_release_date": "2017-11-15T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2017-11-15T15:40:40+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Emergency Responder",
+						"product": {
+							"name": "Cisco Emergency Responder ",
+							"product_id": "CSAFPID-4844"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unity Connection",
+						"product": {
+							"name": "Cisco Unity Connection ",
+							"product_id": "CSAFPID-73608"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified Communications Manager",
+						"product": {
+							"name": "Cisco Unified Communications Manager ",
+							"product_id": "CSAFPID-88444"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified Contact Center Express",
+						"product": {
+							"name": "Cisco Unified Contact Center Express ",
+							"product_id": "CSAFPID-92631"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Hosted Collaboration Solution",
+						"product": {
+							"name": "Cisco Hosted Collaboration Solution ",
+							"product_id": "CSAFPID-188690"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified Communications Manager IM and Presence Service",
+						"product": {
+							"name": "Cisco Unified Communications Manager IM and Presence Service ",
+							"product_id": "CSAFPID-189784"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Finesse",
+						"product": {
+							"name": "Cisco Finesse ",
+							"product_id": "CSAFPID-193469"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco SocialMiner",
+						"product": {
+							"name": "Cisco SocialMiner ",
+							"product_id": "CSAFPID-194456"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco MediaSense",
+						"product": {
+							"name": "Cisco MediaSense ",
+							"product_id": "CSAFPID-194833"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Unified Intelligence Center",
+						"product": {
+							"name": "Cisco Unified Intelligence Center ",
+							"product_id": "CSAFPID-198393"
+						}
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco Prime License Manager",
+						"product": {
+							"name": "Cisco Prime License Manager ",
+							"product_id": "CSAFPID-203607"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2017-12337",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCvg22923,CSCvg55145,CSCvg55128,CSCvg55112,CSCvg58619,CSCvg64475,CSCvg64464,CSCvg68797,CSCvg64456,CSCvg64453,CSCvg55051,CSCvg55162,CSCvg58632",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-189784",
+					"CSAFPID-88444",
+					"CSAFPID-92631",
+					"CSAFPID-73608",
+					"CSAFPID-4844",
+					"CSAFPID-203607",
+					"CSAFPID-193469",
+					"CSAFPID-198393",
+					"CSAFPID-188690",
+					"CSAFPID-194833",
+					"CSAFPID-194456"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco Voice Operating System-Based Products Unauthorized Access Vulnerability",
+					"url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20171115-vos"
+				}
+			],
+			"release_date": "2017-11-15T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There are no workarounds that address this vulnerability."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 9.8,
+						"baseSeverity": "CRITICAL",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-189784",
+						"CSAFPID-88444",
+						"CSAFPID-92631",
+						"CSAFPID-73608",
+						"CSAFPID-4844",
+						"CSAFPID-203607",
+						"CSAFPID-193469",
+						"CSAFPID-198393",
+						"CSAFPID-188690",
+						"CSAFPID-194833",
+						"CSAFPID-194456"
+					]
+				},
+				{
+					"cvss_v3": {
+						"baseScore": 9.8,
+						"baseSeverity": "CRITICAL",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-189784",
+						"CSAFPID-88444",
+						"CSAFPID-92631",
+						"CSAFPID-73608",
+						"CSAFPID-4844",
+						"CSAFPID-203607",
+						"CSAFPID-193469",
+						"CSAFPID-198393",
+						"CSAFPID-188690",
+						"CSAFPID-194833",
+						"CSAFPID-194456"
+					]
+				}
+			],
+			"title": "Cisco Voice Operating System-Based Products Unauthorized Access Vulnerability"
+		}
+	]
+}

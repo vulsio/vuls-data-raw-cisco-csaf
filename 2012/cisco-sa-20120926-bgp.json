@@ -1,0 +1,209 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco IOS Software contains a vulnerability in the Border Gateway Protocol (BGP) routing protocol feature.  \n\r\n\n\r\nThe vulnerability can be triggered when the router receives a malformed attribute from a peer on an existing BGP session.\n\r\n\n\r\nSuccessful exploitation of this vulnerability can cause all BGP sessions to reset.  Repeated exploitation may result in an inability to route packets to BGP neighbors during reconvergence times.\n\r\n\n\r\nCisco has released software updates that address this vulnerability.  There are no workarounds for this vulnerability. \r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-bgp[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-bgp\"]\n\r\nNote: The September 26, 2012, Cisco IOS Software Security Advisory bundled publication includes nine Cisco Security Advisories. Eight of the advisories address vulnerabilities in Cisco IOS Software, and one advisory addresses a vulnerability in Cisco Unified Communications Manager. Each Cisco IOS Software Security Advisory lists the Cisco IOS Software releases that correct the vulnerability or vulnerabilities detailed in the advisory as well as the Cisco IOS Software releases that correct all Cisco IOS Software vulnerabilities in the September 2012 bundled publication. \r\n\r\nIndividual publication links are in \"Cisco Event Response: Semi-Annual Cisco IOS Software Security Advisory Bundled Publication\" at the following link: \r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep12.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep12.html\"]\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco IOS Software, Cisco IOS-XR Software, and Cisco IOS-XE Software. ",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "A Cisco IOS router is potentially vulnerable when it is running an affected version of Cisco IOS Software, BGP routing is enabled on the router, and the router has at least one established BGP neighbor session.  For more information on affected versions, see the \"Software Versions and Fixes\" section below.\n\r\n\n\r\nA device running Cisco IOS XR has a vulnerable configuration if BOTH of the following conditions are true:\n\r\n\n\r\n1.  BGP mVPN routing is enabled and a neighbor is configured.  The following example shows configuration commands that will be present:\n\r\nrouter bgp \n\r\naddress-family   mvpn\n\r\nneighbor \n\r\n\r\n2.  A neighbor session is established.\n\r\n\n\r\nNote: For Cisco IOS XR, the only vulnerable configuration is address-family  mvpn as noted above.  BGP mVPN with MDT is NOT affected.\n\r\n\n\r\nA device running Cisco IOS has an affected configuration if BOTH of the following conditions are true:\n\r\n\n\r\n1.  BGP routing is enabled and a neighbor is configured.  The following example shows configuration commands that will be\r\npresent:\n\r\nrouter bgp \n\r\n\r\nneighbor \n\r\n2.  A BGP neighbor session is established.\n\r\n\n\r\n\n\r\nYou can determine if a BGP session is established using the show ip bgp summary command in Cisco IOS Software.  In Cisco IOS XR software, you can determine if a BGP session is established using the show bgp  mvpn all summary command.  The following example shows the output from an IOS router with two neighbor sessions established:\n\r\n\n\r\n\r\n\r\nRouter# show ip bgp summary \r\n\r\n\r\n\r\n!--- output shortened\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nNeighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down State/PfxRcd\r\n\r\n\r\n\r\n\r\n10.100.1.1      4   200      26      22      199    0    0 00:14:23 23\r\n\r\n\r\n\r\n\r\n10.200.1.1      4   300      21      51      199    0    0 00:13:40 0\r\n\r\n\r\n\n\r\n\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.0(1)M1 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.0(1)M1, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\nCompiled Wed 02-Dec-09 17:17 by prod_rel_team\r\n!--- output truncated \r\nAdditional information about Cisco IOS Software release naming conventions is available in \"White Paper: Cisco IOS and NX-OS Software Reference Guide\" at http://www.cisco.com/web/about/security/intelligence/ios-ref.html[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "A Cisco IOS router is not vulnerable if BGP is not running, or if BGP does not have at least one neighbor session established.  No other Cisco products are currently known to be affected by this vulnerability.  Cisco NXOS Software is not affected.\n\r\n\n\r\nThe following example shows output from a router with BGP enabled, two neighbors configured, but with no sessions established with the remote BGP peers:\n\r\n\n\r\n\r\n\r\nRouter# show ip bgp summary \r\n\r\n\r\n\r\n!--- output shortened\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nNeighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down State/PfxRcd\r\n\r\n\r\n\r\n\r\n10.100.1.1      4   200      0       0        0    0    0 never    Idle\r\n\r\n\r\n\r\n\r\n10.200.1.1      4   300      0       2        0    0    0 never    Idle\r\n\r\n\r\n",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS Software contains a vulnerability in the BGP routing protocol feature.  This vulnerability affects Cisco IOS Software, Cisco IOS-XR Software, and Cisco IOS-XE Software.  Cisco NXOS Software is not affected.\n\r\n\n\r\nThe vulnerability may be triggered when the router receives a malformed attribute from a peer on an existing BGP session.  At least one BGP neighbor session must be established for a router to be vulnerable.\n\r\n\n\r\nSuccessful exploitation of this vulnerability may cause all BGP peers to reset.  Repeated exploitation may result in an inability to route packets to BGP neighbors during reconvergence times.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug IDs CSCtt35379[\"https://bst.cloudapps.cisco.com/bugsearch/bug/%7B%7Bvalue%7D%7D\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and CSCty58300[\"https://bst.cloudapps.cisco.com/bugsearch/bug/%7B%7Bvalue%7D%7D\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-4617.  The corresponding Cisco IOS XR Software bug IDs are CSCtz63248[\"https://bst.cloudapps.cisco.com/bugsearch/bug/%7B%7Bvalue%7D%7D\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and CSCtz62914[\"https://bst.cloudapps.cisco.com/bugsearch/bug/%7B%7Bvalue%7D%7D\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds for this vulnerability.\r\n\r\nA reference document that may be useful is the \"Protecting BGP\" white paper here: http://www.cisco.com/web/about/security/intelligence/protecting_bgp.html[\"http://www.cisco.com/web/about/security/intelligence/protecting_bgp.html\"]",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\n\r\nCisco IOS Software\r\nEach row of the following Cisco IOS Software table corresponds to a Cisco IOS Software train. If a particular train is vulnerable, the earliest releases that contain the fix are listed in the First Fixed Release column. The First Fixed Release for All Advisories in the September 2012 Bundled Publication column lists the earliest possible releases that correct all the published vulnerabilities in the Cisco IOS Software Security Advisory bundled publication. Cisco recommends upgrading to the latest available release, where possible.\r\n\r\nThe Cisco IOS Software Checker allows customers to search for Cisco Security Advisories that address specific Cisco IOS Software releases. This tool is available on the Cisco Security (SIO) portal at http://tools.cisco.com/security/center/selectIOSVersion.x[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] \r\n\r\n\n\r\n\n\r\n\r\n    \r\n        \r\n             Major Release\r\n                 Availability of Repaired Releases\r\n        \r\n        \r\n            Affected 12.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.0 based releases\r\n        \r\n        \r\n            Affected 12.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.2 based releases\r\n        \r\n        \r\n            Affected 12.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.3 based releases\r\n        \r\n        \r\n            Affected 12.4-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.4 based releases\r\n        \r\n        \r\n            Affected 15.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.0 based releases\r\n        \r\n        \r\n            Affected 15.1-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.1 based releases\r\n        \r\n        \r\n            Affected 15.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n             15.2GC\r\n            Not vulnerable\n\r\n            \r\n            Releases prior to 15.2(3)GC are vulnerable; Releases 15.2(3)GC and later are not vulnerable. First fixed in Release 15.2T[\"#15_2T\"]\n\r\n            \r\n        \r\n        \r\n             15.2JA\r\n            Not vulnerable\n\r\n            \r\n            Not Vulnerable\n\r\n            \r\n        \r\n        \r\n             15.2M\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            Not vulnerable \r\n        \r\n        \r\n             15.2S\r\n            15.2(1)S0a \n\r\n            15.2(1)S2\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            15.2(1)S2 \n\r\n            15.2(2)S1 \n\r\n            15.2(4)S\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"] \r\n        \r\n        \r\n             15.2SNG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             15.2T\r\n            Not vulnerable\n\r\n            \r\n            15.2(1)T3 \n\r\n            15.2(2)T2 \n\r\n            15.2(3)T2; Available on 12-OCT-12\n\r\n            \r\n        \r\n    \r\n\r\n\r\n\r\n\r\n\r\nCisco IOS XE Software\r\n\r\nCisco IOS XE is affected by the vulnerability described in this advisory.\n\r\n\n\r\n<!-- BGP 0.2 -->\r\n\r\n    \r\n        \r\n             Cisco IOS XE Software Release  \r\n             First Fixed Release    \r\n             First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication \r\n        \r\n        \r\n             2.1.x \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             2.2.x \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             2.3.x \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             2.4.x \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             2.5.x \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             2.6.x \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             3.1.xS \r\n            Not vulnerable\r\n            3.1.4S\r\n        \r\n        \r\n             3.1.xSG\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.2.5SG or later.\r\n        \r\n        \r\n             3.2.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             3.2.xSG\r\n            Not vulnerable\r\n            3.2.5SG\r\n        \r\n        \r\n            3.2.xSO\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.3.1SG or later.\r\n        \r\n        \r\n             3.3.xS \r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n            3.3xSG\r\n            Not vulnerable\r\n            3.3.1SG \r\n        \r\n        \r\n             3.4.xS \r\n            Not vulnerable\r\n             Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n             3.5.xS \r\n             3.5.2S\r\n             Vulnerable; migrate to 3.6.0S or later.\r\n        \r\n        \r\n            3.6.xS \r\n            Not vulnerable\r\n             Not vulnerable\r\n        \r\n        \r\n            3.7xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n\r\n\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software Releases 4.1.0, 4.1.1, 4.1.2, 4.2.0, 4.2.1, and 4.2.2 are affected by the vulnerability described in this advisory.\r\n\r\n\n\r\n\r\n    \r\n        \r\n            Release\r\n            Platform \r\n            CSCtz62914 SMU ID\r\n            CSCtz63248 SMU ID\r\n        \r\n        \r\n            4.1.0\r\n            c12k\r\n            AA06458\r\n            AA06464 \r\n        \r\n        \r\n            4.1.0\r\n            CRS \r\n            AA06437\r\n            \r\n            AA06399 \r\n        \r\n        \r\n            4.1.0\r\n            asr9k\r\n            AA06449\r\n            AA06444\r\n        \r\n        \r\n            4.1.1\r\n            c12k\r\n            AA06459\r\n            AA06465 \r\n        \r\n        \r\n            4.1.1\r\n            CRS \r\n            AA06438 \r\n            AA06400 \r\n        \r\n        \r\n            4.1.1\r\n            asr9k\r\n            AA06450 \r\n            AA06445 \r\n        \r\n        \r\n            4.1.2\r\n            c12k\r\n            AA06460\r\n            \r\n            AA06466 \r\n        \r\n        \r\n            4.1.2\r\n            CRS \r\n            AA06439\r\n            \r\n            AA06401 \r\n        \r\n        \r\n            4.1.2\r\n            asr9k\r\n            AA06451\r\n            \r\n            AA06446 \r\n        \r\n        \r\n            4.2.0\r\n            c12k\r\n            AA06461\r\n            \r\n            AA06467 \r\n        \r\n        \r\n            4.2.0\r\n            CRS \r\n            AA06440 \r\n            AA06402 \r\n        \r\n        \r\n            4.2.0\r\n            asr9k\r\n            AA06452 \r\n            AA06447 \r\n        \r\n        \r\n            4.2.0\r\n            asr9k (PX)\r\n            AA06453 \r\n            AA06448 \r\n        \r\n        \r\n            4.2.1\r\n            c12k\r\n            AA06462 \r\n            AA06546 \r\n        \r\n        \r\n            4.2.1\r\n            CRS \r\n            AA06441 \r\n            AA06547 \r\n        \r\n        \r\n            4.2.1\r\n            asr9k \r\n            AA06454 \r\n            AA06548 \r\n        \r\n        \r\n            4.2.1\r\n            asr9k (PX)\r\n            AA06455 \r\n            AA06549 \r\n        \r\n        \r\n            4.2.2\r\n            asr9k\r\n            AA06581 \r\n            AA06550 \r\n        \r\n        \r\n            4.2.2\r\n            asr9k (PX)\r\n            AA06582 \r\n            AA06551 \r\n        \r\n    \r\n\r\n\n\r\n\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found internally by Cisco during testing.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Malformed Border Gateway Protocol Attribute Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-bgp"
+			}
+		],
+		"title": "Cisco IOS Software Malformed Border Gateway Protocol Attribute Vulnerability",
+		"tracking": {
+			"current_release_date": "2012-10-04T15:33:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:27+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20120926-bgp",
+			"initial_release_date": "2012-09-26T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2012-09-25T21:13:37+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				},
+				{
+					"date": "2012-10-04T15:33:54+00:00",
+					"number": "1.1.0",
+					"summary": "Added mVPN MDT note in the \"Vulnerable Products\" section."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)S",
+										"product": {
+											"name": "15.2(1)S",
+											"product_id": "CSAFPID-107859"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)S1",
+										"product": {
+											"name": "15.2(1)S1",
+											"product_id": "CSAFPID-111551"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2S"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2012-4617",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtt35379,CSCty58300,CSCtz63248,CSCtz62914",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-107859",
+					"CSAFPID-111551",
+					"CSAFPID-5834"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Malformed Border Gateway Protocol Attribute Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-bgp"
+				}
+			],
+			"release_date": "2012-09-26T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There are no workarounds for this vulnerability.\r\n\r\nA reference document that may be useful is the \"Protecting BGP\" white paper here: http://www.cisco.com/web/about/security/intelligence/protecting_bgp.html[\"http://www.cisco.com/web/about/security/intelligence/protecting_bgp.html\"]"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-107859",
+						"CSAFPID-111551",
+						"CSAFPID-5834"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-107859",
+						"CSAFPID-111551",
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS Software Malformed Border Gateway Protocol Attribute Vulnerability"
+		}
+	]
+}

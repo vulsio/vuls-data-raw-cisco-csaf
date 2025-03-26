@@ -1,0 +1,643 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the SSH server of Cisco Adaptive Security Appliance (ASA) Software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition for the SSH server of an affected device.\r\n\r\nThis vulnerability is due to a logic error when an SSH session is established. An attacker could exploit this vulnerability by sending crafted SSH messages to an affected device. A successful exploit could allow the attacker to exhaust available SSH resources on the affected device so that new SSH connections to the device are denied, resulting in a DoS condition. Existing SSH connections to the device would continue to function normally. The device must be rebooted manually to recover. However, user traffic would not be impacted and could be managed using a remote application such as Cisco Adaptive Security Device Manager (ASDM).\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the October 2024 release of the Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: October 2024 Semiannual Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75300\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected devices that were running Cisco ASA Software Release 9.16.4.67, 9.16.4.70, 9.18.4.40, or 9.20.3 if they had SSH enabled and were configured to use the proprietary ASA SSH stack.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.\r\n  Determine the Device Configuration\r\nThe SSH server is not enabled by default. The SSH server is enabled when the administrator allows SSH access from at least one host using the ssh  { ip_address mask | ipv6_address/prefix } interface command.\r\n\r\nIf a device is running Cisco ASA Software Release 9.16.4.67 or 9.16.4.70 and has SSH enabled, it is affected by this vulnerability. If the device is running Cisco ASA Software Release 9.18.4.40 or 9.20.3, it is affected by this vulnerability only if the show running-config command returns no ssh stack ciscossh, as shown in the following example:\r\n\r\n\r\nasa# show running-config ssh | include stack\r\nno ssh stack ciscossh",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nFirepower Threat Defense (FTD) Software\r\nSecure Firewall Management Center (FMC) Software, formerly Firepower Management Center Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco ASA Software allows a maximum of five concurrent SSH connections per context. Once this limit is reached, no more connections are allowed. To determine the current number of active SSH sessions on a device, use the show resource usage command and inspect the SSH Server row. If the Current number is one more than the Limit, as shown in the following example, and this does not clear for a period of time, the device may have been exploited by this vulnerability:\r\n\r\n\r\nasa# show resource usage\r\nResource                 Current        Peak      Limit        Denied Context\r\nSSH Server                     6           6          5             0 System\r\nASDM                           0           4         30             0 System\r\nSyslogs [rate]                18        1536        N/A             0 System\r\nConns                       8547       32540     500000             0 System\r\n\r\nThe device must be rebooted manually to clear this condition. Administrators could use SSH in another context or access the console port, but this is not always possible.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There is no workaround for this vulnerability for devices that are running Cisco ASA Software Release 9.16.4.67 or 9.16.4.70.\r\n\r\nFor devices that are running Cisco ASA Software Release 9.18.4.40 or 9.20.3, use the ssh stack ciscossh CLI command to configure the device to use the CiscoSSH stack, which is not affected by this vulnerability. For more information about implementing this command, see the ssh stack ciscossh [\"https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/so-st-commands.html#wp8411317820\"] section of Cisco Secure Firewall ASA Series Command Reference.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\nCisco ASA, FMC, and FTD Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco ASA, FMC, and FTD Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities that are described in all the advisories that the Software Checker identifies (“Combined First Fixed”).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search—all advisories, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or only this advisory.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number—for example, 9.16.2.11 for Cisco ASA Software or 6.6.7 for Cisco FTD Software.\r\nClick Check.\r\n    Only this advisory All Critical and High advisories All advisories  Cisco ASA Software Cisco FMC Software Cisco FTD Software  Any Platform 3000 Series Industrial Security Appliances (ISA) ASA 5500-X Series Firewalls ASA Service Module Adaptive Security Virtual Appliance (ASAv) Firepower 1000 Series Firepower 2100 Series Firepower 4100 Series Firepower 9000 Series Firepower NGFW Virtual Secure Firewall 3100 Series Firepower Management Center Appliances\r\n\r\n\r\n\r\n\r\nNote: For Cisco 3000 Series Industrial Security Appliances (ISAs) that are running Cisco ASA Software, Cisco ASA Software Release 9.16.4.67 has been deferred and replaced by Release 9.16.4.70.\r\nAdditional Resources\r\nFor help determining the best Cisco ASA, FMC, or FTD Software release, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\nCisco ASA Compatibility [\"https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html\"]\r\nCisco Secure Firewall ASA Upgrade Guide [\"https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html\"]\r\nCisco Secure Firewall Threat Defense Compatibility Guide [\"https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html\"]",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Adaptive Security Appliance Software SSH Server Resource Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-asa-ssh-dos-eEDWu5RM"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: October 2024 Cisco ASA, FMC, and FTD Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75300"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "ssh stack ciscossh",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/so-st-commands.html#wp8411317820"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco ASA Compatibility",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/compatibility/asamatrx.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall ASA Upgrade Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/asa/upgrade/asa-upgrade/planning.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Secure Firewall Threat Defense Compatibility Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/compatibility/threat-defense-compatibility.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Adaptive Security Appliance Software SSH Server Resource Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-10-23T16:00:00+00:00",
+			"generator": {
+				"date": "2024-10-23T15:58:26+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-asa-ssh-dos-eEDWu5RM",
+			"initial_release_date": "2024-10-23T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-10-23T15:57:23+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.16.4.67",
+										"product": {
+											"name": "9.16.4.67",
+											"product_id": "CSAFPID-302773"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.16.4.70",
+										"product": {
+											"name": "9.16.4.70",
+											"product_id": "CSAFPID-302828"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.16"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.18.4.40",
+										"product": {
+											"name": "9.18.4.40",
+											"product_id": "CSAFPID-302827"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.18"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.20.3",
+										"product": {
+											"name": "9.20.3",
+											"product_id": "CSAFPID-302685"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.20"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 2100 Series",
+						"product": {
+							"name": "Cisco Firepower 2100 Series",
+							"product_id": "CSAFPID-277392"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 1000 Series",
+						"product": {
+							"name": "Cisco Firepower 1000 Series",
+							"product_id": "CSAFPID-277393"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco ASA 5500-X Series Firewalls",
+						"product": {
+							"name": "Cisco ASA 5500-X Series Firewalls",
+							"product_id": "CSAFPID-277437"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+						"product": {
+							"name": "Cisco 3000 Series Industrial Security Appliances (ISA)",
+							"product_id": "CSAFPID-277438"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 9000 Series",
+						"product": {
+							"name": "Cisco Firepower 9000 Series",
+							"product_id": "CSAFPID-277440"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Firepower 4100 Series",
+						"product": {
+							"name": "Cisco Firepower 4100 Series",
+							"product_id": "CSAFPID-277441"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Adaptive Security Virtual Appliance (ASAv)",
+						"product": {
+							"name": "Cisco Adaptive Security Virtual Appliance (ASAv)",
+							"product_id": "CSAFPID-277511"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 3100 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 3100 Series",
+							"product_id": "CSAFPID-286865"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Secure Firewall 4200 Series",
+						"product": {
+							"name": "Cisco Secure Firewall 4200 Series",
+							"product_id": "CSAFPID-300754"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-302773:277392"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-302773:277393"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco ASA 5500-X Series Firewalls",
+					"product_id": "CSAFPID-302773:277437"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277437"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-302773:277438"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-302773:277440"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-302773:277441"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.67 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-302773:277511"
+				},
+				"product_reference": "CSAFPID-302773",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.16.4.70 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-302828:277438"
+				},
+				"product_reference": "CSAFPID-302828",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-302827:277392"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-302827:277393"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-302827:277438"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-302827:277440"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-302827:277441"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-302827:277511"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.18.4.40 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-302827:286865"
+				},
+				"product_reference": "CSAFPID-302827",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Firepower 2100 Series",
+					"product_id": "CSAFPID-302685:277392"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-277392"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Firepower 1000 Series",
+					"product_id": "CSAFPID-302685:277393"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-277393"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco 3000 Series Industrial Security Appliances (ISA)",
+					"product_id": "CSAFPID-302685:277438"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-277438"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Firepower 9000 Series",
+					"product_id": "CSAFPID-302685:277440"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-277440"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Firepower 4100 Series",
+					"product_id": "CSAFPID-302685:277441"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-277441"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Adaptive Security Virtual Appliance (ASAv)",
+					"product_id": "CSAFPID-302685:277511"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-277511"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Secure Firewall 3100 Series",
+					"product_id": "CSAFPID-302685:286865"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-286865"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco Adaptive Security Appliance (ASA) Software 9.20.3 when installed on Cisco Secure Firewall 4200 Series",
+					"product_id": "CSAFPID-302685:300754"
+				},
+				"product_reference": "CSAFPID-302685",
+				"relates_to_product_reference": "CSAFPID-300754"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20526",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwm49153"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-302685:277392",
+					"CSAFPID-302685:277393",
+					"CSAFPID-302685:277438",
+					"CSAFPID-302685:277440",
+					"CSAFPID-302685:277441",
+					"CSAFPID-302685:277511",
+					"CSAFPID-302685:286865",
+					"CSAFPID-302685:300754",
+					"CSAFPID-302773:277392",
+					"CSAFPID-302773:277393",
+					"CSAFPID-302773:277437",
+					"CSAFPID-302773:277438",
+					"CSAFPID-302773:277440",
+					"CSAFPID-302773:277441",
+					"CSAFPID-302773:277511",
+					"CSAFPID-302827:277392",
+					"CSAFPID-302827:277393",
+					"CSAFPID-302827:277438",
+					"CSAFPID-302827:277440",
+					"CSAFPID-302827:277441",
+					"CSAFPID-302827:277511",
+					"CSAFPID-302827:286865",
+					"CSAFPID-302828:277438"
+				]
+			},
+			"release_date": "2024-10-23T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-302685:277392",
+						"CSAFPID-302685:277393",
+						"CSAFPID-302685:277438",
+						"CSAFPID-302685:277440",
+						"CSAFPID-302685:277441",
+						"CSAFPID-302685:277511",
+						"CSAFPID-302685:286865",
+						"CSAFPID-302685:300754",
+						"CSAFPID-302773:277392",
+						"CSAFPID-302773:277393",
+						"CSAFPID-302773:277437",
+						"CSAFPID-302773:277438",
+						"CSAFPID-302773:277440",
+						"CSAFPID-302773:277441",
+						"CSAFPID-302773:277511",
+						"CSAFPID-302827:277392",
+						"CSAFPID-302827:277393",
+						"CSAFPID-302827:277438",
+						"CSAFPID-302827:277440",
+						"CSAFPID-302827:277441",
+						"CSAFPID-302827:277511",
+						"CSAFPID-302827:286865",
+						"CSAFPID-302828:277438"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There is no workaround for this vulnerability for devices that are running Cisco ASA Software Release 9.16.4.67 or 9.16.4.70.\r\n\r\nFor devices that are running Cisco ASA Software Release 9.18.4.40 or 9.20.3, use the ssh stack ciscossh CLI command to configure the device to use the CiscoSSH stack, which is not affected by this vulnerability. For more information about implementing this command, see the ssh stack ciscossh [\"https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/so-st-commands.html#wp8411317820\"] section of Cisco Secure Firewall ASA Series Command Reference.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-302685:277392",
+						"CSAFPID-302685:277393",
+						"CSAFPID-302685:277438",
+						"CSAFPID-302685:277440",
+						"CSAFPID-302685:277441",
+						"CSAFPID-302685:277511",
+						"CSAFPID-302685:286865",
+						"CSAFPID-302685:300754",
+						"CSAFPID-302773:277392",
+						"CSAFPID-302773:277393",
+						"CSAFPID-302773:277437",
+						"CSAFPID-302773:277438",
+						"CSAFPID-302773:277440",
+						"CSAFPID-302773:277441",
+						"CSAFPID-302773:277511",
+						"CSAFPID-302827:277392",
+						"CSAFPID-302827:277393",
+						"CSAFPID-302827:277438",
+						"CSAFPID-302827:277440",
+						"CSAFPID-302827:277441",
+						"CSAFPID-302827:277511",
+						"CSAFPID-302827:286865",
+						"CSAFPID-302828:277438"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.3,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-302685:277392",
+						"CSAFPID-302685:277393",
+						"CSAFPID-302685:277438",
+						"CSAFPID-302685:277440",
+						"CSAFPID-302685:277441",
+						"CSAFPID-302685:277511",
+						"CSAFPID-302685:286865",
+						"CSAFPID-302685:300754",
+						"CSAFPID-302773:277392",
+						"CSAFPID-302773:277393",
+						"CSAFPID-302773:277437",
+						"CSAFPID-302773:277438",
+						"CSAFPID-302773:277440",
+						"CSAFPID-302773:277441",
+						"CSAFPID-302773:277511",
+						"CSAFPID-302827:277392",
+						"CSAFPID-302827:277393",
+						"CSAFPID-302827:277438",
+						"CSAFPID-302827:277440",
+						"CSAFPID-302827:277441",
+						"CSAFPID-302827:277511",
+						"CSAFPID-302827:286865",
+						"CSAFPID-302828:277438"
+					]
+				}
+			],
+			"title": "Cisco Adaptive Security Appliance Software SSH Server Resource Denial of Service Vulnerability"
+		}
+	]
+}

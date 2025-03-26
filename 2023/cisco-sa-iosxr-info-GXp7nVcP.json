@@ -1,0 +1,114 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This issue was found during internal security testing."
+			}
+		],
+		"category": "csaf_informational_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco IOS XR Software supports a programmatic way of configuring and collecting operational data on a network device using data models. Data models provide access to the capabilities of the devices in a network using NETCONF or gRPC.\r\n\r\nAccording to Cisco IOS XR Software configuration guides, if NETCONF or gRPC are enabled on a device, authentication, authorization, and accounting (AAA) authorization should be configured to prevent unauthorized access:\r\n\r\n\r\nConfigure AAA authorization to restrict users from uncontrolled access. If AAA authorization is not configured, the command and data rules associated to the groups that are assigned to the user are bypassed. An IOS-XR user can have full read-write access to the IOS-XR configuration through Network Configuration Protocol (NETCONF), google-defined Remote Procedure Calls (gRPC) or any YANG-based agents. In order to avoid granting uncontrolled access, enable AAA authorization using aaa authorization exec command before setting up any configuration\r\n\r\nThis informational advisory describes the impact of not having AAA authorization configured on a device when NETCONF or gRPC (gRPC Network Management Interface or gRPC Network Operations Interface) are configured.\r\n\r\n\r\n\r\n\r\nThis advisory is part of the September 2023 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: September 2023 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75241\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This informational advisory pertains to Cisco IOS XR Software and Cisco IOS XR7 (LNT) when they support and are configured with either NETCONF or gRPC. If AAA is not enabled, task-based access control may not be enforced.\r\n\r\nDetermine Whether NETCONF and gRPC Are Configured\r\n\r\nTo determine whether a device that is running Cisco IOS XR Software is configured to use either NETCONF or gRPC, use the show running-config netconf-yang agent and show running-config grpc CLI commands. If either command returns output, as shown in the following example, the corresponding protocol is enabled:\r\n\r\n\r\nRP/0/RP0/CPU0:8101-A#show running-config netconf-yang agent\r\nSun Mar  5 23:18:28.756 UTC\r\nnetconf-yang agent\r\nssh\r\n!    RP/0/RP0/CPU0:8101-A#show running-config grpc  Sun Mar  5 23:18:38.070 UTC  grpc   port 57400  !    RP/0/RP0/CPU0:8101-A#\r\n\r\nDetermine Whether AAA Authorization EXEC Is Configured\r\n\r\nTo determine whether a device that is running Cisco IOS XR Software is configured with AAA authorization EXEC, use the show running-config aaa authorization CLI command. If the command returns output similar to what is shown in the following example, AAA authorization EXEC is enabled (in this case, with the default method):\r\n\r\n\r\nRP/0/RSP0/CPU0:SR1#show running-config aaa authorization\r\nSun Mar  5 23:44:05.479 UTC  aaa authorization exec default local    RP/0/RSP0/CPU0:SR1#\r\n\r\nIf AAA authorization EXEC is not configured on a device but NETCONF, gRPC, or both are configured on the device, there are implications. For more information on these implications, see the Details [\"#details\"] section of this advisory.\r\n\r\nNote: NETCONF supports the NETCONF Access Control Model (NACM), which is configured using the aaa authorization nacm CLI command. If both NETCONF and NACM authorization are enabled on a device, and gRPC is not enabled, then AAA authorization EXEC is not required to address the issue described in this advisory.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco recommends that customers review their AAA configurations if they are using NETCONF or gRPC and ensure that AAA authorization EXEC is configured to prevent the security issue that is described in this advisory.\r\n\r\nNETCONF Behavior\r\n\r\nThe client establishes a NETCONF session over SSH to the NETCONF Agent. If AAA authorization EXEC is configured, the configured method list is returned. If AAA authorization EXEC is not configured, the default method list is returned.\r\n\r\nIn Cisco IOS XR7 (LNT), if AAA authorization EXEC is not configured, authorization is skipped. This issue is addressed by Cisco Bug CSCwe35622 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwe35622\"].\r\n\r\nThe following table summarizes task-based authorization enforcement with NETCONF:\r\n        Cisco IOS XR Software  Is Task-Based Authorization Enforced?             Without AAA  With AAA login authentication, but no AAA authorization EXEC  With AAA authorization EXEC  With default NACM  With configured NACM      Cisco IOS XR (32-bit)  Not enforced.  Not enforced.  Enforced.  Enforced.  Enforced.      Cisco IOS XR (64-bit)\r\nRelease 7.1.1 and earlier: Not enforced.\r\n\r\nRelease 7.1.2 and later: Enforced.\r\n\r\nRelease 7.1.1 and earlier: Not enforced.\r\n\r\nRelease 7.1.2 and later: Enforced.\r\n    Enforced.  Enforced.  Enforced.      Cisco IOS XR7 (LNT)\r\nNot enforced; requires CSCwe35622 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwe35622\"] fix.\r\n\r\nNot enforced; requires CSCwe35622 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwe35622\"] fix.\r\n    Enforced.  Enforced.  Enforced.\r\nNote: NETCONF only supports the default method list; therefore, customers should ensure that aaa authorization exec default <method> is configured on their device.\r\n\r\ngRPC Behavior\r\n\r\nThe client establishes a gRPC session through the mgbl Extensible Manageability Services (EMSd) process on Cisco IOS XR Software, then is passed to the YANG framework (YFW) encode/decode layer. EMSd does not pass task map information to the YFW. As a workaround, the YFW process calls AAA for authorization, but it needs to be instructed to do this using AAA authorization EXEC. If AAA authorization EXEC is not configured, authorization is skipped for gRPC sessions.\r\n\r\nCisco plans to address this issue with new service-level and path-level authorization mechanisms in the future.\r\n\r\nThe following table summarizes task-based authorization enforcement with gRPC:\r\n        Cisco IOS XR Software  Is Task-Based Authorization Enforced?             Without AAA  With AAA login authentication but no AAA authorization EXEC  With AAA authorization EXEC      IOS XR (32-bit)  Not supported.  Not supported.  Not supported.      IOS XR (64-bit)  Not enforced.  Not enforced.  Enforced.      IOS XR7 (LNT)  Not enforced.  Not enforced.  Enforced.\r\nNote: gRPC supports named method lists. If a device is using an authorization method name other than default, ensure grpc aaa authorization exec and aaa authorization exec match.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability.\r\n\r\nReview the device configuration and ensure that when NETCONF or gRPC are being used, AAA authorization EXEC (or NACM for NETCONF) is enabled.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the issue that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This issue was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Model-Driven Programmability Behavior with AAA Authorization",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-info-GXp7nVcP"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: September 2023 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75241"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwe35622",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwe35622"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software Model-Driven Programmability Behavior with AAA Authorization",
+		"tracking": {
+			"current_release_date": "2023-09-13T16:00:00+00:00",
+			"generator": {
+				"date": "2023-09-13T15:47:33+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-iosxr-info-GXp7nVcP",
+			"initial_release_date": "2023-09-13T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-09-13T15:47:28+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {}
+}

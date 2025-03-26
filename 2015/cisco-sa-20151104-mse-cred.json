@@ -1,0 +1,175 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "Cisco would like to thank security researcher Jeremy Brown and Beyond Security’s SecuriTeam Secure Disclosure (SSD) group for discovering and reporting this vulnerability."
+			}
+		],
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Cisco Mobility Services Engine (MSE) could allow an unauthenticated, remote attacker to log in to the MSE with the default oracle account. This account does not have full administrator privileges.\n\r\n\n\r\nThe vulnerability is due to a user account that has a default and static password. This account is created at installation and cannot be changed or deleted without impacting the functionality of the system. An attacker could exploit this vulnerability by remotely connecting to the affected system via SSH using this account. A successful exploit could allow the attacker to log in to the MSE using the default oracle account.\n\n\r\nCisco has released software updates that address this vulnerability. A workaround that mitigates this vulnerability is available.\n\r\n\n\r\nThis advisory is available at the following link: http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20151104-mse-cred[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20151104-mse-cred\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco Mobility Services Engine (MSE) versions 8.0.120.7 and earlier are vulnerable. Administrators can use a command to determine whether a vulnerable version of Cisco MSE is running. Prior to 10.0, the command is getserverinfo. For 10.0 and later, the command is cmxctl version. The following examples show an MSE running versions 8.0.120.1 and 10.2.0:\n\r\n\n\r\n[mse]# getserverinfo \n\r\nHealth Monitor is running\n\r\nRetrieving MSE Services status.\n\r\nMSE services are up, getting the status\n\r\n\n\r\n-------------\n\r\nServer Config\n\r\n-------------\n\r\n\n\r\nProduct name: Cisco Mobility Service Engine\n\r\nVersion: 8.0.120.1\n\r\nHealth Monitor Ip Address: 1.1.1.1\n\r\nHigh Availability Role: 1\n\r\nHw Version: V01\n\r\nHw Product Identifier: AIR-MSE-3365-K9\n\r\nHw Serial Number: FCH1841V0YL\n\r\n\n\r\n[mse]# cmxctl version\n\r\n----------------------------------------------------------------------\n\r\nBuild Version   : 10.2.0\n\r\nBuild Time       : 2015-10-19 11:20:06.632222\n\r\n----------------------------------------------------------------------",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The oracle account is a reserved account used for internal MSE operations. This account should not be used for SSH interactive logins. When reviewing authentication, authorization, and accounting (AAA) server log files, if there is an SSH login via the oracle account, this is an indicator that this vulnerability has been exploited on the affected device. The compromise can be determined if there is any output from this command:\n\r\n\n\r\n mse> grep \"user oracle\" /var/log/secure* | grep \"sshd:session\"\r\n\n\r\nThis command should return no output if the oracle account has not been logged into via SSH.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "The following is a workaround to disable SSH login for the oracle user account on the MSE:\n\r\n\n\r\n1. Log in to the MSE as user root.\n\r\n2. Edit the file /etc/ssh/sshd_config via a text editor. \n\r\n3. Navigate to the bottom of the file and add the following line:\n\r\n   \r\nDenyUsers oracle\r\n\n\r\n   This instructs the SSH service to not allow SSH logins for the oracle user. \n\r\n   Note: This change only takes effect after the SSH service is restarted.\n\r\n\n\r\n4. Save the updated /etc/ssh/sshd_config file.\n\r\n5. Restart the SSH service with the service sshd restart command.\n\r\n6. To verify that the workaround is properly configured, attempt an SSH login to the MSE as the oracle user. \n\r\n    This login attempt should fail with the error .   \n\r\n     \r\nssh –l oracle \r\n\n\r\n     Try an SSH login to the MSE as the root user. This login attempt should succeed.\n\r\n   \r\n ssh -l root \r\n\n\r\nNote: This workaround configuration is persistent and only needs to be applied once.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\n\r\nIn all cases, customers should ensure that the devices to upgrade contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\n\r\n\n\r\nThe following advisories are part of the November 2015 Cisco MSE Security Advisory Companion Publications: \n\r\n\r\n    cisco-sa-20151104-mse-cred[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20151104-mse-cred\"]\r\n    cisco-sa-20151104-privmse[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20151104-privmse\"]\r\n\r\nSoftware Download \n\r\n\r\n\n\r\nThe Cisco MSE Static Credential Vulnerability is fixed in all versions after 8.0.120.7. The latest Cisco MSE software can be downloaded from the Software Center on Cisco.com by visiting http://www.cisco.com/cisco/software/navigator.html[\"http://www.cisco.com/cisco/software/navigator.html\"] and selecting:\n\r\n\n\r\n Products > Wireless > Mobility Services > Mobility Services Engine\n\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "Cisco would like to thank security researcher Jeremy Brown and Beyond Security’s SecuriTeam Secure Disclosure (SSD) group for discovering and reporting this vulnerability.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Mobility Services Engine Static Credential Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20151104-mse-cred"
+			}
+		],
+		"title": "Cisco Mobility Services Engine Static Credential Vulnerability",
+		"tracking": {
+			"current_release_date": "2015-11-04T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T01:02:28+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20151104-mse-cred",
+			"initial_release_date": "2015-11-04T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2015-11-04T15:01:59+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Mobility Services Engine",
+						"product": {
+							"name": "Cisco Mobility Services Engine ",
+							"product_id": "CSAFPID-111803"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2015-6316",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuv40501",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-111803"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco Mobility Services Engine Static Credential Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20151104-mse-cred"
+				}
+			],
+			"release_date": "2015-11-04T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following is a workaround to disable SSH login for the oracle user account on the MSE:\n\r\n\n\r\n1. Log in to the MSE as user root.\n\r\n2. Edit the file /etc/ssh/sshd_config via a text editor. \n\r\n3. Navigate to the bottom of the file and add the following line:\n\r\n   \r\nDenyUsers oracle\r\n\n\r\n   This instructs the SSH service to not allow SSH logins for the oracle user. \n\r\n   Note: This change only takes effect after the SSH service is restarted.\n\r\n\n\r\n4. Save the updated /etc/ssh/sshd_config file.\n\r\n5. Restart the SSH service with the service sshd restart command.\n\r\n6. To verify that the workaround is properly configured, attempt an SSH login to the MSE as the oracle user. \n\r\n    This login attempt should fail with the error .   \n\r\n     \r\nssh –l oracle \r\n\n\r\n     Try an SSH login to the MSE as the root user. This login attempt should succeed.\n\r\n   \r\n ssh -l root \r\n\n\r\nNote: This workaround configuration is persistent and only needs to be applied once."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 6.5,
+						"vectorString": "AV:N/AC:L/Au:S/C:P/I:P/A:P/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-111803"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 6.5,
+						"vectorString": "AV:N/AC:L/Au:S/C:P/I:P/A:P/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-111803"
+					]
+				}
+			],
+			"title": "Cisco Mobility Services Engine Static Credential Vulnerability"
+		}
+	]
+}

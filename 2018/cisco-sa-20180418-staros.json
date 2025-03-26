@@ -1,0 +1,194 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the egress packet processing functionality of the Cisco StarOS operating system for Cisco Aggregation Services Router (ASR) 5700 Series devices and Virtualized Packet Core (VPC) System Software could allow an unauthenticated, remote attacker to cause an interface on the device to cease forwarding packets. The device may need to be manually reloaded to clear the condition.\r\n\r\nThe vulnerability is due to the failure to properly check that the length of a packet to transmit does not exceed the maximum supported length of the network interface card (NIC). An attacker could exploit this vulnerability by sending a crafted IP packet or a series of crafted IP fragments through an interface on the targeted device. A successful exploit could allow the attacker to cause the network interface to cease forwarding packets. This vulnerability could be triggered by either IPv4 or IPv6 network traffic.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\nThis advisory is available at the following link:\r\nhttps://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20180418-staros [\"https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20180418-staros\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects the following Cisco products when they are running the StarOS operating system and a virtual interface card is installed on the device:\r\n\r\nAggregation Services Router (ASR) 5700 Series\r\nVirtualized Packet Core—Distributed Instance (VPC—DI) System Software\r\nVirtualized Packet Core—Single Instance (VPC—SI) System Software\r\n\r\nTo determine whether a virtual interface card is installed on the ASR 5700 Series device or VPC—SI or VPC—DI, administrators can issue the show support details | grep 'Cisco VIC' command at the device CLI.\r\n\r\n\r\nstaros# show support details | grep 'Cisco VIC'\r\n2017-Oct-25+02:07:52.813 card 6-cpu0: <6>[   10.967629] enic: Cisco VIC Ethernet NIC Driver, ver 2.1.1.39\r\n\n\r\nDetermining the StarOS Software Release\r\n\r\nTo determine whether a vulnerable release of StarOS is running on an ASR 5700 Series device, administrators can issue the show version command at the device CLI. The following example shows the output of the command for a Cisco ASR 5500 Series Router that is running Cisco StarOS Release 19.2.1:\r\n\r\n\r\n[local]ASR-2# show version\r\nFriday August 12 13:17:31 AST 2016\r\nActive Software:\r\nImage Version:                  19.2.1\r\nImage Build Number:             62564\r\nImage Description:              Deployment_Build\r\nImage Date:                     Thu Dec 31 20:13:39 EST 2015\r\nBoot Image:                     /flash/asr5500-19.2.1.bin\r\n\n\r\nTo determine whether a vulnerable release of Cisco StarOS is running on a VPC—SI or VPC—DI, administrators can issue the show version command at the device CLI. The following example shows the output of the command for a VPC—DI that is running Cisco StarOS Release 20.1.v0 (VPC—DI Release N4.6):\r\n\r\n\r\n[local]VPC-DI# show version\r\nActive Software:\r\nImage Version:                  20.1.v0\r\nImage Build Number:             64657\r\nImage Description:              Deployment_Build\r\nImage Date:                     Wed Jul 27 18:46:53 EDT 2016\r\nBoot Image:                     /flash/qvpc-di-20.1.v0.bin",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nASR 5000 Series\r\nASR 5500 Series\r\nElastic Services Controller (ESC)\r\nUltra Automation Services (UAS)",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability can cause multiple line cards to show transmit drops and errors, and the error counters would continuously increase.\r\n\r\n\r\ncisco# show port datalink counters <interface>\r\nCounters for port x/y:\r\nLine Card  Virtual Ethernet Port\r\nRx Counter                      Data  |  Tx Counter                      Data\r\n-----------------------  ------------ + -----------------------  ------------\r\nRX Unicast frames        146446868039 | TX Unicast frames        250100240151\r\nRX Multicast frames               n/a | TX Multicast frames               n/a\r\nRX Broadcast frames               n/a | TX Broadcast frames               n/a\r\nRX Size   64 frames               n/a | TX Size   64 frames               n/a\r\nRX Size   65 ..  127 fr           n/a | TX Size   65 ..  127 fr           n/a\r\nRX Size  128 ..  255 fr           n/a | TX Size  128 ..  255 fr           n/a\r\nRX Size  256 ..  511 fr           n/a | TX Size  256 ..  511 fr           n/a\r\nRX Size  512 .. 1023 fr           n/a | TX Size  512 .. 1023 fr           n/a\r\nRX Size 1024 .. 1522 fr           n/a | TX Size 1024 .. 1522 fr           n/a\r\nRX Size > 1522 frames             n/a | TX Size > 1522 frames             n/a\r\nRX Bytes OK           164943341920449 | TX Bytes OK           207391659308726\r\nRX Bytes BAD                      n/a | TX Bytes BAD                416971827\r\nRX SHORT OK                       n/a | TX PAUSE                          n/a\r\nRX SHORT CRC                      n/a | TX ERR                        4083841\r\n\r\nThe presence of the transmit drops and errors could cause network traffic to cease being forwarded. If these conditions are observed, contact the Cisco Technical Assistance Center (TAC) to determine whether the device has been compromised by exploitation of this vulnerability.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates that address the vulnerability described in this advisory. Customers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license: http://www.cisco.com/en/US/docs/general/warranty/English/EU1KEN_.html [\"http://www.cisco.com/c/en/us/td/docs/general/warranty/English/EU1KEN_.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nWhen considering software upgrades, customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to upgrade contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n\r\nCustomers Without Service Contracts\r\n\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html [\"http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n\r\nFixed Releases\r\n\r\nCustomers should upgrade to an appropriate fixed release as indicated in the applicable table in this section. In the following table, the first column lists major releases of the Cisco StarOS and VPC System Software and the second column indicates the first corresponding release that includes the fix for this vulnerability.\r\n                            Cisco  VPC (StarOS Major Release)                          First Fixed Release                                            N4.0 (19.2)\r\n             Affected; migrate to N5.1.9 (21.1.v7)\r\n                               N4.2 (19.3)\r\n             Affected; migrate to N5.1.9 (21.1.v7)\r\n                               N4.5 (20.0)             Affected; migrate to N5.1.9 (21.1.v7)                                N4.6 (20.1)             Affected; migrate to N5.1.9 (21.1.v7)\r\n                               N4.7 (20.2)              Affected; migrate to N5.1.9 (21.1.v7)                                N5.0 (21.0)             N5.0.4 (21.0.v4)                                N5.1 (21.1)              N5.1.9 (21.1.v7)                                N5.5 (21.3)              N5.5.0 (21.3.v10)",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco StarOS Interface Forwarding Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20180418-staros"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20180418-staros",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20180418-staros"
+			},
+			{
+				"category": "external",
+				"summary": "http://www.cisco.com/en/US/docs/general/warranty/English/EU1KEN_.html",
+				"url": "http://www.cisco.com/c/en/us/td/docs/general/warranty/English/EU1KEN_.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories and Alerts page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html",
+				"url": "http://www.cisco.com/en/US/support/tsd_cisco_worldwide_contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco StarOS Interface Forwarding Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2018-04-18T16:00:00+00:00",
+			"generator": {
+				"date": "2022-09-03T03:29:13+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20180418-staros",
+			"initial_release_date": "2018-04-18T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2018-04-18T15:40:24+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco ASR 5000 Series Software",
+						"product": {
+							"name": "Cisco ASR 5000 Series Software ",
+							"product_id": "CSAFPID-193199"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2018-0239",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvf32385"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-193199"
+				]
+			},
+			"release_date": "2018-04-18T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-193199"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-193199"
+					]
+				}
+			],
+			"title": "Cisco StarOS Interface Forwarding Denial of Service Vulnerability"
+		}
+	]
+}

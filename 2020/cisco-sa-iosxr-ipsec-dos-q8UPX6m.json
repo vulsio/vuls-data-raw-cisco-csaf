@@ -1,0 +1,196 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the IPsec packet processor of Cisco IOS XR Software could allow an unauthenticated remote attacker to cause a denial of service (DoS) condition for IPsec sessions to an affected device.\r\n\r\nThe vulnerability is due to improper handling of packets by the IPsec packet processor. An attacker could exploit this vulnerability by sending malicious ICMP error messages to an affected device that get punted to the IPsec packet processor. A successful exploit could allow the attacker to deplete IPsec memory, resulting in all future IPsec packets to an affected device being dropped by the device. Manual intervention is required to recover from this situation.\r\n\r\nCisco has released software updates that address the vulnerability described in this advisory. There are workarounds that address this vulnerability.\r\n\r\nThis advisory is available at the following link:\r\nhttps://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-ipsec-dos-q8UPX6m [\"https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-ipsec-dos-q8UPX6m\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco IOS XR Software release prior to 6.4.3, 6.6.3, 7.0.2 and 7.1.1, respectively, that have the IPsec process ipsec_mp or ipsec_pp running. Both IPsec processes are running in Cisco IOS XR Software by default.\r\n\r\nSee the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n  Determine the Status of the IPsec Processes\r\nAdministrators can determine whether IPsec processes are running on a device by using the show processes | include ipsec command in the device CLI. The following example shows the output of this command on a device on which both IPsec processes are running:\r\n\r\n\r\nRP/0/RP0/CPU0:ios#show processes | include ipsec\r\nThu Feb 27 13:42:05.618 UTC\r\n222    5460    0K  20   Sleeping     ipsec_mp         0\r\n222    6055    0K  20   Sleeping     ipsec_mp         0\r\n222    6247    0K  20   Sleeping     ipsec_mp         0\r\n222    6258    0K  20   Sleeping     ipsec_mp         0\r\n222    6502    0K  20   Sleeping     ipsec_mp         0\r\n312    5461    0K  20   Sleeping     ipsec_pp         0\r\n312    6044    0K  20   Sleeping     ipsec_pp         0\r\n312    6220    0K  20   Sleeping     ipsec_pp         0\r\n312    6375    0K  20   Sleeping     ipsec_pp         0\r\n312    6824    0K  20   Sleeping     ipsec_pp         0\r\n\r\nIf the command does not return any output, the IPsec processes are not running and the device is not vulnerable.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect Cisco IOS or IOS XE Software.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "When this vulnerability has been exploited successfully, syslog logging will show messages like the following with a depletion level of 100 percent or close to 100 percent:\r\n\r\n\r\n%PKT_INFRA-PAKWATCH-2-DEPLETION_CATASTROPHIC : Depletion level 100 percent for resource PAK FSV\r\n%PKT_INFRA-PAKWATCH-6-USER_INFO : Top 5 users of PAK FSV:\r\n%PKT_INFRA-PAKWATCH-6-INFO_HEAD : PROCESS NAME                     PID        COUNT\r\n%PKT_INFRA-PAKWATCH-6-INFO_BODY : pkg/bin/ipsec_pp                 540912     9984\r\n%PKT_INFRA-PAKWATCH-6-INFO_BODY : pkg/bin/udp                      540892     16\r\n%PKT_INFRA-PAKWATCH-6-USER_INFO2 : Only 2 users found using PAK FSV.\r\n\r\nManual intervention is required to recover from this failure condition by restarting the IPsec processes as shown in the following example:\r\n\r\n\r\nRP/0/RP0/CPU0:ios#process restart ipsec_mp\r\nFri Feb 21 14:48:58.121 UTC\r\nRP/0/RP0/CPU0:ios#process restart ipsec_pp\r\nFri Feb 21 14:49:00.973 UTC",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "To prevent exploitability of this vulnerability, administrators can apply access-control lists (ACLs) that deny ICMP unreachable packets to an affected device.\r\n\r\nCustomers that do not use any IPsec features can also disable the IPsec processes as shown in the following example:\r\n\r\n\r\nRP/0/RP0/CPU0:ios#process shutdown ipsec_mp\r\nFri Feb 21 14:56:03.870 UTC\r\nProcess Shutdown of a process could leave the System in an Inconsistent State. Proceed? [confirm]\r\nRP/0/RP0/CPU0:ios#process shutdown ipsec_pp\r\nFri Feb 21 14:56:09.124 UTC\r\nProcess Shutdown of a process could leave the System in an Inconsistent State. Proceed? [confirm]\r\nRP/0/RP0/CPU0:ios#\r\n\r\nNote: Shutting down the IPsec processes is not persistent across reloads and would need to be re-applied after every system reload.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, Cisco IOS XR Software releases 6.4.3 (end of 2020), 6.6.3, 7.0.2, and 7.1.1 and later contained the fix for this vulnerability. Software maintenance upgrades (SMUs) that fix this vulnerability were available for Cisco IOS XR Software releases 6.4.2 and 6.5.3 for the ASR9K-PX platform.\r\n\r\nSee the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software IPsec Packet Processor Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-ipsec-dos-q8UPX6m"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-ipsec-dos-q8UPX6m",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-ipsec-dos-q8UPX6m"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories and Alerts page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software IPsec Packet Processor Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2020-03-04T16:00:00+00:00",
+			"generator": {
+				"date": "2022-10-22T03:03:23+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-iosxr-ipsec-dos-q8UPX6m",
+			"initial_release_date": "2020-03-04T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2020-03-03T15:28:16+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2020-3190",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvr75998"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2020-03-04T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "To prevent exploitability of this vulnerability, administrators can apply access-control lists (ACLs) that deny ICMP unreachable packets to an affected device.\r\n\r\nCustomers that do not use any IPsec features can also disable the IPsec processes as shown in the following example:\r\n\r\n\r\nRP/0/RP0/CPU0:ios#process shutdown ipsec_mp\r\nFri Feb 21 14:56:03.870 UTC\r\nProcess Shutdown of a process could leave the System in an Inconsistent State. Proceed? [confirm]\r\nRP/0/RP0/CPU0:ios#process shutdown ipsec_pp\r\nFri Feb 21 14:56:09.124 UTC\r\nProcess Shutdown of a process could leave the System in an Inconsistent State. Proceed? [confirm]\r\nRP/0/RP0/CPU0:ios#\r\n\r\nNote: Shutting down the IPsec processes is not persistent across reloads and would need to be re-applied after every system reload.",
+					"product_ids": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:L",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software IPsec Packet Processor Denial of Service Vulnerability"
+		}
+	]
+}

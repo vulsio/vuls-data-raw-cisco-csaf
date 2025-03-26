@@ -1,0 +1,2785 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Multiple vulnerabilities exist in the Session Initiation Protocol (SIP)\r\nimplementation in Cisco IOS Software and Cisco IOS XE Software that could allow\r\nan unauthenticated, remote attacker to cause a reload of an affected device or\r\ntrigger memory leaks that may result in system instabilities. Affected devices\r\nwould need to be configured to process SIP messages for these vulnerabilities\r\nto be exploitable.\r\n\r\n\r\nCisco has released software updates that address these vulnerabilities. There are no workarounds for devices that must run SIP;\r\nhowever, mitigations are available to limit exposure to the\r\nvulnerabilities.\r\n\r\n\r\nThis advisory is posted at http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip[\"%5B%5BPublication_URL%5D%5D\"].\n\r\n\r\n\r\n\r\n\r\nNote: The September 28, 2011, Cisco IOS Software\r\nSecurity Advisory bundled publication includes ten Cisco Security Advisories.\r\nNine of the advisories address vulnerabilities in Cisco IOS Software, and one\r\nadvisory addresses a vulnerability in Cisco Unified Communications Manager.\r\nEach advisory lists the Cisco IOS Software releases that correct the\r\nvulnerability or vulnerabilities detailed in the advisory as well as the Cisco\r\nIOS Software releases that correct all vulnerabilities in the September 2011\r\nBundled Publication. \r\n\r\n Individual publication links are in \"Cisco Event Response:\r\nSemiannual Cisco IOS Software Security Advisory Bundled Publication\" at the\r\nfollowing link: \r\n\r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep11.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep11.html\"]\r\n\r\n\r\n\r\n\r\n\r\nCisco Unified Communications Manager is affected by one of the\r\nvulnerabilities described in this advisory. A separate Cisco Security Advisory\r\nhas been published to disclose the vulnerability that affects the Cisco Unified\r\nCommunications Manager at the following location: \r\n\r\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-cucm[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-cucm\"]\r\n\r\n\r\n[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-cucm\"]\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco devices are affected when they are running affected Cisco IOS\r\nSoftware and Cisco IOS XE Software versions that are configured to\r\nprocess SIP messages.\r\n\r\nRecent versions of Cisco IOS Software do not process SIP messages by default. Creating a dial peer by issuing the dial-peer voice\r\nconfiguration command will start the SIP processes, causing the Cisco\r\nIOS device to process SIP messages. In addition, several features within\r\nCisco Unified Communications Manager Express, such as ePhones, will\r\nalso automatically start the SIP process when they are configured,\r\ncausing the device to start processing SIP messages. An example of an\r\naffected configuration follows:\r\n\r\n\r\ndial-peer voice  voip\r\n ...\r\n!\r\n\r\nIn addition to inspecting the Cisco IOS device configuration for a dial-peer command that causes the device to process SIP messages, administrators can also use the show processes | include SIP\r\ncommand to determine whether Cisco IOS Software is running the\r\nprocesses that handle SIP messages. In the following example, the\r\npresence of the processes CCSIP_UDP_SOCKET or CCSIP_TCP_SOCKET indicates that the Cisco IOS device will process SIP messages:\r\n\r\n\r\nRouter# show processes | include SIP\r\n 149 Mwe 40F48254            4          1    400023108/24000  0 CCSIP_UDP_SOCKET\r\n 150 Mwe 40F48034            4          1    400023388/24000  0 CCSIP_TCP_SOCKET\r\n\r\n\r\nNote: Because there are several ways a device running Cisco\r\nIOS Software can start processing SIP messages, it is recommended that\r\nthe show processes | include SIP command be used to\r\ndetermine whether the device is processing SIP messages instead of\r\nrelying on the presence of specific configuration commands.\r\n\r\nCisco Unified Border Element images are also affected by two of these vulnerabilities.\r\n\r\nNote: The Cisco Unified Border Element feature (CUBE;\r\npreviously known as the Cisco Multiservice IP-to-IP Gateway) is a\r\nspecial Cisco IOS Software image that runs on Cisco multiservice gateway\r\nplatforms. It provides a network-to-network interface point for\r\nbilling, security, call admission control, quality of service, and\r\nsignaling interworking.\r\n\r\nTo determine the Cisco IOS Software release that is running\r\non a Cisco product, administrators can log in to the device and issue\r\nthe show version command to display the system banner.\r\nThe system banner confirms that the device is running Cisco IOS Software\r\nby displaying text similar to \"Cisco Internetwork Operating System\r\nSoftware\" or \"Cisco IOS Software.\" The image name displays in\r\nparentheses, followed by \"Version\" and the Cisco IOS Software release\r\nname. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is\r\nrunning Cisco IOS Software Release 15.0(1)M1 with an installed image\r\nname of C3900-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version\r\nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.0(1)M1, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Wed 02-Dec-09 17:17 by prod_rel_team\r\n\r\n!--- output truncated\r\n\r\nAdditional information about Cisco IOS Software release naming conventions is available in\r\nthe white paper Cisco IOS and NX-OS Software Reference Guide available at:\r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/ios-ref.html[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"].\r\n\r\nCisco IOS XE Software is affected by these vulnerabilities.\r\n\r\n\r\n\r\n\r\n\r\nNote: Cisco Unified Communications Manager is affected by one of the\r\nvulnerabilities described in this advisory. A separate Cisco Security Advisory\r\nhas been published to disclose the vulnerability that affects the Cisco Unified\r\nCommunications Manager at the following location:\r\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-cucm[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-cucm\"]\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "The SIP Application Layer Gateway (ALG), which is used by the Cisco\r\nIOS Network Address Translation (NAT) and firewall features of Cisco IOS\r\nSoftware, is not affected by these vulnerabilities.\r\nCisco IOS XR Software is not affected by these vulnerabilities.\r\n\r\nNo other Cisco products are currently known to be affected by these vulnerabilities.\r\n",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "\r\nSIP is a popular signaling protocol that is used to manage voice and\r\nvideo calls across IP networks such as the Internet. SIP is responsible for\r\nhandling all aspects of call setup and termination. Voice and video are the\r\nmost popular types of sessions that SIP handles, but the protocol has the\r\nflexibility to accommodate other applications that require call setup and\r\ntermination. SIP call signaling can use UDP (port 5060), TCP (port 5060), or\r\nTransport Layer Security (TLS; TCP port 5061) as the underlying transport\r\nprotocol.\r\n\r\nMultiple vulnerabilities exist in the SIP implementation in Cisco IOS\r\nSoftware that could allow a remote attacker to cause an affected device to\r\nreload or to trigger memory leaks that may result in system instabilities.\r\nThese vulnerabilities are triggered when the device that is running Cisco IOS\r\nSoftware processes crafted SIP messages. Only traffic destined to the device\r\ncan trigger the vulnerabilities; transit SIP traffic is not an exploit\r\nvector.\r\n\r\n\r\nNote: In cases where SIP is running over TCP transport, a TCP three-way\r\nhandshake is necessary to exploit these vulnerabilities.\r\n\r\nThe vulnerabilities are as follow:\r\n\r\n\r\nCSCth03022[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCth03022\"]\r\n(registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nmay cause a reload of an affected device.\r\nThis vulnerability has been assigned Common Vulnerabilities and Exposures (CVE)\r\nID CVE-2011-0939.\r\n\r\n\r\nCSCti48504[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCti48504\"]\r\n(registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nmay cause memory leaks. This\r\nvulnerability has been assigned CVE ID CVE-2011-3275.\r\n\r\n\r\nCSCto88686[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCto88686\"]\r\n(registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nmay cause memory leaks or reloads of\r\naffected devices. This vulnerability has been assigned CVE ID\r\nCVE-2011-2072.\r\n\r\n\r\nNote: this vulnerability also affects Cisco Unified Communications Manager.\r\nThe corresponding Cisco bug ID is\r\n\r\nCSCtl86047\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtl86047\"]\r\n(registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n. Refer to the separate\r\nCisco Security Advisory for the Cisco Unified Communications Manager for\r\nadditional details.\r\n\r\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised\r\nto apply mitigation techniques to help limit exposure to the\r\nvulnerabilities. Mitigation consists of allowing only legitimate devices\r\nto connect to affected devices. To increase effectiveness, the\r\nmitigation must be coupled with anti-spoofing measures on the network\r\nedge. This action is required because SIP can use UDP as the transport\r\nprotocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices\r\nwithin the network are available in the companion document \"Cisco\r\nApplied Mitigation Bulletin:Identifying and Mitigating Exploitation of\r\nthe Multiple Vulnerabilities in Cisco Voice Products\", which is\r\navailable at the following location: http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice\"].\r\n\r\nDisabling SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the\r\nsimplest and most effective workaround is to disable SIP processing on\r\nthe device. Some versions of Cisco IOS Software allow administrators to\r\ndisable SIP with the following commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\nWarning: When\r\napplying this workaround to devices that are processing Media Gateway\r\nControl Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these\r\ncircumstances, this workaround should be implemented during a\r\nmaintenance window when active calls can be briefly stopped.\r\n\r\nThe show udp connections, show tcp brief all, and show processes | include SIP commands can be used to confirm that the SIP UDP and TCP ports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, when SIP is disabled the output from the show ip sockets\r\ncommand may still show the SIP ports open, but sending traffic to them\r\nwill cause the SIP process to emit the following message:\r\n\r\n\r\n*Jun 2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services, it is possible\r\nto use Control Plane Policing (CoPP) to block SIP traffic to the device\r\nfrom untrusted sources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T,\r\n12.4, and 12.4T support the CoPP feature. CoPP may be configured on a\r\ndevice to protect the management and control planes to minimize the risk\r\nand effectiveness of direct infrastructure attacks by explicitly\r\npermitting only authorized traffic sent to infrastructure devices in\r\naccordance with existing security policies and configurations. The\r\nfollowing example can be adapted to specific network configurations:\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature): if the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\nNote: Because SIP can use UDP as a transport protocol, it is\r\npossible to spoof the source address of an IP packet, which may bypass\r\naccess control lists that permit communication to these ports from\r\ntrusted IP addresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs)\r\nthat match the potential exploit packets with the \"permit\" action result\r\nin these packets being discarded by the policy-map \"drop\" function,\r\nwhile packets that match the \"deny\" action (not shown) are not affected\r\nby the policy-map drop function. Additional information on the\r\nconfiguration and use of the CoPP feature can be found at http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, also consult http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and any subsequent advisories to determine exposure and a complete upgrade solution.\r\n\r\n\r\nIn all cases, customers should exercise caution to be certain the\r\ndevices to be upgraded contain sufficient memory and that current\r\nhardware and software configurations will continue to be supported\r\nproperly by the new release. If the information is not clear, contact\r\nthe Cisco Technical Assistance Center (TAC) or your contracted\r\nmaintenance provider for assistance.\r\n\r\n\r\nAdditionally, the Cisco IOS Software Checker is available on the Cisco\r\nCisco Security (SIO) portal at\r\nhttp://tools.cisco.com/security/center/selectIOSVersion.x[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"].\r\nIt provides several features for checking which Security Advisories affect\r\nspecified versions of Cisco IOS Software.\r\n\r\n\n\r\nCisco IOS Software\r\nEach row of the following Cisco IOS Software table corresponds to a\r\nCisco IOS Software train. If a particular train is vulnerable, the\r\nearliest releases that contain the fix are listed in the First Fixed\r\nRelease For This Advisory column. The First Fixed Release for All\r\nAdvisories in the September 2011 Bundled Publication column lists the\r\nearliest possible releases that correct all the published\r\nvulnerabilities in the Cisco IOS Software Security Advisory bundled\r\npublication. Cisco recommends upgrading to the latest available release,\r\nwhere possible.\r\n\r\n\r\n    \r\n        \r\n            \r\n            \r\n             Major Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n                 Availability of Repaired\r\n            Releases\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.0-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 12.0 based releases\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.1-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.1E\r\n\r\n            \r\n            \r\n            \r\n             Not vulnerable \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.2-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2B\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2BC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2BW\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2BX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SB[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SB\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2BY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2BZ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2CX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2CY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2CZ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SB[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SB\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2DA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2DD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2DX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2EU\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2EW\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Releases up to and including 12.2(20)EW4 are not vulnerable.\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2EWA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2EX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(55)EX3\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2EY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(58)EY\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2EZ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0SE\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2FX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2FY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2EX[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2EX\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2FZ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.2IRG\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.2IRG\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.2IRG\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.2IRG\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IRG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2IXH\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2JA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2JK\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2MB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2MC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2MRA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SRD[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SRD\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2MRB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2S\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.2(30)S are vulnerable; Releases 12.2(30)S\r\n            and later are not vulnerable. First fixed in Release\r\n            12.2SB[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SB\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(31)SB20\r\n\r\n            12.2(33)SB10\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SBC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SB[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SB\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SCA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SCC[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SCC\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SCB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SCC[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SCC\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SCC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SCC7\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SCD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SCD6\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SCE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SCE112.2(33)SCE2\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SCF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(55)SE312.2(58)SE\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SEA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SEB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SEC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SED\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SEE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SEF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SE[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SE\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SEG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.2(25)SEG4 are vulnerable; Releases\r\n            12.2(25)SEG4 and later are not vulnerable. First fixed in Release 12.2EX[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2EX\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n             Releases prior to 12.2(53)SG4 are vulnerable; Releases\r\n            12.2(53)SG4 and later are not vulnerable. \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SGA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SL\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SM\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SO\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SQ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(50)SQ3\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SRA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SRD[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SRD\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SRB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SRD[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SRD\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SRC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SRD[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SRD\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SRD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SRD6\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SRE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SRE4\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2STE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SU\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SV\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n             Releases prior to 12.2(29a)SV are vulnerable; Releases\r\n            12.2(29a)SV and later are not vulnerable. Migrate to any release in 12.2SVD\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SVA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SVC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SVD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SVE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SW\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(18)SXF17b\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXH\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXI\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SXI6\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SXJ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.2(33)SXJ1\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2SZ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SB[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SB\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2T\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2TPC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XH\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XI\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XJ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XK\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XL\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XM\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XN\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XNA\r\n\r\n            \r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XNB\r\n\r\n            \r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XNC\r\n\r\n            \r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XND\r\n\r\n            \r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XNE\r\n\r\n            \r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XNF\r\n\r\n            \r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            See Cisco IOS-XE Software\r\n            Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XO\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.2(54)XO are vulnerable; Releases 12.2(54)XO\r\n            and later are not vulnerable.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XQ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XR\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XS\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XT\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XU\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XV\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2XW\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YH\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YJ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YK\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YL\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YM\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YN\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YO\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YP\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YQ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YR\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YS\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YT\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YU\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YV\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YW\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2YZ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXF[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXF\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZH\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZJ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZL\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZP\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZU\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.2SXH[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_2SXH\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.2ZYA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.3-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 12.3 based releases\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.4-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.4(25f)\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4GC\r\n\r\n            \r\n            \r\n            \r\n            12.4(24)GC4\r\n\r\n            \r\n            \r\n            12.4(24)GC4\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JAX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JDA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JDC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JHA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JHB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JHC\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JK\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JL\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JMA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JMB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JX\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.4JA\r\n\r\n            Releases up to and including 12.4(21a)JX are not vulnerable.\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n             12.4(24)MD6 on 28-Oct-2011 \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MDA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.4(24)MDA7\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MDB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.4(24)MDB3\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MR\r\n\r\n            \r\n            \r\n            \r\n            Releases up to and including 12.4(6)MR1 are not vulnerable.\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MRA\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section of\r\n            this advisory.\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MRB\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4SW\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4T\r\n\r\n            \r\n            \r\n            \r\n            12.4(24)T6\r\n\r\n            12.4(15)T16\r\n\r\n            \r\n            \r\n            12.4(24)T6\r\n\r\n             12.4(15)T16\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XB\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            12.4(2)XB12\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XC\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First Fixed in Release 12.4T\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            Vulnerable; First Fixed in Release 12.4T\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XF\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XG\r\n\r\n            \r\n            \r\n            \r\n            Releases up to and including 12.4(9)XG1 are not vulnerable.\r\n            \r\n\r\n             Releases 12.4(9)XG3 and later are not vulnerable. First fixed in\r\n            Release 12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XJ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            Vulnerable; First Fixed in Release 12.4T\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XK\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XL\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XM\r\n\r\n            \r\n            \r\n            \r\n            Releases up to and including 12.4(15)XM are not vulnerable.\r\n            \r\n\r\n             Releases 12.4(15)XM3 and later are not vulnerable. First fixed\r\n            in Release 12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XN\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XP\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XQ\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XR\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XT\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XV\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XW\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XY\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XZ\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YA\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            12.4T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#12_4T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YB\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section of\r\n            this advisory.\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YD\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n             Vulnerable; fixed in 12.4(22)YE6 on 30-Sept-2011; 12.4(24)YE7\r\n            available on 17-Oct-2011 \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YG\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 15.0-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0M\r\n\r\n            \r\n            \r\n            \r\n            15.0(1)M7\r\n\r\n            \r\n            \r\n            15.0(1)M7\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0MR\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0MRA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0S\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            15.0(1)S4\r\n\r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0SA\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0SE\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0SG\r\n\r\n            \r\n            \r\n            \r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0XA\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            15.1T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#15_1T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            15.1T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#15_1T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.0XO\r\n\r\n            \r\n            \r\n            \r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 15.1-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1EY\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1GC\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            15.1T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#15_1T\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            15.1T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#15_1T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1M\r\n\r\n            \r\n            \r\n            \r\n            15.1(4)M1\r\n\r\n            \r\n            \r\n            15.1(4)M2; Available on 30-SEP-11\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1MR\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; contact your support organization per the\r\n            instructions in the Obtaining Fixed Software[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#fixes\"] section\r\n            of this advisory.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1S\r\n\r\n            \r\n            \r\n            \r\n            Not vulnerable\r\n\r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n            \r\n            15.1(2)S2\r\n\r\n            15.1(3)S\r\n\r\n            Cisco IOS XE devices: See Cisco IOS-XE\r\n            Software Availability[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#iosxe\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1T\r\n\r\n            \r\n            \r\n            \r\n            15.1(2)T4\r\n\r\n            15.1(3)T2\r\n\r\n            \r\n            \r\n             15.1(2)T4 15.1(1)T4 on 8-Dec-2011 \r\n\r\n            \r\n        \r\n        \r\n            \r\n             15.1XB\r\n\r\n            \r\n            \r\n            \r\n            15.1(4)XB5\r\n\r\n            \r\n            \r\n            Vulnerable; First fixed in Release\r\n            15.1T[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip#15_1T\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 15.2-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for All Advisories in the September\r\n            2011 Bundled Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 15.2 based releases\r\n\r\n            \r\n        \r\n    \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\r\n\r\nCisco IOS XE Software\r\n\r\n\r\n    \r\n        \r\n            \r\n             Cisco IOS XE Release \r\n\r\n            \r\n            \r\n             First Fixed Release \r\n\r\n            \r\n            \r\n             First Fixed Release for All Advisories in the September 2011\r\n            Bundled Publication \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.1.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.2.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.3.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.4.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.5.x \r\n\r\n            \r\n            \r\n             3.1.3S \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.6.x \r\n\r\n            \r\n            \r\n             3.1.3S \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             3.1.xS \r\n\r\n            \r\n            \r\n             3.1.3S \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             3.1.xSG\r\n\r\n            \r\n            \r\n             Not vulnerable \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.2.0SG or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             3.2.xS \r\n\r\n            \r\n            \r\n             3.2.1S \r\n\r\n            \r\n            \r\n             Vulnerable; migrate to 3.3.2S or later \r\n\r\n            \r\n        \r\n        \r\n            \r\n             3.2.xSG\r\n\r\n            \r\n            \r\n             Not vulnerable \r\n\r\n            \r\n            \r\n             Not vulnerable \r\n\r\n            \r\n        \r\n        \r\n            \r\n             3.3.xS \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n            \r\n             3.3.2S \r\n\r\n            \r\n        \r\n        \r\n            \r\n             3.4.xS \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n    \r\n\r\n\r\n\r\n\r\nFor mapping of Cisco IOS XE to Cisco IOS releases, please refer to the\r\nCisco IOS XE 2 Release Notes, Cisco IOS XE 3S Release Notes, and, Cisco IOS XE 3SG Release Notes,\r\navailable at\r\n\r\nhttp://www.cisco.com/en/US/docs/ios/ios_xe/2/release/notes/rnasr21.html#wp2310700[\"http://www.cisco.com/en/US/docs/ios/ios_xe/2/release/notes/rnasr21.html#wp2310700\"],\r\n\r\nhttp://www.cisco.com/en/US/docs/ios/ios_xe/3/release/notes/asr1k_rn_3s_sys_req.html#wp2999052[\"http://www.cisco.com/en/US/docs/ios/ios_xe/3/release/notes/asr1k_rn_3s_sys_req.html#wp2999052\"] and\r\n\r\nhttp://www.cisco.com/en/US/docs/switches/lan/catalyst4500/release/note/OL_24726.html#wp2570252[\"http://www.cisco.com/en/US/docs/switches/lan/catalyst4500/release/note/OL_24726.html#wp2570252\"]\r\nrespectively.\r\nCisco IOS XR System Software\r\nCisco IOS XR Software is not affected by any of the vulnerabilities in\r\nthe September 2011 bundled publication\r\n\r\n\n\r\n\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerabilities described in this advisory.\r\n\r\nThese vulnerabilities were discovered by Cisco during internal testing.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip"
+			}
+		],
+		"title": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+		"tracking": {
+			"current_release_date": "2012-09-21T19:22:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:18:17+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20110928-sip",
+			"initial_release_date": "2011-09-28T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2011-09-30T23:00:00+00:00",
+					"number": "1.1.0",
+					"summary": "Update IOS Software table bundled publication first fixed\r\n            information."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(11)MR",
+										"product": {
+											"name": "12.4(11)MR",
+											"product_id": "CSAFPID-65536"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)MR",
+										"product": {
+											"name": "12.4(9)MR",
+											"product_id": "CSAFPID-65563"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12)MR",
+										"product": {
+											"name": "12.4(12)MR",
+											"product_id": "CSAFPID-66058"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(16)MR",
+										"product": {
+											"name": "12.4(16)MR",
+											"product_id": "CSAFPID-83374"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(16)MR1",
+										"product": {
+											"name": "12.4(16)MR1",
+											"product_id": "CSAFPID-104138"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(19)MR2",
+										"product": {
+											"name": "12.4(19)MR2",
+											"product_id": "CSAFPID-104445"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(19)MR1",
+										"product": {
+											"name": "12.4(19)MR1",
+											"product_id": "CSAFPID-104677"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(19)MR",
+										"product": {
+											"name": "12.4(19)MR",
+											"product_id": "CSAFPID-105060"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)MR",
+										"product": {
+											"name": "12.4(20)MR",
+											"product_id": "CSAFPID-105069"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(19)MR3",
+										"product": {
+											"name": "12.4(19)MR3",
+											"product_id": "CSAFPID-105463"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12)MR1",
+										"product": {
+											"name": "12.4(12)MR1",
+											"product_id": "CSAFPID-105595"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)MR2",
+										"product": {
+											"name": "12.4(20)MR2",
+											"product_id": "CSAFPID-105889"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(16)MR2",
+										"product": {
+											"name": "12.4(16)MR2",
+											"product_id": "CSAFPID-106096"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12)MR2",
+										"product": {
+											"name": "12.4(12)MR2",
+											"product_id": "CSAFPID-106867"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)MR1",
+										"product": {
+											"name": "12.4(20)MR1",
+											"product_id": "CSAFPID-230964"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4MR"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T",
+										"product": {
+											"name": "12.4(9)T",
+											"product_id": "CSAFPID-59299"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)T",
+										"product": {
+											"name": "12.4(11)T",
+											"product_id": "CSAFPID-66054"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T",
+										"product": {
+											"name": "12.4(15)T",
+											"product_id": "CSAFPID-69764"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T",
+										"product": {
+											"name": "12.4(20)T",
+											"product_id": "CSAFPID-81746"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T",
+										"product": {
+											"name": "12.4(24)T",
+											"product_id": "CSAFPID-92384"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T3",
+										"product": {
+											"name": "12.4(24)T3",
+											"product_id": "CSAFPID-99647"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T1",
+										"product": {
+											"name": "12.4(20)T1",
+											"product_id": "CSAFPID-103543"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T1",
+										"product": {
+											"name": "12.4(22)T1",
+											"product_id": "CSAFPID-103595"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T9",
+										"product": {
+											"name": "12.4(15)T9",
+											"product_id": "CSAFPID-103631"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)T4",
+										"product": {
+											"name": "12.4(11)T4",
+											"product_id": "CSAFPID-103735"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T8",
+										"product": {
+											"name": "12.4(15)T8",
+											"product_id": "CSAFPID-103946"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T15",
+										"product": {
+											"name": "12.4(15)T15",
+											"product_id": "CSAFPID-104005"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T5",
+										"product": {
+											"name": "12.4(24)T5",
+											"product_id": "CSAFPID-104167"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T2",
+										"product": {
+											"name": "12.4(15)T2",
+											"product_id": "CSAFPID-104190"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T12",
+										"product": {
+											"name": "12.4(15)T12",
+											"product_id": "CSAFPID-104345"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T4",
+										"product": {
+											"name": "12.4(24)T4",
+											"product_id": "CSAFPID-104379"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T5",
+										"product": {
+											"name": "12.4(9)T5",
+											"product_id": "CSAFPID-104534"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T3",
+										"product": {
+											"name": "12.4(20)T3",
+											"product_id": "CSAFPID-104570"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T",
+										"product": {
+											"name": "12.4(22)T",
+											"product_id": "CSAFPID-104810"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T6a",
+										"product": {
+											"name": "12.4(15)T6a",
+											"product_id": "CSAFPID-104851"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T6",
+										"product": {
+											"name": "12.4(20)T6",
+											"product_id": "CSAFPID-104852"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T3",
+										"product": {
+											"name": "12.4(9)T3",
+											"product_id": "CSAFPID-104916"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T13",
+										"product": {
+											"name": "12.4(15)T13",
+											"product_id": "CSAFPID-105203"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T3",
+										"product": {
+											"name": "12.4(15)T3",
+											"product_id": "CSAFPID-105358"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T2",
+										"product": {
+											"name": "12.4(24)T2",
+											"product_id": "CSAFPID-105388"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T5",
+										"product": {
+											"name": "12.4(22)T5",
+											"product_id": "CSAFPID-105401"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T10",
+										"product": {
+											"name": "12.4(15)T10",
+											"product_id": "CSAFPID-105554"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T4",
+										"product": {
+											"name": "12.4(22)T4",
+											"product_id": "CSAFPID-105631"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T5",
+										"product": {
+											"name": "12.4(20)T5",
+											"product_id": "CSAFPID-105638"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T6",
+										"product": {
+											"name": "12.4(9)T6",
+											"product_id": "CSAFPID-105647"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T4",
+										"product": {
+											"name": "12.4(15)T4",
+											"product_id": "CSAFPID-105662"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T1",
+										"product": {
+											"name": "12.4(24)T1",
+											"product_id": "CSAFPID-105745"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T4",
+										"product": {
+											"name": "12.4(9)T4",
+											"product_id": "CSAFPID-105754"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T3",
+										"product": {
+											"name": "12.4(22)T3",
+											"product_id": "CSAFPID-105848"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T9",
+										"product": {
+											"name": "12.4(20)T9",
+											"product_id": "CSAFPID-105850"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T1",
+										"product": {
+											"name": "12.4(9)T1",
+											"product_id": "CSAFPID-105958"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T13b",
+										"product": {
+											"name": "12.4(15)T13b",
+											"product_id": "CSAFPID-106241"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T5a",
+										"product": {
+											"name": "12.4(20)T5a",
+											"product_id": "CSAFPID-106271"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T5",
+										"product": {
+											"name": "12.4(15)T5",
+											"product_id": "CSAFPID-106387"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T2",
+										"product": {
+											"name": "12.4(20)T2",
+											"product_id": "CSAFPID-106510"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)T1",
+										"product": {
+											"name": "12.4(11)T1",
+											"product_id": "CSAFPID-106630"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T11",
+										"product": {
+											"name": "12.4(15)T11",
+											"product_id": "CSAFPID-106730"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T0a",
+										"product": {
+											"name": "12.4(9)T0a",
+											"product_id": "CSAFPID-106786"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T7",
+										"product": {
+											"name": "12.4(15)T7",
+											"product_id": "CSAFPID-106839"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)T2",
+										"product": {
+											"name": "12.4(11)T2",
+											"product_id": "CSAFPID-106884"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T7",
+										"product": {
+											"name": "12.4(9)T7",
+											"product_id": "CSAFPID-106962"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T14",
+										"product": {
+											"name": "12.4(15)T14",
+											"product_id": "CSAFPID-107044"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)T3",
+										"product": {
+											"name": "12.4(11)T3",
+											"product_id": "CSAFPID-107169"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T6",
+										"product": {
+											"name": "12.4(15)T6",
+											"product_id": "CSAFPID-107173"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)T1",
+										"product": {
+											"name": "12.4(15)T1",
+											"product_id": "CSAFPID-107277"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(9)T2",
+										"product": {
+											"name": "12.4(9)T2",
+											"product_id": "CSAFPID-107295"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T2",
+										"product": {
+											"name": "12.4(22)T2",
+											"product_id": "CSAFPID-107524"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)T4",
+										"product": {
+											"name": "12.4(20)T4",
+											"product_id": "CSAFPID-107550"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC",
+										"product": {
+											"name": "12.4(4)XC",
+											"product_id": "CSAFPID-65549"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC1",
+										"product": {
+											"name": "12.4(4)XC1",
+											"product_id": "CSAFPID-103674"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC5",
+										"product": {
+											"name": "12.4(4)XC5",
+											"product_id": "CSAFPID-103715"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC7",
+										"product": {
+											"name": "12.4(4)XC7",
+											"product_id": "CSAFPID-105305"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC3",
+										"product": {
+											"name": "12.4(4)XC3",
+											"product_id": "CSAFPID-105402"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC4",
+										"product": {
+											"name": "12.4(4)XC4",
+											"product_id": "CSAFPID-105635"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC2",
+										"product": {
+											"name": "12.4(4)XC2",
+											"product_id": "CSAFPID-106214"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XC6",
+										"product": {
+											"name": "12.4(4)XC6",
+											"product_id": "CSAFPID-107163"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XC"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XE",
+										"product": {
+											"name": "12.4(6)XE",
+											"product_id": "CSAFPID-65557"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XE2",
+										"product": {
+											"name": "12.4(6)XE2",
+											"product_id": "CSAFPID-105120"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XE1",
+										"product": {
+											"name": "12.4(6)XE1",
+											"product_id": "CSAFPID-106963"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XE"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ",
+										"product": {
+											"name": "12.4(11)XJ",
+											"product_id": "CSAFPID-66055"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ1",
+										"product": {
+											"name": "12.4(11)XJ1",
+											"product_id": "CSAFPID-104423"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ3",
+										"product": {
+											"name": "12.4(11)XJ3",
+											"product_id": "CSAFPID-105162"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ6",
+										"product": {
+											"name": "12.4(11)XJ6",
+											"product_id": "CSAFPID-105376"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ2",
+										"product": {
+											"name": "12.4(11)XJ2",
+											"product_id": "CSAFPID-105841"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ5",
+										"product": {
+											"name": "12.4(11)XJ5",
+											"product_id": "CSAFPID-106170"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XJ4",
+										"product": {
+											"name": "12.4(11)XJ4",
+											"product_id": "CSAFPID-106969"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XJ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XV",
+										"product": {
+											"name": "12.4(11)XV",
+											"product_id": "CSAFPID-69756"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XV1",
+										"product": {
+											"name": "12.4(11)XV1",
+											"product_id": "CSAFPID-106757"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XV "
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW",
+										"product": {
+											"name": "12.4(11)XW",
+											"product_id": "CSAFPID-66056"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW3",
+										"product": {
+											"name": "12.4(11)XW3",
+											"product_id": "CSAFPID-103926"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW7",
+										"product": {
+											"name": "12.4(11)XW7",
+											"product_id": "CSAFPID-104134"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW10",
+										"product": {
+											"name": "12.4(11)XW10",
+											"product_id": "CSAFPID-104839"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW8",
+										"product": {
+											"name": "12.4(11)XW8",
+											"product_id": "CSAFPID-105481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW9",
+										"product": {
+											"name": "12.4(11)XW9",
+											"product_id": "CSAFPID-105743"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW6",
+										"product": {
+											"name": "12.4(11)XW6",
+											"product_id": "CSAFPID-106057"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW4",
+										"product": {
+											"name": "12.4(11)XW4",
+											"product_id": "CSAFPID-106340"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW1",
+										"product": {
+											"name": "12.4(11)XW1",
+											"product_id": "CSAFPID-106653"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW5",
+										"product": {
+											"name": "12.4(11)XW5",
+											"product_id": "CSAFPID-107081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(11)XW2",
+										"product": {
+											"name": "12.4(11)XW2",
+											"product_id": "CSAFPID-107428"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XW"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XY4",
+										"product": {
+											"name": "12.4(15)XY4",
+											"product_id": "CSAFPID-103564"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XY5",
+										"product": {
+											"name": "12.4(15)XY5",
+											"product_id": "CSAFPID-103869"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XY1",
+										"product": {
+											"name": "12.4(15)XY1",
+											"product_id": "CSAFPID-105150"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XY",
+										"product": {
+											"name": "12.4(15)XY",
+											"product_id": "CSAFPID-105469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XY2",
+										"product": {
+											"name": "12.4(15)XY2",
+											"product_id": "CSAFPID-105930"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XY3",
+										"product": {
+											"name": "12.4(15)XY3",
+											"product_id": "CSAFPID-107014"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XZ",
+										"product": {
+											"name": "12.4(15)XZ",
+											"product_id": "CSAFPID-104125"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XZ2",
+										"product": {
+											"name": "12.4(15)XZ2",
+											"product_id": "CSAFPID-104422"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XZ1",
+										"product": {
+											"name": "12.4(15)XZ1",
+											"product_id": "CSAFPID-104734"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XZ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XL3",
+										"product": {
+											"name": "12.4(15)XL3",
+											"product_id": "CSAFPID-103604"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XL1",
+										"product": {
+											"name": "12.4(15)XL1",
+											"product_id": "CSAFPID-103962"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XL2",
+										"product": {
+											"name": "12.4(15)XL2",
+											"product_id": "CSAFPID-106819"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XL4",
+										"product": {
+											"name": "12.4(15)XL4",
+											"product_id": "CSAFPID-107573"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XL5",
+										"product": {
+											"name": "12.4(15)XL5",
+											"product_id": "CSAFPID-107659"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XL",
+										"product": {
+											"name": "12.4(15)XL",
+											"product_id": "CSAFPID-107775"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XL"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XM1",
+										"product": {
+											"name": "12.4(15)XM1",
+											"product_id": "CSAFPID-107218"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(15)XM2",
+										"product": {
+											"name": "12.4(15)XM2",
+											"product_id": "CSAFPID-107434"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XM "
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M1",
+										"product": {
+											"name": "15.0(1)M1",
+											"product_id": "CSAFPID-99645"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M5",
+										"product": {
+											"name": "15.0(1)M5",
+											"product_id": "CSAFPID-104157"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M4",
+										"product": {
+											"name": "15.0(1)M4",
+											"product_id": "CSAFPID-105005"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M3",
+										"product": {
+											"name": "15.0(1)M3",
+											"product_id": "CSAFPID-105547"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M2",
+										"product": {
+											"name": "15.0(1)M2",
+											"product_id": "CSAFPID-105802"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M6",
+										"product": {
+											"name": "15.0(1)M6",
+											"product_id": "CSAFPID-106044"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)M",
+										"product": {
+											"name": "15.0(1)M",
+											"product_id": "CSAFPID-106499"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.0M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.0(1)XA2",
+										"product": {
+											"name": "15.0(1)XA2",
+											"product_id": "CSAFPID-104165"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)XA4",
+										"product": {
+											"name": "15.0(1)XA4",
+											"product_id": "CSAFPID-105426"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)XA1",
+										"product": {
+											"name": "15.0(1)XA1",
+											"product_id": "CSAFPID-106082"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)XA3",
+										"product": {
+											"name": "15.0(1)XA3",
+											"product_id": "CSAFPID-106740"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)XA",
+										"product": {
+											"name": "15.0(1)XA",
+											"product_id": "CSAFPID-107048"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)XA5",
+										"product": {
+											"name": "15.0(1)XA5",
+											"product_id": "CSAFPID-107191"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.0XA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T",
+										"product": {
+											"name": "15.1(2)T",
+											"product_id": "CSAFPID-100214"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T1",
+										"product": {
+											"name": "15.1(1)T1",
+											"product_id": "CSAFPID-105178"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T0a",
+										"product": {
+											"name": "15.1(2)T0a",
+											"product_id": "CSAFPID-106078"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T3",
+										"product": {
+											"name": "15.1(1)T3",
+											"product_id": "CSAFPID-106205"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T3",
+										"product": {
+											"name": "15.1(2)T3",
+											"product_id": "CSAFPID-106246"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T2",
+										"product": {
+											"name": "15.1(1)T2",
+											"product_id": "CSAFPID-106988"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)T",
+										"product": {
+											"name": "15.1(3)T",
+											"product_id": "CSAFPID-107057"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T2a",
+										"product": {
+											"name": "15.1(2)T2a",
+											"product_id": "CSAFPID-107123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)T1",
+										"product": {
+											"name": "15.1(3)T1",
+											"product_id": "CSAFPID-107407"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T",
+										"product": {
+											"name": "15.1(1)T",
+											"product_id": "CSAFPID-107433"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T2",
+										"product": {
+											"name": "15.1(2)T2",
+											"product_id": "CSAFPID-107626"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T1",
+										"product": {
+											"name": "15.1(2)T1",
+											"product_id": "CSAFPID-107691"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB",
+										"product": {
+											"name": "15.1(1)XB",
+											"product_id": "CSAFPID-104546"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB3",
+										"product": {
+											"name": "15.1(1)XB3",
+											"product_id": "CSAFPID-105260"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB1",
+										"product": {
+											"name": "15.1(1)XB1",
+											"product_id": "CSAFPID-105906"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB2",
+										"product": {
+											"name": "15.1(1)XB2",
+											"product_id": "CSAFPID-106077"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)XB4",
+										"product": {
+											"name": "15.1(4)XB4",
+											"product_id": "CSAFPID-108462"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1XB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S2",
+										"product": {
+											"name": "15.0(1)S2",
+											"product_id": "CSAFPID-103751"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S1",
+										"product": {
+											"name": "15.0(1)S1",
+											"product_id": "CSAFPID-106152"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S",
+										"product": {
+											"name": "15.0(1)S",
+											"product_id": "CSAFPID-106712"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S4",
+										"product": {
+											"name": "15.0(1)S4",
+											"product_id": "CSAFPID-108998"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.0S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(20)MRB",
+										"product": {
+											"name": "12.4(20)MRB",
+											"product_id": "CSAFPID-104463"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(20)MRB1",
+										"product": {
+											"name": "12.4(20)MRB1",
+											"product_id": "CSAFPID-107841"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4MRB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)S",
+										"product": {
+											"name": "15.1(2)S",
+											"product_id": "CSAFPID-105018"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)S",
+										"product": {
+											"name": "15.1(1)S",
+											"product_id": "CSAFPID-107853"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)S1",
+										"product": {
+											"name": "15.1(1)S1",
+											"product_id": "CSAFPID-107854"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)S1",
+										"product": {
+											"name": "15.1(2)S1",
+											"product_id": "CSAFPID-108865"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(4)M",
+										"product": {
+											"name": "15.1(4)M",
+											"product_id": "CSAFPID-107856"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)M0a",
+										"product": {
+											"name": "15.1(4)M0a",
+											"product_id": "CSAFPID-108997"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(4)M0b",
+										"product": {
+											"name": "15.1(4)M0b",
+											"product_id": "CSAFPID-109851"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)GC",
+										"product": {
+											"name": "15.1(2)GC",
+											"product_id": "CSAFPID-105759"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)GC1",
+										"product": {
+											"name": "15.1(2)GC1",
+											"product_id": "CSAFPID-108649"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1GC"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(24)YS3",
+										"product": {
+											"name": "12.4(24)YS3",
+											"product_id": "CSAFPID-193317"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4YS"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2011-2072",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCto88686",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-100214",
+					"CSAFPID-103543",
+					"CSAFPID-103564",
+					"CSAFPID-103595",
+					"CSAFPID-103604",
+					"CSAFPID-103631",
+					"CSAFPID-103674",
+					"CSAFPID-103715",
+					"CSAFPID-103735",
+					"CSAFPID-103751",
+					"CSAFPID-103869",
+					"CSAFPID-103926",
+					"CSAFPID-103946",
+					"CSAFPID-103962",
+					"CSAFPID-104005",
+					"CSAFPID-104125",
+					"CSAFPID-104134",
+					"CSAFPID-104138",
+					"CSAFPID-104157",
+					"CSAFPID-104165",
+					"CSAFPID-104167",
+					"CSAFPID-104190",
+					"CSAFPID-104345",
+					"CSAFPID-104379",
+					"CSAFPID-104422",
+					"CSAFPID-104423",
+					"CSAFPID-104445",
+					"CSAFPID-104463",
+					"CSAFPID-104534",
+					"CSAFPID-104546",
+					"CSAFPID-104570",
+					"CSAFPID-104677",
+					"CSAFPID-104734",
+					"CSAFPID-104810",
+					"CSAFPID-104839",
+					"CSAFPID-104851",
+					"CSAFPID-104852",
+					"CSAFPID-104916",
+					"CSAFPID-105005",
+					"CSAFPID-105018",
+					"CSAFPID-105060",
+					"CSAFPID-105069",
+					"CSAFPID-105120",
+					"CSAFPID-105150",
+					"CSAFPID-105162",
+					"CSAFPID-105178",
+					"CSAFPID-105203",
+					"CSAFPID-105260",
+					"CSAFPID-105305",
+					"CSAFPID-105358",
+					"CSAFPID-105376",
+					"CSAFPID-105388",
+					"CSAFPID-105401",
+					"CSAFPID-105402",
+					"CSAFPID-105426",
+					"CSAFPID-105463",
+					"CSAFPID-105469",
+					"CSAFPID-105481",
+					"CSAFPID-105547",
+					"CSAFPID-105554",
+					"CSAFPID-105595",
+					"CSAFPID-105631",
+					"CSAFPID-105635",
+					"CSAFPID-105638",
+					"CSAFPID-105647",
+					"CSAFPID-105662",
+					"CSAFPID-105743",
+					"CSAFPID-105745",
+					"CSAFPID-105754",
+					"CSAFPID-105759",
+					"CSAFPID-105802",
+					"CSAFPID-105841",
+					"CSAFPID-105848",
+					"CSAFPID-105850",
+					"CSAFPID-105889",
+					"CSAFPID-105906",
+					"CSAFPID-105930",
+					"CSAFPID-105958",
+					"CSAFPID-106057",
+					"CSAFPID-106077",
+					"CSAFPID-106078",
+					"CSAFPID-106082",
+					"CSAFPID-106096",
+					"CSAFPID-106152",
+					"CSAFPID-106170",
+					"CSAFPID-106205",
+					"CSAFPID-106214",
+					"CSAFPID-106241",
+					"CSAFPID-106246",
+					"CSAFPID-106271",
+					"CSAFPID-106340",
+					"CSAFPID-106387",
+					"CSAFPID-106499",
+					"CSAFPID-106510",
+					"CSAFPID-106630",
+					"CSAFPID-106653",
+					"CSAFPID-106712",
+					"CSAFPID-106730",
+					"CSAFPID-106740",
+					"CSAFPID-106757",
+					"CSAFPID-106786",
+					"CSAFPID-106819",
+					"CSAFPID-106839",
+					"CSAFPID-106867",
+					"CSAFPID-106884",
+					"CSAFPID-106962",
+					"CSAFPID-106963",
+					"CSAFPID-106969",
+					"CSAFPID-106988",
+					"CSAFPID-107014",
+					"CSAFPID-107044",
+					"CSAFPID-107048",
+					"CSAFPID-107057",
+					"CSAFPID-107081",
+					"CSAFPID-107123",
+					"CSAFPID-107163",
+					"CSAFPID-107169",
+					"CSAFPID-107173",
+					"CSAFPID-107191",
+					"CSAFPID-107218",
+					"CSAFPID-107277",
+					"CSAFPID-107295",
+					"CSAFPID-107407",
+					"CSAFPID-107428",
+					"CSAFPID-107433",
+					"CSAFPID-107434",
+					"CSAFPID-107524",
+					"CSAFPID-107550",
+					"CSAFPID-107573",
+					"CSAFPID-107626",
+					"CSAFPID-107659",
+					"CSAFPID-107691",
+					"CSAFPID-107775",
+					"CSAFPID-107841",
+					"CSAFPID-107853",
+					"CSAFPID-107854",
+					"CSAFPID-107856",
+					"CSAFPID-108462",
+					"CSAFPID-108649",
+					"CSAFPID-108865",
+					"CSAFPID-108997",
+					"CSAFPID-108998",
+					"CSAFPID-109851",
+					"CSAFPID-193317",
+					"CSAFPID-230964",
+					"CSAFPID-59299",
+					"CSAFPID-65536",
+					"CSAFPID-65549",
+					"CSAFPID-65557",
+					"CSAFPID-65563",
+					"CSAFPID-66054",
+					"CSAFPID-66055",
+					"CSAFPID-66056",
+					"CSAFPID-66058",
+					"CSAFPID-69756",
+					"CSAFPID-69764",
+					"CSAFPID-81746",
+					"CSAFPID-83374",
+					"CSAFPID-92384",
+					"CSAFPID-99645",
+					"CSAFPID-99647"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip"
+				}
+			],
+			"release_date": "2011-11-28T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised\r\nto apply mitigation techniques to help limit exposure to the\r\nvulnerabilities. Mitigation consists of allowing only legitimate devices\r\nto connect to affected devices. To increase effectiveness, the\r\nmitigation must be coupled with anti-spoofing measures on the network\r\nedge. This action is required because SIP can use UDP as the transport\r\nprotocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices\r\nwithin the network are available in the companion document \"Cisco\r\nApplied Mitigation Bulletin:Identifying and Mitigating Exploitation of\r\nthe Multiple Vulnerabilities in Cisco Voice Products\", which is\r\navailable at the following location: http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice\"].\r\n\r\nDisabling SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the\r\nsimplest and most effective workaround is to disable SIP processing on\r\nthe device. Some versions of Cisco IOS Software allow administrators to\r\ndisable SIP with the following commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\nWarning: When\r\napplying this workaround to devices that are processing Media Gateway\r\nControl Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these\r\ncircumstances, this workaround should be implemented during a\r\nmaintenance window when active calls can be briefly stopped.\r\n\r\nThe show udp connections, show tcp brief all, and show processes | include SIP commands can be used to confirm that the SIP UDP and TCP ports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, when SIP is disabled the output from the show ip sockets\r\ncommand may still show the SIP ports open, but sending traffic to them\r\nwill cause the SIP process to emit the following message:\r\n\r\n\r\n*Jun 2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services, it is possible\r\nto use Control Plane Policing (CoPP) to block SIP traffic to the device\r\nfrom untrusted sources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T,\r\n12.4, and 12.4T support the CoPP feature. CoPP may be configured on a\r\ndevice to protect the management and control planes to minimize the risk\r\nand effectiveness of direct infrastructure attacks by explicitly\r\npermitting only authorized traffic sent to infrastructure devices in\r\naccordance with existing security policies and configurations. The\r\nfollowing example can be adapted to specific network configurations:\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature): if the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\nNote: Because SIP can use UDP as a transport protocol, it is\r\npossible to spoof the source address of an IP packet, which may bypass\r\naccess control lists that permit communication to these ports from\r\ntrusted IP addresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs)\r\nthat match the potential exploit packets with the \"permit\" action result\r\nin these packets being discarded by the policy-map \"drop\" function,\r\nwhile packets that match the \"deny\" action (not shown) are not affected\r\nby the policy-map drop function. Additional information on the\r\nconfiguration and use of the CoPP feature can be found at http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103543",
+						"CSAFPID-103564",
+						"CSAFPID-103595",
+						"CSAFPID-103604",
+						"CSAFPID-103631",
+						"CSAFPID-103674",
+						"CSAFPID-103715",
+						"CSAFPID-103735",
+						"CSAFPID-103751",
+						"CSAFPID-103869",
+						"CSAFPID-103926",
+						"CSAFPID-103946",
+						"CSAFPID-103962",
+						"CSAFPID-104005",
+						"CSAFPID-104125",
+						"CSAFPID-104134",
+						"CSAFPID-104138",
+						"CSAFPID-104157",
+						"CSAFPID-104165",
+						"CSAFPID-104167",
+						"CSAFPID-104190",
+						"CSAFPID-104345",
+						"CSAFPID-104379",
+						"CSAFPID-104422",
+						"CSAFPID-104423",
+						"CSAFPID-104445",
+						"CSAFPID-104463",
+						"CSAFPID-104534",
+						"CSAFPID-104546",
+						"CSAFPID-104570",
+						"CSAFPID-104677",
+						"CSAFPID-104734",
+						"CSAFPID-104810",
+						"CSAFPID-104839",
+						"CSAFPID-104851",
+						"CSAFPID-104852",
+						"CSAFPID-104916",
+						"CSAFPID-105005",
+						"CSAFPID-105018",
+						"CSAFPID-105060",
+						"CSAFPID-105069",
+						"CSAFPID-105120",
+						"CSAFPID-105150",
+						"CSAFPID-105162",
+						"CSAFPID-105178",
+						"CSAFPID-105203",
+						"CSAFPID-105260",
+						"CSAFPID-105305",
+						"CSAFPID-105358",
+						"CSAFPID-105376",
+						"CSAFPID-105388",
+						"CSAFPID-105401",
+						"CSAFPID-105402",
+						"CSAFPID-105426",
+						"CSAFPID-105463",
+						"CSAFPID-105469",
+						"CSAFPID-105481",
+						"CSAFPID-105547",
+						"CSAFPID-105554",
+						"CSAFPID-105595",
+						"CSAFPID-105631",
+						"CSAFPID-105635",
+						"CSAFPID-105638",
+						"CSAFPID-105647",
+						"CSAFPID-105662",
+						"CSAFPID-105743",
+						"CSAFPID-105745",
+						"CSAFPID-105754",
+						"CSAFPID-105759",
+						"CSAFPID-105802",
+						"CSAFPID-105841",
+						"CSAFPID-105848",
+						"CSAFPID-105850",
+						"CSAFPID-105889",
+						"CSAFPID-105906",
+						"CSAFPID-105930",
+						"CSAFPID-105958",
+						"CSAFPID-106057",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106082",
+						"CSAFPID-106096",
+						"CSAFPID-106152",
+						"CSAFPID-106170",
+						"CSAFPID-106205",
+						"CSAFPID-106214",
+						"CSAFPID-106241",
+						"CSAFPID-106246",
+						"CSAFPID-106271",
+						"CSAFPID-106340",
+						"CSAFPID-106387",
+						"CSAFPID-106499",
+						"CSAFPID-106510",
+						"CSAFPID-106630",
+						"CSAFPID-106653",
+						"CSAFPID-106712",
+						"CSAFPID-106730",
+						"CSAFPID-106740",
+						"CSAFPID-106757",
+						"CSAFPID-106786",
+						"CSAFPID-106819",
+						"CSAFPID-106839",
+						"CSAFPID-106867",
+						"CSAFPID-106884",
+						"CSAFPID-106962",
+						"CSAFPID-106963",
+						"CSAFPID-106969",
+						"CSAFPID-106988",
+						"CSAFPID-107014",
+						"CSAFPID-107044",
+						"CSAFPID-107048",
+						"CSAFPID-107057",
+						"CSAFPID-107081",
+						"CSAFPID-107123",
+						"CSAFPID-107163",
+						"CSAFPID-107169",
+						"CSAFPID-107173",
+						"CSAFPID-107191",
+						"CSAFPID-107218",
+						"CSAFPID-107277",
+						"CSAFPID-107295",
+						"CSAFPID-107407",
+						"CSAFPID-107428",
+						"CSAFPID-107433",
+						"CSAFPID-107434",
+						"CSAFPID-107524",
+						"CSAFPID-107550",
+						"CSAFPID-107573",
+						"CSAFPID-107626",
+						"CSAFPID-107659",
+						"CSAFPID-107691",
+						"CSAFPID-107775",
+						"CSAFPID-107841",
+						"CSAFPID-107853",
+						"CSAFPID-107854",
+						"CSAFPID-107856",
+						"CSAFPID-108462",
+						"CSAFPID-108649",
+						"CSAFPID-108865",
+						"CSAFPID-108997",
+						"CSAFPID-108998",
+						"CSAFPID-109851",
+						"CSAFPID-193317",
+						"CSAFPID-230964",
+						"CSAFPID-59299",
+						"CSAFPID-65536",
+						"CSAFPID-65549",
+						"CSAFPID-65557",
+						"CSAFPID-65563",
+						"CSAFPID-66054",
+						"CSAFPID-66055",
+						"CSAFPID-66056",
+						"CSAFPID-66058",
+						"CSAFPID-69756",
+						"CSAFPID-69764",
+						"CSAFPID-81746",
+						"CSAFPID-83374",
+						"CSAFPID-92384",
+						"CSAFPID-99645",
+						"CSAFPID-99647"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103543",
+						"CSAFPID-103564",
+						"CSAFPID-103595",
+						"CSAFPID-103604",
+						"CSAFPID-103631",
+						"CSAFPID-103674",
+						"CSAFPID-103715",
+						"CSAFPID-103735",
+						"CSAFPID-103751",
+						"CSAFPID-103869",
+						"CSAFPID-103926",
+						"CSAFPID-103946",
+						"CSAFPID-103962",
+						"CSAFPID-104005",
+						"CSAFPID-104125",
+						"CSAFPID-104134",
+						"CSAFPID-104138",
+						"CSAFPID-104157",
+						"CSAFPID-104165",
+						"CSAFPID-104167",
+						"CSAFPID-104190",
+						"CSAFPID-104345",
+						"CSAFPID-104379",
+						"CSAFPID-104422",
+						"CSAFPID-104423",
+						"CSAFPID-104445",
+						"CSAFPID-104463",
+						"CSAFPID-104534",
+						"CSAFPID-104546",
+						"CSAFPID-104570",
+						"CSAFPID-104677",
+						"CSAFPID-104734",
+						"CSAFPID-104810",
+						"CSAFPID-104839",
+						"CSAFPID-104851",
+						"CSAFPID-104852",
+						"CSAFPID-104916",
+						"CSAFPID-105005",
+						"CSAFPID-105018",
+						"CSAFPID-105060",
+						"CSAFPID-105069",
+						"CSAFPID-105120",
+						"CSAFPID-105150",
+						"CSAFPID-105162",
+						"CSAFPID-105178",
+						"CSAFPID-105203",
+						"CSAFPID-105260",
+						"CSAFPID-105305",
+						"CSAFPID-105358",
+						"CSAFPID-105376",
+						"CSAFPID-105388",
+						"CSAFPID-105401",
+						"CSAFPID-105402",
+						"CSAFPID-105426",
+						"CSAFPID-105463",
+						"CSAFPID-105469",
+						"CSAFPID-105481",
+						"CSAFPID-105547",
+						"CSAFPID-105554",
+						"CSAFPID-105595",
+						"CSAFPID-105631",
+						"CSAFPID-105635",
+						"CSAFPID-105638",
+						"CSAFPID-105647",
+						"CSAFPID-105662",
+						"CSAFPID-105743",
+						"CSAFPID-105745",
+						"CSAFPID-105754",
+						"CSAFPID-105759",
+						"CSAFPID-105802",
+						"CSAFPID-105841",
+						"CSAFPID-105848",
+						"CSAFPID-105850",
+						"CSAFPID-105889",
+						"CSAFPID-105906",
+						"CSAFPID-105930",
+						"CSAFPID-105958",
+						"CSAFPID-106057",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106082",
+						"CSAFPID-106096",
+						"CSAFPID-106152",
+						"CSAFPID-106170",
+						"CSAFPID-106205",
+						"CSAFPID-106214",
+						"CSAFPID-106241",
+						"CSAFPID-106246",
+						"CSAFPID-106271",
+						"CSAFPID-106340",
+						"CSAFPID-106387",
+						"CSAFPID-106499",
+						"CSAFPID-106510",
+						"CSAFPID-106630",
+						"CSAFPID-106653",
+						"CSAFPID-106712",
+						"CSAFPID-106730",
+						"CSAFPID-106740",
+						"CSAFPID-106757",
+						"CSAFPID-106786",
+						"CSAFPID-106819",
+						"CSAFPID-106839",
+						"CSAFPID-106867",
+						"CSAFPID-106884",
+						"CSAFPID-106962",
+						"CSAFPID-106963",
+						"CSAFPID-106969",
+						"CSAFPID-106988",
+						"CSAFPID-107014",
+						"CSAFPID-107044",
+						"CSAFPID-107048",
+						"CSAFPID-107057",
+						"CSAFPID-107081",
+						"CSAFPID-107123",
+						"CSAFPID-107163",
+						"CSAFPID-107169",
+						"CSAFPID-107173",
+						"CSAFPID-107191",
+						"CSAFPID-107218",
+						"CSAFPID-107277",
+						"CSAFPID-107295",
+						"CSAFPID-107407",
+						"CSAFPID-107428",
+						"CSAFPID-107433",
+						"CSAFPID-107434",
+						"CSAFPID-107524",
+						"CSAFPID-107550",
+						"CSAFPID-107573",
+						"CSAFPID-107626",
+						"CSAFPID-107659",
+						"CSAFPID-107691",
+						"CSAFPID-107775",
+						"CSAFPID-107841",
+						"CSAFPID-107853",
+						"CSAFPID-107854",
+						"CSAFPID-107856",
+						"CSAFPID-108462",
+						"CSAFPID-108649",
+						"CSAFPID-108865",
+						"CSAFPID-108997",
+						"CSAFPID-108998",
+						"CSAFPID-109851",
+						"CSAFPID-193317",
+						"CSAFPID-230964",
+						"CSAFPID-59299",
+						"CSAFPID-65536",
+						"CSAFPID-65549",
+						"CSAFPID-65557",
+						"CSAFPID-65563",
+						"CSAFPID-66054",
+						"CSAFPID-66055",
+						"CSAFPID-66056",
+						"CSAFPID-66058",
+						"CSAFPID-69756",
+						"CSAFPID-69764",
+						"CSAFPID-81746",
+						"CSAFPID-83374",
+						"CSAFPID-92384",
+						"CSAFPID-99645",
+						"CSAFPID-99647"
+					]
+				}
+			],
+			"title": "Crafted SIP Message May Cause Memory Leak or Device Reload"
+		},
+		{
+			"cve": "CVE-2011-3275",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCti48504",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-100214",
+					"CSAFPID-103543",
+					"CSAFPID-103595",
+					"CSAFPID-103751",
+					"CSAFPID-104125",
+					"CSAFPID-104157",
+					"CSAFPID-104165",
+					"CSAFPID-104167",
+					"CSAFPID-104379",
+					"CSAFPID-104422",
+					"CSAFPID-104463",
+					"CSAFPID-104546",
+					"CSAFPID-104570",
+					"CSAFPID-104734",
+					"CSAFPID-104810",
+					"CSAFPID-104852",
+					"CSAFPID-105005",
+					"CSAFPID-105069",
+					"CSAFPID-105178",
+					"CSAFPID-105260",
+					"CSAFPID-105388",
+					"CSAFPID-105401",
+					"CSAFPID-105426",
+					"CSAFPID-105547",
+					"CSAFPID-105631",
+					"CSAFPID-105638",
+					"CSAFPID-105745",
+					"CSAFPID-105759",
+					"CSAFPID-105802",
+					"CSAFPID-105848",
+					"CSAFPID-105850",
+					"CSAFPID-105889",
+					"CSAFPID-105906",
+					"CSAFPID-106044",
+					"CSAFPID-106077",
+					"CSAFPID-106078",
+					"CSAFPID-106082",
+					"CSAFPID-106152",
+					"CSAFPID-106205",
+					"CSAFPID-106246",
+					"CSAFPID-106271",
+					"CSAFPID-106499",
+					"CSAFPID-106510",
+					"CSAFPID-106712",
+					"CSAFPID-106740",
+					"CSAFPID-106988",
+					"CSAFPID-107048",
+					"CSAFPID-107057",
+					"CSAFPID-107123",
+					"CSAFPID-107191",
+					"CSAFPID-107407",
+					"CSAFPID-107433",
+					"CSAFPID-107524",
+					"CSAFPID-107550",
+					"CSAFPID-107626",
+					"CSAFPID-107691",
+					"CSAFPID-107841",
+					"CSAFPID-107853",
+					"CSAFPID-108649",
+					"CSAFPID-193317",
+					"CSAFPID-230964",
+					"CSAFPID-81746",
+					"CSAFPID-92384",
+					"CSAFPID-99645",
+					"CSAFPID-99647"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip"
+				}
+			],
+			"release_date": "2011-11-28T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised\r\nto apply mitigation techniques to help limit exposure to the\r\nvulnerabilities. Mitigation consists of allowing only legitimate devices\r\nto connect to affected devices. To increase effectiveness, the\r\nmitigation must be coupled with anti-spoofing measures on the network\r\nedge. This action is required because SIP can use UDP as the transport\r\nprotocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices\r\nwithin the network are available in the companion document \"Cisco\r\nApplied Mitigation Bulletin:Identifying and Mitigating Exploitation of\r\nthe Multiple Vulnerabilities in Cisco Voice Products\", which is\r\navailable at the following location: http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice\"].\r\n\r\nDisabling SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the\r\nsimplest and most effective workaround is to disable SIP processing on\r\nthe device. Some versions of Cisco IOS Software allow administrators to\r\ndisable SIP with the following commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\nWarning: When\r\napplying this workaround to devices that are processing Media Gateway\r\nControl Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these\r\ncircumstances, this workaround should be implemented during a\r\nmaintenance window when active calls can be briefly stopped.\r\n\r\nThe show udp connections, show tcp brief all, and show processes | include SIP commands can be used to confirm that the SIP UDP and TCP ports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, when SIP is disabled the output from the show ip sockets\r\ncommand may still show the SIP ports open, but sending traffic to them\r\nwill cause the SIP process to emit the following message:\r\n\r\n\r\n*Jun 2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services, it is possible\r\nto use Control Plane Policing (CoPP) to block SIP traffic to the device\r\nfrom untrusted sources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T,\r\n12.4, and 12.4T support the CoPP feature. CoPP may be configured on a\r\ndevice to protect the management and control planes to minimize the risk\r\nand effectiveness of direct infrastructure attacks by explicitly\r\npermitting only authorized traffic sent to infrastructure devices in\r\naccordance with existing security policies and configurations. The\r\nfollowing example can be adapted to specific network configurations:\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature): if the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\nNote: Because SIP can use UDP as a transport protocol, it is\r\npossible to spoof the source address of an IP packet, which may bypass\r\naccess control lists that permit communication to these ports from\r\ntrusted IP addresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs)\r\nthat match the potential exploit packets with the \"permit\" action result\r\nin these packets being discarded by the policy-map \"drop\" function,\r\nwhile packets that match the \"deny\" action (not shown) are not affected\r\nby the policy-map drop function. Additional information on the\r\nconfiguration and use of the CoPP feature can be found at http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103543",
+						"CSAFPID-103595",
+						"CSAFPID-103751",
+						"CSAFPID-104125",
+						"CSAFPID-104157",
+						"CSAFPID-104165",
+						"CSAFPID-104167",
+						"CSAFPID-104379",
+						"CSAFPID-104422",
+						"CSAFPID-104463",
+						"CSAFPID-104546",
+						"CSAFPID-104570",
+						"CSAFPID-104734",
+						"CSAFPID-104810",
+						"CSAFPID-104852",
+						"CSAFPID-105005",
+						"CSAFPID-105069",
+						"CSAFPID-105178",
+						"CSAFPID-105260",
+						"CSAFPID-105388",
+						"CSAFPID-105401",
+						"CSAFPID-105426",
+						"CSAFPID-105547",
+						"CSAFPID-105631",
+						"CSAFPID-105638",
+						"CSAFPID-105745",
+						"CSAFPID-105759",
+						"CSAFPID-105802",
+						"CSAFPID-105848",
+						"CSAFPID-105850",
+						"CSAFPID-105889",
+						"CSAFPID-105906",
+						"CSAFPID-106044",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106082",
+						"CSAFPID-106152",
+						"CSAFPID-106205",
+						"CSAFPID-106246",
+						"CSAFPID-106271",
+						"CSAFPID-106499",
+						"CSAFPID-106510",
+						"CSAFPID-106712",
+						"CSAFPID-106740",
+						"CSAFPID-106988",
+						"CSAFPID-107048",
+						"CSAFPID-107057",
+						"CSAFPID-107123",
+						"CSAFPID-107191",
+						"CSAFPID-107407",
+						"CSAFPID-107433",
+						"CSAFPID-107524",
+						"CSAFPID-107550",
+						"CSAFPID-107626",
+						"CSAFPID-107691",
+						"CSAFPID-107841",
+						"CSAFPID-107853",
+						"CSAFPID-108649",
+						"CSAFPID-193317",
+						"CSAFPID-230964",
+						"CSAFPID-81746",
+						"CSAFPID-92384",
+						"CSAFPID-99645",
+						"CSAFPID-99647"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103543",
+						"CSAFPID-103595",
+						"CSAFPID-103751",
+						"CSAFPID-104125",
+						"CSAFPID-104157",
+						"CSAFPID-104165",
+						"CSAFPID-104167",
+						"CSAFPID-104379",
+						"CSAFPID-104422",
+						"CSAFPID-104463",
+						"CSAFPID-104546",
+						"CSAFPID-104570",
+						"CSAFPID-104734",
+						"CSAFPID-104810",
+						"CSAFPID-104852",
+						"CSAFPID-105005",
+						"CSAFPID-105069",
+						"CSAFPID-105178",
+						"CSAFPID-105260",
+						"CSAFPID-105388",
+						"CSAFPID-105401",
+						"CSAFPID-105426",
+						"CSAFPID-105547",
+						"CSAFPID-105631",
+						"CSAFPID-105638",
+						"CSAFPID-105745",
+						"CSAFPID-105759",
+						"CSAFPID-105802",
+						"CSAFPID-105848",
+						"CSAFPID-105850",
+						"CSAFPID-105889",
+						"CSAFPID-105906",
+						"CSAFPID-106044",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106082",
+						"CSAFPID-106152",
+						"CSAFPID-106205",
+						"CSAFPID-106246",
+						"CSAFPID-106271",
+						"CSAFPID-106499",
+						"CSAFPID-106510",
+						"CSAFPID-106712",
+						"CSAFPID-106740",
+						"CSAFPID-106988",
+						"CSAFPID-107048",
+						"CSAFPID-107057",
+						"CSAFPID-107123",
+						"CSAFPID-107191",
+						"CSAFPID-107407",
+						"CSAFPID-107433",
+						"CSAFPID-107524",
+						"CSAFPID-107550",
+						"CSAFPID-107626",
+						"CSAFPID-107691",
+						"CSAFPID-107841",
+						"CSAFPID-107853",
+						"CSAFPID-108649",
+						"CSAFPID-193317",
+						"CSAFPID-230964",
+						"CSAFPID-81746",
+						"CSAFPID-92384",
+						"CSAFPID-99645",
+						"CSAFPID-99647"
+					]
+				}
+			],
+			"title": "SIP Memory Leak Vulnerability"
+		},
+		{
+			"cve": "CVE-2011-0939",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCth03022",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-100214",
+					"CSAFPID-103543",
+					"CSAFPID-103564",
+					"CSAFPID-103595",
+					"CSAFPID-103604",
+					"CSAFPID-103631",
+					"CSAFPID-103674",
+					"CSAFPID-103715",
+					"CSAFPID-103735",
+					"CSAFPID-103751",
+					"CSAFPID-103869",
+					"CSAFPID-103926",
+					"CSAFPID-103946",
+					"CSAFPID-103962",
+					"CSAFPID-104125",
+					"CSAFPID-104134",
+					"CSAFPID-104138",
+					"CSAFPID-104165",
+					"CSAFPID-104190",
+					"CSAFPID-104345",
+					"CSAFPID-104379",
+					"CSAFPID-104422",
+					"CSAFPID-104423",
+					"CSAFPID-104445",
+					"CSAFPID-104463",
+					"CSAFPID-104534",
+					"CSAFPID-104546",
+					"CSAFPID-104570",
+					"CSAFPID-104677",
+					"CSAFPID-104734",
+					"CSAFPID-104810",
+					"CSAFPID-104839",
+					"CSAFPID-104851",
+					"CSAFPID-104852",
+					"CSAFPID-104916",
+					"CSAFPID-105005",
+					"CSAFPID-105060",
+					"CSAFPID-105069",
+					"CSAFPID-105120",
+					"CSAFPID-105150",
+					"CSAFPID-105162",
+					"CSAFPID-105178",
+					"CSAFPID-105203",
+					"CSAFPID-105260",
+					"CSAFPID-105305",
+					"CSAFPID-105358",
+					"CSAFPID-105376",
+					"CSAFPID-105388",
+					"CSAFPID-105401",
+					"CSAFPID-105402",
+					"CSAFPID-105426",
+					"CSAFPID-105463",
+					"CSAFPID-105469",
+					"CSAFPID-105481",
+					"CSAFPID-105547",
+					"CSAFPID-105554",
+					"CSAFPID-105595",
+					"CSAFPID-105631",
+					"CSAFPID-105635",
+					"CSAFPID-105638",
+					"CSAFPID-105647",
+					"CSAFPID-105662",
+					"CSAFPID-105743",
+					"CSAFPID-105745",
+					"CSAFPID-105754",
+					"CSAFPID-105802",
+					"CSAFPID-105841",
+					"CSAFPID-105848",
+					"CSAFPID-105889",
+					"CSAFPID-105906",
+					"CSAFPID-105930",
+					"CSAFPID-105958",
+					"CSAFPID-106057",
+					"CSAFPID-106077",
+					"CSAFPID-106078",
+					"CSAFPID-106082",
+					"CSAFPID-106096",
+					"CSAFPID-106152",
+					"CSAFPID-106170",
+					"CSAFPID-106214",
+					"CSAFPID-106241",
+					"CSAFPID-106271",
+					"CSAFPID-106340",
+					"CSAFPID-106387",
+					"CSAFPID-106499",
+					"CSAFPID-106510",
+					"CSAFPID-106630",
+					"CSAFPID-106653",
+					"CSAFPID-106712",
+					"CSAFPID-106730",
+					"CSAFPID-106740",
+					"CSAFPID-106757",
+					"CSAFPID-106786",
+					"CSAFPID-106819",
+					"CSAFPID-106839",
+					"CSAFPID-106867",
+					"CSAFPID-106884",
+					"CSAFPID-106962",
+					"CSAFPID-106963",
+					"CSAFPID-106969",
+					"CSAFPID-106988",
+					"CSAFPID-107014",
+					"CSAFPID-107044",
+					"CSAFPID-107048",
+					"CSAFPID-107081",
+					"CSAFPID-107163",
+					"CSAFPID-107169",
+					"CSAFPID-107173",
+					"CSAFPID-107218",
+					"CSAFPID-107277",
+					"CSAFPID-107295",
+					"CSAFPID-107428",
+					"CSAFPID-107433",
+					"CSAFPID-107434",
+					"CSAFPID-107524",
+					"CSAFPID-107550",
+					"CSAFPID-107573",
+					"CSAFPID-107659",
+					"CSAFPID-107691",
+					"CSAFPID-107775",
+					"CSAFPID-107853",
+					"CSAFPID-193317",
+					"CSAFPID-230964",
+					"CSAFPID-59299",
+					"CSAFPID-65536",
+					"CSAFPID-65549",
+					"CSAFPID-65557",
+					"CSAFPID-65563",
+					"CSAFPID-66054",
+					"CSAFPID-66055",
+					"CSAFPID-66056",
+					"CSAFPID-66058",
+					"CSAFPID-69756",
+					"CSAFPID-69764",
+					"CSAFPID-81746",
+					"CSAFPID-83374",
+					"CSAFPID-92384",
+					"CSAFPID-99645",
+					"CSAFPID-99647"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20110928-sip"
+				}
+			],
+			"release_date": "2011-11-28T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised\r\nto apply mitigation techniques to help limit exposure to the\r\nvulnerabilities. Mitigation consists of allowing only legitimate devices\r\nto connect to affected devices. To increase effectiveness, the\r\nmitigation must be coupled with anti-spoofing measures on the network\r\nedge. This action is required because SIP can use UDP as the transport\r\nprotocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices\r\nwithin the network are available in the companion document \"Cisco\r\nApplied Mitigation Bulletin:Identifying and Mitigating Exploitation of\r\nthe Multiple Vulnerabilities in Cisco Voice Products\", which is\r\navailable at the following location: http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20110928-voice\"].\r\n\r\nDisabling SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the\r\nsimplest and most effective workaround is to disable SIP processing on\r\nthe device. Some versions of Cisco IOS Software allow administrators to\r\ndisable SIP with the following commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\nWarning: When\r\napplying this workaround to devices that are processing Media Gateway\r\nControl Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these\r\ncircumstances, this workaround should be implemented during a\r\nmaintenance window when active calls can be briefly stopped.\r\n\r\nThe show udp connections, show tcp brief all, and show processes | include SIP commands can be used to confirm that the SIP UDP and TCP ports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, when SIP is disabled the output from the show ip sockets\r\ncommand may still show the SIP ports open, but sending traffic to them\r\nwill cause the SIP process to emit the following message:\r\n\r\n\r\n*Jun 2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services, it is possible\r\nto use Control Plane Policing (CoPP) to block SIP traffic to the device\r\nfrom untrusted sources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T,\r\n12.4, and 12.4T support the CoPP feature. CoPP may be configured on a\r\ndevice to protect the management and control planes to minimize the risk\r\nand effectiveness of direct infrastructure attacks by explicitly\r\npermitting only authorized traffic sent to infrastructure devices in\r\naccordance with existing security policies and configurations. The\r\nfollowing example can be adapted to specific network configurations:\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature): if the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\nNote: Because SIP can use UDP as a transport protocol, it is\r\npossible to spoof the source address of an IP packet, which may bypass\r\naccess control lists that permit communication to these ports from\r\ntrusted IP addresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs)\r\nthat match the potential exploit packets with the \"permit\" action result\r\nin these packets being discarded by the policy-map \"drop\" function,\r\nwhile packets that match the \"deny\" action (not shown) are not affected\r\nby the policy-map drop function. Additional information on the\r\nconfiguration and use of the CoPP feature can be found at http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103543",
+						"CSAFPID-103564",
+						"CSAFPID-103595",
+						"CSAFPID-103604",
+						"CSAFPID-103631",
+						"CSAFPID-103674",
+						"CSAFPID-103715",
+						"CSAFPID-103735",
+						"CSAFPID-103751",
+						"CSAFPID-103869",
+						"CSAFPID-103926",
+						"CSAFPID-103946",
+						"CSAFPID-103962",
+						"CSAFPID-104125",
+						"CSAFPID-104134",
+						"CSAFPID-104138",
+						"CSAFPID-104165",
+						"CSAFPID-104190",
+						"CSAFPID-104345",
+						"CSAFPID-104379",
+						"CSAFPID-104422",
+						"CSAFPID-104423",
+						"CSAFPID-104445",
+						"CSAFPID-104463",
+						"CSAFPID-104534",
+						"CSAFPID-104546",
+						"CSAFPID-104570",
+						"CSAFPID-104677",
+						"CSAFPID-104734",
+						"CSAFPID-104810",
+						"CSAFPID-104839",
+						"CSAFPID-104851",
+						"CSAFPID-104852",
+						"CSAFPID-104916",
+						"CSAFPID-105005",
+						"CSAFPID-105060",
+						"CSAFPID-105069",
+						"CSAFPID-105120",
+						"CSAFPID-105150",
+						"CSAFPID-105162",
+						"CSAFPID-105178",
+						"CSAFPID-105203",
+						"CSAFPID-105260",
+						"CSAFPID-105305",
+						"CSAFPID-105358",
+						"CSAFPID-105376",
+						"CSAFPID-105388",
+						"CSAFPID-105401",
+						"CSAFPID-105402",
+						"CSAFPID-105426",
+						"CSAFPID-105463",
+						"CSAFPID-105469",
+						"CSAFPID-105481",
+						"CSAFPID-105547",
+						"CSAFPID-105554",
+						"CSAFPID-105595",
+						"CSAFPID-105631",
+						"CSAFPID-105635",
+						"CSAFPID-105638",
+						"CSAFPID-105647",
+						"CSAFPID-105662",
+						"CSAFPID-105743",
+						"CSAFPID-105745",
+						"CSAFPID-105754",
+						"CSAFPID-105802",
+						"CSAFPID-105841",
+						"CSAFPID-105848",
+						"CSAFPID-105889",
+						"CSAFPID-105906",
+						"CSAFPID-105930",
+						"CSAFPID-105958",
+						"CSAFPID-106057",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106082",
+						"CSAFPID-106096",
+						"CSAFPID-106152",
+						"CSAFPID-106170",
+						"CSAFPID-106214",
+						"CSAFPID-106241",
+						"CSAFPID-106271",
+						"CSAFPID-106340",
+						"CSAFPID-106387",
+						"CSAFPID-106499",
+						"CSAFPID-106510",
+						"CSAFPID-106630",
+						"CSAFPID-106653",
+						"CSAFPID-106712",
+						"CSAFPID-106730",
+						"CSAFPID-106740",
+						"CSAFPID-106757",
+						"CSAFPID-106786",
+						"CSAFPID-106819",
+						"CSAFPID-106839",
+						"CSAFPID-106867",
+						"CSAFPID-106884",
+						"CSAFPID-106962",
+						"CSAFPID-106963",
+						"CSAFPID-106969",
+						"CSAFPID-106988",
+						"CSAFPID-107014",
+						"CSAFPID-107044",
+						"CSAFPID-107048",
+						"CSAFPID-107081",
+						"CSAFPID-107163",
+						"CSAFPID-107169",
+						"CSAFPID-107173",
+						"CSAFPID-107218",
+						"CSAFPID-107277",
+						"CSAFPID-107295",
+						"CSAFPID-107428",
+						"CSAFPID-107433",
+						"CSAFPID-107434",
+						"CSAFPID-107524",
+						"CSAFPID-107550",
+						"CSAFPID-107573",
+						"CSAFPID-107659",
+						"CSAFPID-107691",
+						"CSAFPID-107775",
+						"CSAFPID-107853",
+						"CSAFPID-193317",
+						"CSAFPID-230964",
+						"CSAFPID-59299",
+						"CSAFPID-65536",
+						"CSAFPID-65549",
+						"CSAFPID-65557",
+						"CSAFPID-65563",
+						"CSAFPID-66054",
+						"CSAFPID-66055",
+						"CSAFPID-66056",
+						"CSAFPID-66058",
+						"CSAFPID-69756",
+						"CSAFPID-69764",
+						"CSAFPID-81746",
+						"CSAFPID-83374",
+						"CSAFPID-92384",
+						"CSAFPID-99645",
+						"CSAFPID-99647"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103543",
+						"CSAFPID-103564",
+						"CSAFPID-103595",
+						"CSAFPID-103604",
+						"CSAFPID-103631",
+						"CSAFPID-103674",
+						"CSAFPID-103715",
+						"CSAFPID-103735",
+						"CSAFPID-103751",
+						"CSAFPID-103869",
+						"CSAFPID-103926",
+						"CSAFPID-103946",
+						"CSAFPID-103962",
+						"CSAFPID-104125",
+						"CSAFPID-104134",
+						"CSAFPID-104138",
+						"CSAFPID-104165",
+						"CSAFPID-104190",
+						"CSAFPID-104345",
+						"CSAFPID-104379",
+						"CSAFPID-104422",
+						"CSAFPID-104423",
+						"CSAFPID-104445",
+						"CSAFPID-104463",
+						"CSAFPID-104534",
+						"CSAFPID-104546",
+						"CSAFPID-104570",
+						"CSAFPID-104677",
+						"CSAFPID-104734",
+						"CSAFPID-104810",
+						"CSAFPID-104839",
+						"CSAFPID-104851",
+						"CSAFPID-104852",
+						"CSAFPID-104916",
+						"CSAFPID-105005",
+						"CSAFPID-105060",
+						"CSAFPID-105069",
+						"CSAFPID-105120",
+						"CSAFPID-105150",
+						"CSAFPID-105162",
+						"CSAFPID-105178",
+						"CSAFPID-105203",
+						"CSAFPID-105260",
+						"CSAFPID-105305",
+						"CSAFPID-105358",
+						"CSAFPID-105376",
+						"CSAFPID-105388",
+						"CSAFPID-105401",
+						"CSAFPID-105402",
+						"CSAFPID-105426",
+						"CSAFPID-105463",
+						"CSAFPID-105469",
+						"CSAFPID-105481",
+						"CSAFPID-105547",
+						"CSAFPID-105554",
+						"CSAFPID-105595",
+						"CSAFPID-105631",
+						"CSAFPID-105635",
+						"CSAFPID-105638",
+						"CSAFPID-105647",
+						"CSAFPID-105662",
+						"CSAFPID-105743",
+						"CSAFPID-105745",
+						"CSAFPID-105754",
+						"CSAFPID-105802",
+						"CSAFPID-105841",
+						"CSAFPID-105848",
+						"CSAFPID-105889",
+						"CSAFPID-105906",
+						"CSAFPID-105930",
+						"CSAFPID-105958",
+						"CSAFPID-106057",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106082",
+						"CSAFPID-106096",
+						"CSAFPID-106152",
+						"CSAFPID-106170",
+						"CSAFPID-106214",
+						"CSAFPID-106241",
+						"CSAFPID-106271",
+						"CSAFPID-106340",
+						"CSAFPID-106387",
+						"CSAFPID-106499",
+						"CSAFPID-106510",
+						"CSAFPID-106630",
+						"CSAFPID-106653",
+						"CSAFPID-106712",
+						"CSAFPID-106730",
+						"CSAFPID-106740",
+						"CSAFPID-106757",
+						"CSAFPID-106786",
+						"CSAFPID-106819",
+						"CSAFPID-106839",
+						"CSAFPID-106867",
+						"CSAFPID-106884",
+						"CSAFPID-106962",
+						"CSAFPID-106963",
+						"CSAFPID-106969",
+						"CSAFPID-106988",
+						"CSAFPID-107014",
+						"CSAFPID-107044",
+						"CSAFPID-107048",
+						"CSAFPID-107081",
+						"CSAFPID-107163",
+						"CSAFPID-107169",
+						"CSAFPID-107173",
+						"CSAFPID-107218",
+						"CSAFPID-107277",
+						"CSAFPID-107295",
+						"CSAFPID-107428",
+						"CSAFPID-107433",
+						"CSAFPID-107434",
+						"CSAFPID-107524",
+						"CSAFPID-107550",
+						"CSAFPID-107573",
+						"CSAFPID-107659",
+						"CSAFPID-107691",
+						"CSAFPID-107775",
+						"CSAFPID-107853",
+						"CSAFPID-193317",
+						"CSAFPID-230964",
+						"CSAFPID-59299",
+						"CSAFPID-65536",
+						"CSAFPID-65549",
+						"CSAFPID-65557",
+						"CSAFPID-65563",
+						"CSAFPID-66054",
+						"CSAFPID-66055",
+						"CSAFPID-66056",
+						"CSAFPID-66058",
+						"CSAFPID-69756",
+						"CSAFPID-69764",
+						"CSAFPID-81746",
+						"CSAFPID-83374",
+						"CSAFPID-92384",
+						"CSAFPID-99645",
+						"CSAFPID-99647"
+					]
+				}
+			],
+			"title": "Crafted SIP packets may cause device to reload"
+		}
+	]
+}

@@ -1,0 +1,592 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found while handling customer support requests."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Virtual Private LAN Service (VPLS) code of Cisco IOS Software for Cisco Catalyst 6800 Series Switches could allow an unauthenticated, adjacent attacker to cause a C6800-16P10G or C6800-16P10G-XL type line card to crash, resulting in a denial of service (DoS) condition.\r\n\r\nThe vulnerability is due to a memory management issue in the affected software. An attacker could exploit this vulnerability by creating a large number of VPLS-generated MAC entries in the MAC address table of an affected device. A successful exploit could allow the attacker to cause a C6800-16P10G or C6800-16P10G-XL type line card to crash, resulting in a DoS condition.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the September 27, 2017, release of the Cisco IOS and IOS XE Software Security Advisory Bundled Publication, which includes 12 Cisco Security Advisories that describe 13 vulnerabilities. For a complete list of the advisories and links to them, see Cisco Event Response: September 2017 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-63410\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco Catalyst 6800 Series Switches that are running a vulnerable release of Cisco IOS Software and have a Cisco C6800-16P10G or C6800-16P10G-XL line card in use with Supervisor Engine 6T. To be vulnerable, the device must also be configured with VPLS and the C6800-16P10G or C6800-16P10G-XL line card needs to be the core-facing MPLS interfaces.\r\n\r\nFor information about which Cisco IOS Software releases are vulnerable, see the Fixed Software [\"#fixed\"] section of this advisory.\r\n\r\nTo determine whether a device is configured for VPLS, administrators can use the show vfi privileged EXEC command in the CLI. The following example shows the output of the command for a device that is configured with VPLS and has an active circuit, as indicated by the VFI state up value:\r\n\r\n\r\nVFI name: VPLS-2, state: up\r\n   VPN ID: 100     Local attachment circuits:       Vlan2     Neighbors connected via pseudowires:     Peer Address     VC ID     Split-horizon     10.1.1.1          2             Y\r\n\r\nA device that is not configured with VPLS will return different output.\r\n  Determining the Cisco IOS Software Release\r\nTo determine which Cisco IOS Software release is running on a device, administrators can log in to the device, use the show version command in the CLI, and then refer to the system banner that appears. If the device is running Cisco IOS Software, the system banner displays text similar to Cisco Internetwork Operating System Software or Cisco IOS Software. The banner also displays the installed image name in parentheses, followed by the Cisco IOS Software release number and release name. Some Cisco devices do not support the show version command or may provide different output.\r\n\r\nThe following example shows the output of the command for a device that is running Cisco IOS Software Release 15.5(2)T1 and has an installed image name of C2951-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version\r\n  Cisco IOS Software, C2951 Software (C2951-UNIVERSALK9-M), Version 15.5(2)T1, RELEASE SOFTWARE (fc1)  Technical Support: http://www.cisco.com/techsupport  Copyright (c) 1986-2015 by Cisco Systems, Inc.  Compiled Mon 22-Jun-15 09:32 by prod_rel_team  .  .  .\r\n\r\nFor information about the naming and numbering conventions for Cisco IOS Software releases, see White Paper: Cisco IOS and NX-OS Software Reference Guide [\"https://www.cisco.com/c/en/us/about/security-center/ios-nx-os-reference-guide.html\"].",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect Cisco IOS XE Software, Cisco IOS XR Software, or Cisco NX-OS Software.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability could cause the line card to crash and generate the following error in the logs:\r\n\r\n\r\n%SYS-DFC1-6-STACKLOW: Stack for process earl_ntfy_dm_thread running low, 0/26000\r\n\r\nThe crashinfo file, when comparing the earl_ntfy_dm_thread value and the output of the Current Process Stack, may indicate that the bytes used are equal to the bytes available. The following example shows a line card crashinfo file generated after exploitation of this vulnerability:\r\n\r\n\r\n513E.E.36-6800-3#$crashinfo_20120131-140600-UTC | begin \"earl_ntfy_dm_thread\r\nPid 375: Process \"earl_ntfy_dm_thread \"  stack 0x1CCCDA7C savedsp 0x121C8A34  Flags: analyze prefers_new process_arg_valid     <output omitted>         PC : 088827A8  MSR: 00029200     ---- Current Process Stack (0x6590 bytes used, out of 0x6590 available) ----",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates that address the vulnerability described in this advisory. Customers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nWhen considering software upgrades, customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories and Alerts page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n\r\nCustomers Without Service Contracts\r\n\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC:\r\nhttps://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n                        Cisco IOS Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco IOS Software, Cisco provides a tool, the Cisco IOS Software Checker [\"https://sec.cloudapps.cisco.com/security/center/selectIOSVersion.x\"], that identifies any Cisco Security Advisories that impact a specific Cisco IOS Software release and the earliest release that fixes the vulnerabilities described in each advisory (“First Fixed”). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities described in all the advisories identified (“Combined First Fixed”).\r\n\r\nCustomers can use this tool to perform the following tasks:\r\n\r\nInitiate a search by choosing one or more releases from a drop-down menu or uploading a file from a local system for the tool to parse\r\nEnter the output of the show version command for the tool to parse\r\nCreate a custom search by including all previously published Cisco Security Advisories, a specific advisory, or all advisories in the most recent bundled publication\r\n\r\nTo determine whether a release is affected by any published Cisco Security Advisory, use the Cisco IOS Software Checker [\"https://sec.cloudapps.cisco.com/security/center/selectIOSVersion.x\"] on Cisco.com or enter a Cisco IOS Software release—for example, 15.1(4)M2—in the following field:",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found while handling customer support requests.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software for Cisco Catalyst 6800 Series Switches VPLS Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20170927-vpls"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: September 2017 Semiannual Cisco IOS and IOS XE Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-63410"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "White Paper: Cisco IOS and NX-OS Software Reference Guide",
+				"url": "https://www.cisco.com/c/en/us/about/security-center/ios-nx-os-reference-guide.html"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories and Alerts page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;IOS Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/selectIOSVersion.x"
+			}
+		],
+		"title": "Cisco IOS Software for Cisco Catalyst 6800 Series Switches VPLS Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2017-09-27T16:00:00+00:00",
+			"generator": {
+				"date": "2024-03-28T20:25:15+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20170927-vpls",
+			"initial_release_date": "2017-09-27T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2017-09-27T14:55:34+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY",
+										"product": {
+											"name": "15.1(1)SY",
+											"product_id": "CSAFPID-112489"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY1",
+										"product": {
+											"name": "15.1(1)SY1",
+											"product_id": "CSAFPID-115285"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY",
+										"product": {
+											"name": "15.1(2)SY",
+											"product_id": "CSAFPID-184932"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY1",
+										"product": {
+											"name": "15.1(2)SY1",
+											"product_id": "CSAFPID-188061"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY2",
+										"product": {
+											"name": "15.1(2)SY2",
+											"product_id": "CSAFPID-189219"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY2",
+										"product": {
+											"name": "15.1(1)SY2",
+											"product_id": "CSAFPID-191635"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY3",
+										"product": {
+											"name": "15.1(1)SY3",
+											"product_id": "CSAFPID-194944"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY3",
+										"product": {
+											"name": "15.1(2)SY3",
+											"product_id": "CSAFPID-198059"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY4",
+										"product": {
+											"name": "15.1(1)SY4",
+											"product_id": "CSAFPID-198426"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY4",
+										"product": {
+											"name": "15.1(2)SY4",
+											"product_id": "CSAFPID-201019"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY5",
+										"product": {
+											"name": "15.1(1)SY5",
+											"product_id": "CSAFPID-204109"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY5",
+										"product": {
+											"name": "15.1(2)SY5",
+											"product_id": "CSAFPID-204110"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY4a",
+										"product": {
+											"name": "15.1(2)SY4a",
+											"product_id": "CSAFPID-204832"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)SY6",
+										"product": {
+											"name": "15.1(1)SY6",
+											"product_id": "CSAFPID-209043"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY6",
+										"product": {
+											"name": "15.1(2)SY6",
+											"product_id": "CSAFPID-209044"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY7",
+										"product": {
+											"name": "15.1(2)SY7",
+											"product_id": "CSAFPID-210406"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY8",
+										"product": {
+											"name": "15.1(2)SY8",
+											"product_id": "CSAFPID-214052"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY9",
+										"product": {
+											"name": "15.1(2)SY9",
+											"product_id": "CSAFPID-220440"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY10",
+										"product": {
+											"name": "15.1(2)SY10",
+											"product_id": "CSAFPID-222650"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY",
+										"product": {
+											"name": "15.2(1)SY",
+											"product_id": "CSAFPID-192726"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY1",
+										"product": {
+											"name": "15.2(1)SY1",
+											"product_id": "CSAFPID-204828"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY0a",
+										"product": {
+											"name": "15.2(1)SY0a",
+											"product_id": "CSAFPID-209063"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY2",
+										"product": {
+											"name": "15.2(1)SY2",
+											"product_id": "CSAFPID-209064"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY",
+										"product": {
+											"name": "15.2(2)SY",
+											"product_id": "CSAFPID-209065"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY1a",
+										"product": {
+											"name": "15.2(1)SY1a",
+											"product_id": "CSAFPID-209439"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY1",
+										"product": {
+											"name": "15.2(2)SY1",
+											"product_id": "CSAFPID-211976"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SY2",
+										"product": {
+											"name": "15.2(2)SY2",
+											"product_id": "CSAFPID-214053"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY3",
+										"product": {
+											"name": "15.2(1)SY3",
+											"product_id": "CSAFPID-216259"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)SY4",
+										"product": {
+											"name": "15.2(1)SY4",
+											"product_id": "CSAFPID-222651"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(1)SY",
+										"product": {
+											"name": "15.3(1)SY",
+											"product_id": "CSAFPID-209532"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(0)SY",
+										"product": {
+											"name": "15.3(0)SY",
+											"product_id": "CSAFPID-212701"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)SY1",
+										"product": {
+											"name": "15.3(1)SY1",
+											"product_id": "CSAFPID-216258"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.3(1)SY2",
+										"product": {
+											"name": "15.3(1)SY2",
+											"product_id": "CSAFPID-220444"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(1)SY",
+										"product": {
+											"name": "15.4(1)SY",
+											"product_id": "CSAFPID-217807"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4SY"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2017-12238",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCva61927"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-112489",
+					"CSAFPID-115285",
+					"CSAFPID-184932",
+					"CSAFPID-188061",
+					"CSAFPID-189219",
+					"CSAFPID-191635",
+					"CSAFPID-192726",
+					"CSAFPID-194944",
+					"CSAFPID-198059",
+					"CSAFPID-198426",
+					"CSAFPID-201019",
+					"CSAFPID-204109",
+					"CSAFPID-204110",
+					"CSAFPID-204828",
+					"CSAFPID-204832",
+					"CSAFPID-209043",
+					"CSAFPID-209044",
+					"CSAFPID-209063",
+					"CSAFPID-209064",
+					"CSAFPID-209065",
+					"CSAFPID-209439",
+					"CSAFPID-209532",
+					"CSAFPID-210406",
+					"CSAFPID-211976",
+					"CSAFPID-212701",
+					"CSAFPID-214052",
+					"CSAFPID-214053",
+					"CSAFPID-216258",
+					"CSAFPID-216259",
+					"CSAFPID-217807",
+					"CSAFPID-220440",
+					"CSAFPID-220444",
+					"CSAFPID-222650",
+					"CSAFPID-222651"
+				]
+			},
+			"release_date": "2017-09-27T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-112489",
+						"CSAFPID-115285",
+						"CSAFPID-184932",
+						"CSAFPID-188061",
+						"CSAFPID-189219",
+						"CSAFPID-191635",
+						"CSAFPID-192726",
+						"CSAFPID-194944",
+						"CSAFPID-198059",
+						"CSAFPID-198426",
+						"CSAFPID-201019",
+						"CSAFPID-204109",
+						"CSAFPID-204110",
+						"CSAFPID-204828",
+						"CSAFPID-204832",
+						"CSAFPID-209043",
+						"CSAFPID-209044",
+						"CSAFPID-209063",
+						"CSAFPID-209064",
+						"CSAFPID-209065",
+						"CSAFPID-209439",
+						"CSAFPID-209532",
+						"CSAFPID-210406",
+						"CSAFPID-211976",
+						"CSAFPID-212701",
+						"CSAFPID-214052",
+						"CSAFPID-214053",
+						"CSAFPID-216258",
+						"CSAFPID-216259",
+						"CSAFPID-217807",
+						"CSAFPID-220440",
+						"CSAFPID-220444",
+						"CSAFPID-222650",
+						"CSAFPID-222651"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 7.4,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.0"
+					},
+					"products": [
+						"CSAFPID-112489",
+						"CSAFPID-115285",
+						"CSAFPID-184932",
+						"CSAFPID-188061",
+						"CSAFPID-189219",
+						"CSAFPID-191635",
+						"CSAFPID-192726",
+						"CSAFPID-194944",
+						"CSAFPID-198059",
+						"CSAFPID-198426",
+						"CSAFPID-201019",
+						"CSAFPID-204109",
+						"CSAFPID-204110",
+						"CSAFPID-204828",
+						"CSAFPID-204832",
+						"CSAFPID-209043",
+						"CSAFPID-209044",
+						"CSAFPID-209063",
+						"CSAFPID-209064",
+						"CSAFPID-209065",
+						"CSAFPID-209439",
+						"CSAFPID-209532",
+						"CSAFPID-210406",
+						"CSAFPID-211976",
+						"CSAFPID-212701",
+						"CSAFPID-214052",
+						"CSAFPID-214053",
+						"CSAFPID-216258",
+						"CSAFPID-216259",
+						"CSAFPID-217807",
+						"CSAFPID-220440",
+						"CSAFPID-220444",
+						"CSAFPID-222650",
+						"CSAFPID-222651"
+					]
+				}
+			],
+			"title": "Cisco IOS Software for Cisco Catalyst 6800 Series Switches VPLS Denial of Service Vulnerability"
+		}
+	]
+}

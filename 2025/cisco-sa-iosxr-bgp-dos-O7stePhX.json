@@ -1,0 +1,206 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in confederation implementation for the Border Gateway Protocol (BGP) in Cisco IOS XR Software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition.\r\n\r\nThis vulnerability is due to a memory corruption that occurs when a BGP update is created with an AS_CONFED_SEQUENCE attribute that has 255 autonomous system numbers (AS numbers). An attacker could exploit this vulnerability by sending a crafted BGP update message, or the network could be designed in such a manner that the AS_CONFED_SEQUENCE attribute grows to 255 AS numbers or more. A successful exploit could allow the attacker to cause memory corruption, which may cause the BGP process to restart, resulting in a DoS condition. To exploit this vulnerability, an attacker must control a BGP confederation speaker within the same autonomous system as the victim, or the network must be designed in such a manner that the AS_CONFED_SEQUENCE attribute grows to 255 AS numbers or more.\r\n\r\nCisco has released software updates that address this vulnerability. There is a workaround that addresses this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the March 2025 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: March 2025 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75548\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco IOS XR Software if it had BGP confederation configured.\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nDetermine the Device Configuration\r\n\r\nTo determine whether the device has BGP confederation configured, use the show running-config router bgp EXEC CLI command. If the router is configured for BGP, this command will return output. For the device to be considered vulnerable, the bgp confederation peers configuration command must also be present in the output, as shown in the following example:\r\n\r\n\r\n# show running-config router bgp\r\nrouter bgp 64500\r\n.\r\n.\r\n.\r\nbgp confederation peers",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability. This vulnerability exists partly because the BGP AS_CONFED_SEQUENCE attribute is 255 AS numbers or greater. The workaround is to restrict this BGP attribute to 254 or fewer AS numbers. This can be accomplished by using a routing policy that drops BGP updates with long AS path lengths on the confederation peers:\r\n\r\n\r\nroute-policy max-asns\r\n  if as-path length ge 254 then\r\n    drop\r\n  else\r\n    pass\r\n  endif\r\nend-policy\r\nrouter bgp 64500\r\nbgp confederation peers\r\n  64501\r\n  64502\r\n !\r\nbgp confederation identifier 64511 neighbor 192.168.0.1\r\n remote-as 64501\r\n  address-family ipv4 unicast\r\n    policy max-asns in\r\n    policy max-asns out\r\n\r\nFor more information on Cisco IOS XR Routing Policy Language (RPL), see Implementing Routing Policy on Cisco IOS XR Software [\"https://www.cisco.com/c/en/us/td/docs/routers/xr12000/software/xr12k_r4-0/routing/configuration/guide/rc40xr12k_chapter7.html\"].\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, the release information in the following table(s) was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nIn the following table, the left column lists Cisco software releases or trains. The right column indicates whether a release (train) is affected by the vulnerability that is described in this advisory and the first release that includes the fix for this vulnerability.\r\n        Cisco IOS XR Software Release  First Fixed Release          7.11 and earlier  Migrate to a fixed release.      24.1 and earlier  Migrate to a fixed release.      24.2\r\n  24.2.21 (future release)      24.3  24.3.1      24.4  Not affected.\r\nSMUs are also available to address this vulnerability. Customers who require SMUs for platforms or releases that are not available are advised to contact their support organization. For more information on finding which SMUs may have been published for this vulnerability, see the Download section of Understand Cisco IOS XR Software Maintenance Updates (SMUs) [\"https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/116332-maintain-ios-xr-smu-00.html#toc-hId-972485609\"].\r\n\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is aware of a public announcement about this issue. This announcement is not specific to Cisco IOS XR Software and can be found at Crafting endless AS-PATHS in BGP [\"https://blog.apnic.net/2024/09/02/crafting-endless-as-paths-in-bgp/\"].\r\n\r\nThe Cisco PSIRT is not aware of any malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Border Gateway Protocol Confederation Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-bgp-dos-O7stePhX"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: March 2025 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75548"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Implementing Routing Policy on Cisco IOS XR Software",
+				"url": "https://www.cisco.com/c/en/us/td/docs/routers/xr12000/software/xr12k_r4-0/routing/configuration/guide/rc40xr12k_chapter7.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Understand Cisco IOS XR Software Maintenance Updates (SMUs)",
+				"url": "https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/116332-maintain-ios-xr-smu-00.html#toc-hId-972485609"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Crafting endless AS-PATHS in BGP",
+				"url": "https://blog.apnic.net/2024/09/02/crafting-endless-as-paths-in-bgp/"
+			}
+		],
+		"title": "Cisco IOS XR Software Border Gateway Protocol Confederation Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2025-03-12T16:00:00+00:00",
+			"generator": {
+				"date": "2025-03-12T15:55:34+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-iosxr-bgp-dos-O7stePhX",
+			"initial_release_date": "2025-03-12T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2025-03-12T15:54:45+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2025-20115",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwk15887"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2025-03-12T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There is a workaround that addresses this vulnerability. This vulnerability exists partly because the BGP AS_CONFED_SEQUENCE attribute is 255 AS numbers or greater. The workaround is to restrict this BGP attribute to 254 or fewer AS numbers. This can be accomplished by using a routing policy that drops BGP updates with long AS path lengths on the confederation peers:\r\n\r\n\r\nroute-policy max-asns\r\n  if as-path length ge 254 then\r\n    drop\r\n  else\r\n    pass\r\n  endif\r\nend-policy\r\nrouter bgp 64500\r\nbgp confederation peers\r\n  64501\r\n  64502\r\n !\r\nbgp confederation identifier 64511 neighbor 192.168.0.1\r\n remote-as 64501\r\n  address-family ipv4 unicast\r\n    policy max-asns in\r\n    policy max-asns out\r\n\r\nFor more information on Cisco IOS XR Routing Policy Language (RPL), see Implementing Routing Policy on Cisco IOS XR Software [\"https://www.cisco.com/c/en/us/td/docs/routers/xr12000/software/xr12k_r4-0/routing/configuration/guide/rc40xr12k_chapter7.html\"].\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Border Gateway Protocol Denial of Service Vulnerability"
+		}
+	]
+}

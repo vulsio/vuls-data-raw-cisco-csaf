@@ -1,0 +1,3436 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Multiple vulnerabilities exist in the Session Initiation Protocol (SIP)\r\nimplementation in Cisco IOS® Software that could\r\nallow an unauthenticated, remote attacker to cause a reload of an affected\r\ndevice when SIP operation is enabled. Remote code execution may also be\r\npossible.\r\n\r\nCisco has released software updates that address these vulnerabilities. For devices that must run SIP there are no workarounds;\r\nhowever, mitigations are available to limit exposure of the\r\nvulnerabilities.\r\n\r\nThis advisory is posted at\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-sip[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-sip\"].\r\n\r\n\r\n\r\nNote: The March 24, 2010, Cisco IOS Software Security Advisory bundled\r\npublication includes seven Security Advisories. All the advisories address\r\nvulnerabilities in Cisco IOS Software. Each advisory lists the releases that\r\ncorrect the vulnerability or vulnerabilities detailed in the advisory. The\r\ntable at the following URL lists releases that correct all Cisco IOS Software\r\nvulnerabilities that have been published on March 24, 2010, or earlier: \r\n\r\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-bundle[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-bundle\"]\r\n\r\n\r\n Individual publication links are in \"Cisco Event Response:\r\nSemiannual Cisco IOS Software Security Advisory Bundled Publication\" at the\r\nfollowing link: \r\n\r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar10.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar10.html\"]\r\n\r\n\r\n\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "These vulnerabilities only affect devices running Cisco IOS Software\r\nwith SIP voice services enabled.\r\n",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco devices running affected Cisco IOS Software versions that are\r\nconfigured to process SIP messages are affected.\r\n\r\nRecent versions of Cisco IOS Software do not process SIP messages by\r\ndefault. Creating a dial peer by issuing the command dial-peer\r\nvoice will start the SIP processes, causing the Cisco IOS device\r\nto process SIP messages. In addition, several features within Cisco Unified\r\nCommunications Manager Express, such as ePhones, once configured will also\r\nautomatically start the SIP process, which will cause the device to start\r\nprocessing SIP messages. An example of an affected configuration\r\nfollows:\r\n\r\n\r\ndial-peer voice  voip\r\n ...\r\n!\r\n\r\nIn addition to inspecting the Cisco IOS device configuration for a\r\ndial-peer command that causes the device to process\r\nSIP messages, administrators can also use the command show\r\nprocesses | include SIP to determine whether Cisco IOS Software\r\nis running the processes that handle SIP messages. In the following example,\r\nthe presence of the processes CCSIP_UDP_SOCKET or\r\nCCSIP_TCP_SOCKET indicates that the Cisco IOS device will\r\nprocess SIP messages:\r\n\r\n\r\nRouter#show processes | include SIP\r\n 149 Mwe 40F48254            4          1    400023108/24000  0 CCSIP_UDP_SOCKET\r\n 150 Mwe 40F48034            4          1    400023388/24000  0 CCSIP_TCP_SOCKET\r\n\r\n\r\n\r\nWarning: Because there are several ways a device running Cisco IOS Software\r\ncan start processing SIP messages, it is recommended that the show\r\nprocesses | include SIP command be used to determine whether the\r\ndevice is processing SIP messages instead of relying on the presence of\r\nspecific configuration commands.\r\n\r\nCisco Unified Border Element images are also affected by these\r\nvulnerabilities.\r\n\r\n\r\nNote: The Cisco Unified Border Element feature (previously known as the\r\nCisco Multiservice IP-to-IP Gateway) is a special Cisco IOS Software image that\r\nruns on Cisco multiservice gateway platforms. It provides a network-to-network\r\ninterface point for billing, security, call admission control, quality of\r\nservice, and signaling interworking.\r\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco\r\nproduct, administrators can log in to the device and issue the\r\nshow version command to display the system banner.\r\nThe system banner confirms that the device is running Cisco IOS Software by\r\ndisplaying text similar to \"Cisco Internetwork Operating System Software\" or\r\n\"Cisco IOS Software.\" The image name displays in parentheses, followed by\r\n\"Version\" and the Cisco IOS Software release name. Other Cisco devices do not\r\nhave the show version command or may provide\r\ndifferent output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco\r\nIOS Software Release 12.3(26) with an installed image name of\r\nC2500-IS-L:\r\n\r\n\r\nRouter#show version\r\nCisco Internetwork Operating System Software\r\nIOS (tm) 2500 Software (C2500-IS-L), Version 12.3(26), RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2008 by cisco Systems, Inc.\r\nCompiled Mon 17-Mar-08 14:39 by dchih\r\n\r\n\r\n!--- output truncated\r\n\r\n\r\n\r\nThe following example identifies a Cisco product that is running Cisco\r\nIOS Software Release 12.4(20)T with an installed image name of\r\nC1841-ADVENTERPRISEK9-M:\r\n\r\n\r\nRouter#show version\r\nCisco IOS Software, 1841 Software (C1841-ADVENTERPRISEK9-M), Version 12.4(20)T, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2008 by Cisco Systems, Inc.\r\nCompiled Thu 10-Jul-08 20:25 by prod_rel_team\r\n\r\n\r\n!--- output truncated\r\n\r\n\r\n\r\nAdditional information about Cisco IOS Software release naming\r\nconventions is available in \"White Paper: Cisco IOS Reference Guide\" at the\r\nfollowing link: http://www.cisco.com/warp/public/620/1.html[\"http://www.cisco.com/warp/public/620/1.html\"].\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "The SIP Application Layer Gateway (ALG), which is used by the Cisco IOS\r\nNAT and firewall features of Cisco IOS Software, is not affected by these\r\nvulnerabilities.\r\n\r\nCisco IOS XE Software and Cisco IOS XR Software are not affected by\r\nthese vulnerabilities.\r\n\r\nNo other Cisco products are currently known to be affected by these\r\nvulnerabilities.\r\n",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "SIP is a popular signaling protocol that is used to manage voice and\r\nvideo calls across IP networks such as the Internet. SIP is responsible for\r\nhandling all aspects of call setup and termination. Voice and video are the\r\nmost popular types of sessions that SIP handles, but the protocol has the\r\nflexibility to accommodate other applications that require call setup and\r\ntermination. SIP call signaling can use UDP (port 5060), TCP (port 5060), or\r\nTLS (TCP port 5061) as the underlying transport protocol.\r\n\r\nThree vulnerabilities exist in the SIP implementation in Cisco IOS\r\nSoftware that may allow a remote attacker to cause a device reload, or execute\r\narbitrary code. These vulnerabilities are triggered when the device running\r\nCisco IOS Software processes malformed SIP messages.\r\n\r\nIn cases where SIP is running over TCP transport, a TCP three-way\r\nhandshake is necessary to exploit these vulnerabilities.\r\n\r\nThese vulnerabilities are addressed by Cisco bug IDs\r\n\r\nCSCsz48680\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsz48680\"]\r\n(\r\nregistered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n,\r\n\r\nCSCsz89904\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsz89904\"]\r\n(\r\nregistered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n, and\r\n\r\nCSCtb93416\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtb93416\"]\r\n(\r\nregistered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\n, and have been assigned\r\nCommon Vulnerabilities and Exposures (CVE) IDs CVE-2010-0580, CVE-2010-0581,\r\nand CVE-2010-0579, respectively.\r\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised to\r\napply mitigation techniques to help limit exposure to the vulnerabilities.\r\nMitigation consists of allowing only legitimate devices to connect to affected\r\ndevices. To increase effectiveness, the mitigation must be coupled with\r\nanti-spoofing measures on the network edge. This action is required because SIP\r\ncan use UDP as the transport protocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices within the\r\nnetwork are available in the companion document \"Cisco Applied Mitigation\r\nBulletin: Identifying and Mitigating Exploitation of the Cisco Unified\r\nCommunications Manager Express and Cisco IOS Software H.323 and Session\r\nInitiation Protocol Denial of Service Vulnerabilities\", which is available at\r\nthe following location:\r\nhttp://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice\"].\r\n\r\nDisable SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the simplest and\r\nmost effective workaround is to disable SIP processing on the device. Some\r\nversions of Cisco IOS Software allow administrators to disable SIP with the\r\nfollowing commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\n\r\n\r\nWarning: When applying this workaround to devices that are processing Media\r\nGateway Control Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these circumstances,\r\nthis workaround should be implemented during a maintenance window when active\r\ncalls can be briefly stopped.\r\n\r\nThe show udp connections, show\r\ntcp brief all, and show processes | include\r\nSIP commands can be used to confirm that the SIP UDP and TCP\r\nports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, the output from the\r\nshow ip sockets command may still show the SIP ports\r\nopen, but sending traffic to them will cause the SIP process to emit the\r\nfollowing message:\r\n\r\n\r\n*Feb  2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services it is possible to use\r\nControl Plane Policing (CoPP) to block SIP traffic to the device from untrusted\r\nsources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T\r\nsupport the CoPP feature. CoPP may be configured on a device to protect the\r\nmanagement and control planes to minimize the risk and effectiveness of direct\r\ninfrastructure attacks by explicitly permitting only authorized traffic sent to\r\ninfrastructure devices in accordance with existing security policies and\r\nconfigurations. The following example can be adapted to specific network\r\nconfigurations:\r\n\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature.) If the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\n\r\n\r\nWarning: Because SIP can use UDP as a transport protocol, it is possible to\r\neasily spoof the IP address of the sender, which may defeat access control\r\nlists that permit communication to these ports from trusted IP\r\naddresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs) that match\r\nthe potential exploit packets with the \"permit\" action result in these packets\r\nbeing discarded by the policy-map \"drop\" function, while packets that match the\r\n\"deny\" action (not shown) are not affected by the policy-map drop function.\r\nAdditional information on the configuration and use of the CoPP feature can be\r\nfound at\r\nhttp://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"]\r\nand\r\nhttp://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, also consult\r\nhttp://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"]\r\nand any subsequent advisories to determine exposure and a complete upgrade\r\nsolution. \r\n\r\nIn all cases, customers should exercise caution to be\r\ncertain the devices to be upgraded contain sufficient memory and that current\r\nhardware and software configurations will continue to be supported properly by\r\nthe new release. If the information is not clear, contact the Cisco Technical\r\nAssistance Center (TAC) or your contracted maintenance provider for assistance.\r\n\r\n\r\nEach row of the Cisco IOS software table (below) names a\r\nCisco IOS release train. If a given release train is vulnerable, then the\r\nearliest possible releases that contain the fix (along with the anticipated\r\ndate of availability for each, if applicable) are listed in the \"First Fixed\r\nRelease for this Advisory\" column of the table. The \"First Fixed Release for\r\nall Advisories in 24 March 2010 Bundle Publication\" column indicates the\r\nearliest possible releases which have fixes for all the published\r\nvulnerabilities in this Cisco IOS Security Advisory bundled publication. Cisco\r\nrecommends upgrading to the latest available release where possible.\r\n\r\n\r\n    \r\n        \r\n            \r\n            \r\n             Major Release\r\n            \r\n\r\n            \r\n            \r\n            \r\n                 Availability of Repaired\r\n            Releases\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.0-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 12.0 based releases\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.1-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 12.1 based releases\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.2-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 12.2 based releases\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.3-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3B\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3BC\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.2SCB\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3BW\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3EU\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.3(11)JA5 are vulnerable, release\r\n            12.3(11)JA5 and later are not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JEA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.3(8)JEA4 are vulnerable, release\r\n            12.3(8)JEA4 and later are not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JEB\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.3(8)JEB2 are vulnerable, release\r\n            12.3(8)JEB2 and later are not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JEC\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JED\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JK\r\n\r\n            \r\n            \r\n            \r\n            Releases up to and including 12.3(2)JK3 are not vulnerable.\r\n            \r\n\r\n             Releases 12.3(8)JK1 and later are not vulnerable; first fixed\r\n            in 12.4[\"#12_4\"]\r\n            \r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JL\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3JX\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3T\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release. Releases up to and including 12.3(4)T11 are not\r\n            vulnerable.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3TPC\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3VA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XB\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XC\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XD\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XE\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.4[\"#12_4\"]\r\n            \r\n\r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XF\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XG\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XI\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Releases prior to 12.3(7)XI11 are vulnerable, release\r\n            12.3(7)XI11 and later are not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XJ\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.4XN\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.4XR[\"#12_4XR\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XK\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XL\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XQ\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XR\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XS\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XU\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4T\r\n            release.\r\n\r\n            Releases up to and including 12.3(8)XU1 are not\r\n            vulnerable.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XW\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.4XN\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.4XR[\"#12_4XR\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XX\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XY\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3XZ\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YD\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YF\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.4XN\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.4XR[\"#12_4XR\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YG\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YH\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YI\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YJ\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YK\r\n\r\n            \r\n            \r\n            \r\n            Releases prior to 12.3(11)YK3 are vulnerable, release\r\n            12.3(11)YK3 and later are not vulnerable;\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YM\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YQ\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YS\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4T\r\n            release.\r\n\r\n            Releases up to and including 12.3(11)YS1 are not\r\n            vulnerable.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YT\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YU\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YX\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 12.4XN\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.4XR[\"#12_4XR\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3YZ\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.3ZA\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 12.4-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4\r\n\r\n            \r\n            \r\n            \r\n            12.4(25c)\r\n\r\n            15.0(1)M1\r\n\r\n            15.0(1)M2 ; Available on 26-MAR-10\r\n\r\n            \r\n            \r\n            12.4(25c)\r\n\r\n            15.0(1)M1\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4GC\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software section of this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JDA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JDC\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JDD\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            12.4(10b)JDD1\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JHA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JK\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JL\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JMA\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Releases prior to 12.4(3g)JMA2 are vulnerable, release\r\n            12.4(3g)JMA2 and later are not vulnerable\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JMB\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4JX\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; first fixed in 12.4JA[\"#12_4JA\"]\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MD\r\n\r\n            \r\n            \r\n            \r\n            12.4(24)MD\r\n\r\n            Releases prior to 12.4(22)MD are not vulnerable; Releases after\r\n            12.4(22)MD1 are not vulnerable;\r\n\r\n            \r\n            \r\n            12.4(24)MD\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MDA\r\n\r\n            \r\n            \r\n            \r\n            12.4(22)MDA2\r\n\r\n            \r\n            \r\n            12.4(22)MDA2\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4MR\r\n\r\n            \r\n            \r\n            \r\n            Releases prior to 12.4(9)MR are vulnerable, release 12.4(9)MR\r\n            and later are not vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4SW\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4T\r\n\r\n            \r\n            \r\n            \r\n            12.4(22)T3\r\n\r\n            12.4(24)T2\r\n\r\n            \r\n            \r\n            12.4(15)T12\r\n\r\n            12.4(20)T5\r\n\r\n            12.4(24)T3; Available on 26-MAR-10\r\n\r\n            12.4(22)T4\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XA\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XB\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XC\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XD\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XE\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XF\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XG\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XJ\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XK\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XL\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XM\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XN\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XP\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XQ\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XR\r\n\r\n            \r\n            \r\n            \r\n            12.4(22)XR3;\r\n\r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4T\r\n            release.\r\n\r\n            Releases up to and including 12.4(15)XR8 are not\r\n            vulnerable.\r\n\r\n            \r\n            \r\n            12.4(22)XR3\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XT\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XV\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XW\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XY\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4XZ\r\n\r\n            \r\n            \r\n            \r\n            Not Vulnerable\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YA\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n            \r\n            Vulnerable; migrate to any release in 15.0M or a fixed 12.4\r\n            release.\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YB\r\n\r\n            \r\n            \r\n            \r\n            12.4(22)YB5\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YD\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YE\r\n\r\n            \r\n            \r\n            \r\n            12.4(22)YE2\r\n\r\n            12.4(24)YE\r\n\r\n            \r\n            \r\n            12.4(22)YE2\r\n\r\n            12.4(24)YE\r\n\r\n            \r\n        \r\n        \r\n            \r\n             12.4YG\r\n\r\n            \r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n            \r\n            Vulnerable; Contact your support organization per the\r\n            instructions in Obtaining Fixed Software[\"#fixes\"] section of\r\n            this advisory\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 15.0-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 15.0 based releases\r\n\r\n            \r\n        \r\n        \r\n            \r\n            \r\n            Affected 15.1-Based Releases\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for this\r\n            Advisory\r\n            \r\n\r\n            \r\n            \r\n            \r\n            First Fixed Release for all Advisories in 24 March 2010\r\n            Bundle Publication\r\n            \r\n\r\n            \r\n        \r\n        \r\n            \r\n            There are no affected 15.1 based releases\r\n\r\n            \r\n        \r\n    \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nCisco IOS-XE Software\r\n\r\n    \r\n        \r\n            \r\n             IOS-XE Release \r\n\r\n            \r\n            \r\n             First Fixed Release \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.1.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.2.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.3.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.4.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.5.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n        \r\n            \r\n             2.6.x \r\n\r\n            \r\n            \r\n             Not Vulnerable \r\n\r\n            \r\n        \r\n    \r\n\r\n\r\n\r\n\r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious\r\nuse of the vulnerabilities described in this advisory.\r\n\r\nThe vulnerability addressed by\r\n\r\nCSCsz48680\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsz48680\"]\r\n(\r\nregistered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nwas discovered during\r\nthe resolution of customer service requests.\r\n\r\nThe vulnerabilities addressed by\r\n\r\nCSCtb93416\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtb93416\"]\r\n(\r\nregistered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nand\r\n\r\nCSCsz89904\r\n[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsz89904\"]\r\n(\r\nregistered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only)\r\nwere discovered by Cisco\r\nduring internal testing.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-sip"
+			}
+		],
+		"title": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+		"tracking": {
+			"current_release_date": "2012-09-21T19:11:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:09:21+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20100324-sip",
+			"initial_release_date": "2010-03-24T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2010-03-24T16:00:00+00:00",
+					"number": "1.1.0",
+					"summary": "Updated First Fixed releases for 12.4T"
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T",
+										"product": {
+											"name": "12.3(11)T",
+											"product_id": "CSAFPID-58331"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T12",
+										"product": {
+											"name": "12.3(7)T12",
+											"product_id": "CSAFPID-62555"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T11",
+										"product": {
+											"name": "12.3(11)T11",
+											"product_id": "CSAFPID-62570"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T10",
+										"product": {
+											"name": "12.3(11)T10",
+											"product_id": "CSAFPID-62622"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T7",
+										"product": {
+											"name": "12.3(14)T7",
+											"product_id": "CSAFPID-62623"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T",
+										"product": {
+											"name": "12.3(14)T",
+											"product_id": "CSAFPID-63197"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T",
+										"product": {
+											"name": "12.3(8)T",
+											"product_id": "CSAFPID-63378"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T",
+										"product": {
+											"name": "12.3(7)T",
+											"product_id": "CSAFPID-65513"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T9",
+										"product": {
+											"name": "12.3(8)T9",
+											"product_id": "CSAFPID-103573"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T2a",
+										"product": {
+											"name": "12.3(11)T2a",
+											"product_id": "CSAFPID-103638"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T6",
+										"product": {
+											"name": "12.3(8)T6",
+											"product_id": "CSAFPID-103777"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T4",
+										"product": {
+											"name": "12.3(14)T4",
+											"product_id": "CSAFPID-104136"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T2",
+										"product": {
+											"name": "12.3(8)T2",
+											"product_id": "CSAFPID-104266"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T5",
+										"product": {
+											"name": "12.3(11)T5",
+											"product_id": "CSAFPID-104381"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T3",
+										"product": {
+											"name": "12.3(7)T3",
+											"product_id": "CSAFPID-104448"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T3",
+										"product": {
+											"name": "12.3(8)T3",
+											"product_id": "CSAFPID-104481"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T7",
+										"product": {
+											"name": "12.3(8)T7",
+											"product_id": "CSAFPID-104500"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T8",
+										"product": {
+											"name": "12.3(11)T8",
+											"product_id": "CSAFPID-104612"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T2",
+										"product": {
+											"name": "12.3(7)T2",
+											"product_id": "CSAFPID-104657"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T4",
+										"product": {
+											"name": "12.3(8)T4",
+											"product_id": "CSAFPID-104802"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T8",
+										"product": {
+											"name": "12.3(8)T8",
+											"product_id": "CSAFPID-104854"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T5",
+										"product": {
+											"name": "12.3(14)T5",
+											"product_id": "CSAFPID-104979"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T3",
+										"product": {
+											"name": "12.3(11)T3",
+											"product_id": "CSAFPID-104980"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T10",
+										"product": {
+											"name": "12.3(8)T10",
+											"product_id": "CSAFPID-105116"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T2",
+										"product": {
+											"name": "12.3(14)T2",
+											"product_id": "CSAFPID-105272"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T7",
+										"product": {
+											"name": "12.3(7)T7",
+											"product_id": "CSAFPID-105369"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T10",
+										"product": {
+											"name": "12.3(7)T10",
+											"product_id": "CSAFPID-105523"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T4",
+										"product": {
+											"name": "12.3(7)T4",
+											"product_id": "CSAFPID-105720"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T6",
+										"product": {
+											"name": "12.3(11)T6",
+											"product_id": "CSAFPID-105748"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T11",
+										"product": {
+											"name": "12.3(7)T11",
+											"product_id": "CSAFPID-105808"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T5",
+										"product": {
+											"name": "12.3(7)T5",
+											"product_id": "CSAFPID-106060"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T3",
+										"product": {
+											"name": "12.3(14)T3",
+											"product_id": "CSAFPID-106094"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T4",
+										"product": {
+											"name": "12.3(11)T4",
+											"product_id": "CSAFPID-106304"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T9",
+										"product": {
+											"name": "12.3(7)T9",
+											"product_id": "CSAFPID-106391"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T11",
+										"product": {
+											"name": "12.3(8)T11",
+											"product_id": "CSAFPID-106421"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T1",
+										"product": {
+											"name": "12.3(11)T1",
+											"product_id": "CSAFPID-106609"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T9",
+										"product": {
+											"name": "12.3(11)T9",
+											"product_id": "CSAFPID-106983"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T8",
+										"product": {
+											"name": "12.3(7)T8",
+											"product_id": "CSAFPID-107066"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T5",
+										"product": {
+											"name": "12.3(8)T5",
+											"product_id": "CSAFPID-107238"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T1",
+										"product": {
+											"name": "12.3(14)T1",
+											"product_id": "CSAFPID-107367"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T2",
+										"product": {
+											"name": "12.3(11)T2",
+											"product_id": "CSAFPID-107382"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T6",
+										"product": {
+											"name": "12.3(7)T6",
+											"product_id": "CSAFPID-107392"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T7",
+										"product": {
+											"name": "12.3(11)T7",
+											"product_id": "CSAFPID-107596"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)T1",
+										"product": {
+											"name": "12.3(7)T1",
+											"product_id": "CSAFPID-107603"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)T6",
+										"product": {
+											"name": "12.3(14)T6",
+											"product_id": "CSAFPID-107608"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)T12",
+										"product": {
+											"name": "12.3(11)T12",
+											"product_id": "CSAFPID-107640"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)T1",
+										"product": {
+											"name": "12.3(8)T1",
+											"product_id": "CSAFPID-107764"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XQ",
+										"product": {
+											"name": "12.3(4)XQ",
+											"product_id": "CSAFPID-63380"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XQ1",
+										"product": {
+											"name": "12.3(4)XQ1",
+											"product_id": "CSAFPID-105067"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XQ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)XL",
+										"product": {
+											"name": "12.3(11)XL",
+											"product_id": "CSAFPID-65434"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XL",
+										"product": {
+											"name": "12.3(7)XL",
+											"product_id": "CSAFPID-65511"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)XL1",
+										"product": {
+											"name": "12.3(11)XL1",
+											"product_id": "CSAFPID-106612"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)XL3",
+										"product": {
+											"name": "12.3(11)XL3",
+											"product_id": "CSAFPID-107307"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)XL2",
+										"product": {
+											"name": "12.3(11)XL2",
+											"product_id": "CSAFPID-107394"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XL"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XK3",
+										"product": {
+											"name": "12.3(4)XK3",
+											"product_id": "CSAFPID-103862"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XK1",
+										"product": {
+											"name": "12.3(4)XK1",
+											"product_id": "CSAFPID-104909"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XK4",
+										"product": {
+											"name": "12.3(4)XK4",
+											"product_id": "CSAFPID-106312"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XK",
+										"product": {
+											"name": "12.3(4)XK",
+											"product_id": "CSAFPID-106872"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XK2",
+										"product": {
+											"name": "12.3(4)XK2",
+											"product_id": "CSAFPID-107314"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XK"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XJ",
+										"product": {
+											"name": "12.3(7)XJ",
+											"product_id": "CSAFPID-65510"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XJ1",
+										"product": {
+											"name": "12.3(7)XJ1",
+											"product_id": "CSAFPID-104083"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XJ2",
+										"product": {
+											"name": "12.3(7)XJ2",
+											"product_id": "CSAFPID-104179"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XJ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI",
+										"product": {
+											"name": "12.3(7)XI",
+											"product_id": "CSAFPID-65509"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI7",
+										"product": {
+											"name": "12.3(7)XI7",
+											"product_id": "CSAFPID-103650"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI1",
+										"product": {
+											"name": "12.3(7)XI1",
+											"product_id": "CSAFPID-105434"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI7a",
+										"product": {
+											"name": "12.3(7)XI7a",
+											"product_id": "CSAFPID-105571"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI2b",
+										"product": {
+											"name": "12.3(7)XI2b",
+											"product_id": "CSAFPID-105911"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI3a",
+										"product": {
+											"name": "12.3(7)XI3a",
+											"product_id": "CSAFPID-106141"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI3",
+										"product": {
+											"name": "12.3(7)XI3",
+											"product_id": "CSAFPID-106531"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI6",
+										"product": {
+											"name": "12.3(7)XI6",
+											"product_id": "CSAFPID-106582"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI2",
+										"product": {
+											"name": "12.3(7)XI2",
+											"product_id": "CSAFPID-106751"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XI5",
+										"product": {
+											"name": "12.3(7)XI5",
+											"product_id": "CSAFPID-106793"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XI"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XH",
+										"product": {
+											"name": "12.3(4)XH",
+											"product_id": "CSAFPID-63379"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XH1",
+										"product": {
+											"name": "12.3(4)XH1",
+											"product_id": "CSAFPID-105193"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XH"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XG",
+										"product": {
+											"name": "12.3(4)XG",
+											"product_id": "CSAFPID-65490"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XG3",
+										"product": {
+											"name": "12.3(4)XG3",
+											"product_id": "CSAFPID-104208"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XG1",
+										"product": {
+											"name": "12.3(4)XG1",
+											"product_id": "CSAFPID-105348"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XG4",
+										"product": {
+											"name": "12.3(4)XG4",
+											"product_id": "CSAFPID-105964"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XG2",
+										"product": {
+											"name": "12.3(4)XG2",
+											"product_id": "CSAFPID-106147"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XG5",
+										"product": {
+											"name": "12.3(4)XG5",
+											"product_id": "CSAFPID-106745"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XG"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(2)XF",
+										"product": {
+											"name": "12.3(2)XF",
+											"product_id": "CSAFPID-65471"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XF"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XD",
+										"product": {
+											"name": "12.3(4)XD",
+											"product_id": "CSAFPID-63501"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XD4",
+										"product": {
+											"name": "12.3(4)XD4",
+											"product_id": "CSAFPID-103502"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XD1",
+										"product": {
+											"name": "12.3(4)XD1",
+											"product_id": "CSAFPID-103953"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XD3",
+										"product": {
+											"name": "12.3(4)XD3",
+											"product_id": "CSAFPID-106469"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(4)XD2",
+										"product": {
+											"name": "12.3(4)XD2",
+											"product_id": "CSAFPID-106716"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XD"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XM",
+										"product": {
+											"name": "12.3(7)XM",
+											"product_id": "CSAFPID-65514"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XM"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XR",
+										"product": {
+											"name": "12.3(7)XR",
+											"product_id": "CSAFPID-63381"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XR4",
+										"product": {
+											"name": "12.3(7)XR4",
+											"product_id": "CSAFPID-105271"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XR3",
+										"product": {
+											"name": "12.3(7)XR3",
+											"product_id": "CSAFPID-105585"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XR5",
+										"product": {
+											"name": "12.3(7)XR5",
+											"product_id": "CSAFPID-106081"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XR6",
+										"product": {
+											"name": "12.3(7)XR6",
+											"product_id": "CSAFPID-106296"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)XR7",
+										"product": {
+											"name": "12.3(7)XR7",
+											"product_id": "CSAFPID-107075"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XR"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XU5",
+										"product": {
+											"name": "12.3(8)XU5",
+											"product_id": "CSAFPID-105503"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XU2",
+										"product": {
+											"name": "12.3(8)XU2",
+											"product_id": "CSAFPID-105797"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XU4",
+										"product": {
+											"name": "12.3(8)XU4",
+											"product_id": "CSAFPID-106924"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XU3",
+										"product": {
+											"name": "12.3(8)XU3",
+											"product_id": "CSAFPID-107104"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XU"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XX",
+										"product": {
+											"name": "12.3(8)XX",
+											"product_id": "CSAFPID-63385"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XX1",
+										"product": {
+											"name": "12.3(8)XX1",
+											"product_id": "CSAFPID-104533"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XX"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XW",
+										"product": {
+											"name": "12.3(8)XW",
+											"product_id": "CSAFPID-63384"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XW2",
+										"product": {
+											"name": "12.3(8)XW2",
+											"product_id": "CSAFPID-104048"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XW3",
+										"product": {
+											"name": "12.3(8)XW3",
+											"product_id": "CSAFPID-104844"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XW1",
+										"product": {
+											"name": "12.3(8)XW1",
+											"product_id": "CSAFPID-105933"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XW1b",
+										"product": {
+											"name": "12.3(8)XW1b",
+											"product_id": "CSAFPID-106895"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XW1a",
+										"product": {
+											"name": "12.3(8)XW1a",
+											"product_id": "CSAFPID-107157"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XW"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY",
+										"product": {
+											"name": "12.3(8)XY",
+											"product_id": "CSAFPID-63386"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY3",
+										"product": {
+											"name": "12.3(8)XY3",
+											"product_id": "CSAFPID-103575"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY5",
+										"product": {
+											"name": "12.3(8)XY5",
+											"product_id": "CSAFPID-104640"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY4",
+										"product": {
+											"name": "12.3(8)XY4",
+											"product_id": "CSAFPID-104876"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY1",
+										"product": {
+											"name": "12.3(8)XY1",
+											"product_id": "CSAFPID-106092"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY7",
+										"product": {
+											"name": "12.3(8)XY7",
+											"product_id": "CSAFPID-106179"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY2",
+										"product": {
+											"name": "12.3(8)XY2",
+											"product_id": "CSAFPID-106790"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)XY6",
+										"product": {
+											"name": "12.3(8)XY6",
+											"product_id": "CSAFPID-107582"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3XY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YF",
+										"product": {
+											"name": "12.3(11)YF",
+											"product_id": "CSAFPID-65435"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YF2",
+										"product": {
+											"name": "12.3(11)YF2",
+											"product_id": "CSAFPID-103503"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YF3",
+										"product": {
+											"name": "12.3(11)YF3",
+											"product_id": "CSAFPID-106437"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YF4",
+										"product": {
+											"name": "12.3(11)YF4",
+											"product_id": "CSAFPID-106773"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YF1",
+										"product": {
+											"name": "12.3(11)YF1",
+											"product_id": "CSAFPID-107542"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YF"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YG",
+										"product": {
+											"name": "12.3(8)YG",
+											"product_id": "CSAFPID-63204"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YG3",
+										"product": {
+											"name": "12.3(8)YG3",
+											"product_id": "CSAFPID-106324"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YG2",
+										"product": {
+											"name": "12.3(8)YG2",
+											"product_id": "CSAFPID-107099"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YG4",
+										"product": {
+											"name": "12.3(8)YG4",
+											"product_id": "CSAFPID-107559"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YG"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YC",
+										"product": {
+											"name": "12.3(8)YC",
+											"product_id": "CSAFPID-65517"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YC2",
+										"product": {
+											"name": "12.3(8)YC2",
+											"product_id": "CSAFPID-104788"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YC3",
+										"product": {
+											"name": "12.3(8)YC3",
+											"product_id": "CSAFPID-104955"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)YC1",
+										"product": {
+											"name": "12.3(8)YC1",
+											"product_id": "CSAFPID-107671"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YC"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YL",
+										"product": {
+											"name": "12.3(11)YL",
+											"product_id": "CSAFPID-65899"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YL2",
+										"product": {
+											"name": "12.3(11)YL2",
+											"product_id": "CSAFPID-106672"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YL1",
+										"product": {
+											"name": "12.3(11)YL1",
+											"product_id": "CSAFPID-107160"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YL"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YK",
+										"product": {
+											"name": "12.3(11)YK",
+											"product_id": "CSAFPID-65437"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YK1",
+										"product": {
+											"name": "12.3(11)YK1",
+											"product_id": "CSAFPID-105113"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YK2",
+										"product": {
+											"name": "12.3(11)YK2",
+											"product_id": "CSAFPID-105174"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YK"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)JA2",
+										"product": {
+											"name": "12.3(11)JA2",
+											"product_id": "CSAFPID-105637"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3JA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ8",
+										"product": {
+											"name": "12.3(14)YQ8",
+											"product_id": "CSAFPID-62616"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ",
+										"product": {
+											"name": "12.3(14)YQ",
+											"product_id": "CSAFPID-65453"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ5",
+										"product": {
+											"name": "12.3(14)YQ5",
+											"product_id": "CSAFPID-103494"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ4",
+										"product": {
+											"name": "12.3(14)YQ4",
+											"product_id": "CSAFPID-103773"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ7",
+										"product": {
+											"name": "12.3(14)YQ7",
+											"product_id": "CSAFPID-104386"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ1",
+										"product": {
+											"name": "12.3(14)YQ1",
+											"product_id": "CSAFPID-106385"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ6",
+										"product": {
+											"name": "12.3(14)YQ6",
+											"product_id": "CSAFPID-106433"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ3",
+										"product": {
+											"name": "12.3(14)YQ3",
+											"product_id": "CSAFPID-106713"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YQ2",
+										"product": {
+											"name": "12.3(14)YQ2",
+											"product_id": "CSAFPID-107136"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YQ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YR",
+										"product": {
+											"name": "12.3(11)YR",
+											"product_id": "CSAFPID-65439"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YR1",
+										"product": {
+											"name": "12.3(11)YR1",
+											"product_id": "CSAFPID-105391"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YR"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(3e)",
+										"product": {
+											"name": "12.4(3e)",
+											"product_id": "CSAFPID-62573"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7b)",
+										"product": {
+											"name": "12.4(7b)",
+											"product_id": "CSAFPID-62574"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(8)",
+										"product": {
+											"name": "12.4(8)",
+											"product_id": "CSAFPID-62603"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(5b)",
+										"product": {
+											"name": "12.4(5b)",
+											"product_id": "CSAFPID-62625"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7a)",
+										"product": {
+											"name": "12.4(7a)",
+											"product_id": "CSAFPID-62626"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3d)",
+										"product": {
+											"name": "12.4(3d)",
+											"product_id": "CSAFPID-63198"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(1)",
+										"product": {
+											"name": "12.4(1)",
+											"product_id": "CSAFPID-65527"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(1a)",
+										"product": {
+											"name": "12.4(1a)",
+											"product_id": "CSAFPID-65528"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(1b)",
+										"product": {
+											"name": "12.4(1b)",
+											"product_id": "CSAFPID-65529"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(1c)",
+										"product": {
+											"name": "12.4(1c)",
+											"product_id": "CSAFPID-65530"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(10)",
+										"product": {
+											"name": "12.4(10)",
+											"product_id": "CSAFPID-65532"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3)",
+										"product": {
+											"name": "12.4(3)",
+											"product_id": "CSAFPID-65542"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3a)",
+										"product": {
+											"name": "12.4(3a)",
+											"product_id": "CSAFPID-65543"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3b)",
+										"product": {
+											"name": "12.4(3b)",
+											"product_id": "CSAFPID-65544"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3c)",
+										"product": {
+											"name": "12.4(3c)",
+											"product_id": "CSAFPID-65545"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3f)",
+										"product": {
+											"name": "12.4(3f)",
+											"product_id": "CSAFPID-65546"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(5)",
+										"product": {
+											"name": "12.4(5)",
+											"product_id": "CSAFPID-65552"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(5a)",
+										"product": {
+											"name": "12.4(5a)",
+											"product_id": "CSAFPID-65554"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7c)",
+										"product": {
+											"name": "12.4(7c)",
+											"product_id": "CSAFPID-65559"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7)",
+										"product": {
+											"name": "12.4(7)",
+											"product_id": "CSAFPID-65560"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(8a)",
+										"product": {
+											"name": "12.4(8a)",
+											"product_id": "CSAFPID-65561"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(8b)",
+										"product": {
+											"name": "12.4(8b)",
+											"product_id": "CSAFPID-65562"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7d)",
+										"product": {
+											"name": "12.4(7d)",
+											"product_id": "CSAFPID-66207"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3g)",
+										"product": {
+											"name": "12.4(3g)",
+											"product_id": "CSAFPID-66213"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(8c)",
+										"product": {
+											"name": "12.4(8c)",
+											"product_id": "CSAFPID-66328"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(10b)",
+										"product": {
+											"name": "12.4(10b)",
+											"product_id": "CSAFPID-69755"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12)",
+										"product": {
+											"name": "12.4(12)",
+											"product_id": "CSAFPID-69757"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12a)",
+										"product": {
+											"name": "12.4(12a)",
+											"product_id": "CSAFPID-69758"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12b)",
+										"product": {
+											"name": "12.4(12b)",
+											"product_id": "CSAFPID-69759"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13)",
+										"product": {
+											"name": "12.4(13)",
+											"product_id": "CSAFPID-69760"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13a)",
+										"product": {
+											"name": "12.4(13a)",
+											"product_id": "CSAFPID-69761"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13b)",
+										"product": {
+											"name": "12.4(13b)",
+											"product_id": "CSAFPID-69762"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13c)",
+										"product": {
+											"name": "12.4(13c)",
+											"product_id": "CSAFPID-69763"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7e)",
+										"product": {
+											"name": "12.4(7e)",
+											"product_id": "CSAFPID-69776"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(17)",
+										"product": {
+											"name": "12.4(17)",
+											"product_id": "CSAFPID-83376"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(18b)",
+										"product": {
+											"name": "12.4(18b)",
+											"product_id": "CSAFPID-103815"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(18e)",
+										"product": {
+											"name": "12.4(18e)",
+											"product_id": "CSAFPID-103886"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3i)",
+										"product": {
+											"name": "12.4(3i)",
+											"product_id": "CSAFPID-104248"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3j)",
+										"product": {
+											"name": "12.4(3j)",
+											"product_id": "CSAFPID-104369"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(23b)",
+										"product": {
+											"name": "12.4(23b)",
+											"product_id": "CSAFPID-104474"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(3h)",
+										"product": {
+											"name": "12.4(3h)",
+											"product_id": "CSAFPID-104487"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7h)",
+										"product": {
+											"name": "12.4(7h)",
+											"product_id": "CSAFPID-104670"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(25a)",
+										"product": {
+											"name": "12.4(25a)",
+											"product_id": "CSAFPID-104692"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(16)",
+										"product": {
+											"name": "12.4(16)",
+											"product_id": "CSAFPID-104878"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13d)",
+										"product": {
+											"name": "12.4(13d)",
+											"product_id": "CSAFPID-105034"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(25)",
+										"product": {
+											"name": "12.4(25)",
+											"product_id": "CSAFPID-105205"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(18d)",
+										"product": {
+											"name": "12.4(18d)",
+											"product_id": "CSAFPID-105480"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(19)",
+										"product": {
+											"name": "12.4(19)",
+											"product_id": "CSAFPID-105484"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13e)",
+										"product": {
+											"name": "12.4(13e)",
+											"product_id": "CSAFPID-105497"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(25b)",
+										"product": {
+											"name": "12.4(25b)",
+											"product_id": "CSAFPID-105594"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(23)",
+										"product": {
+											"name": "12.4(23)",
+											"product_id": "CSAFPID-105763"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(10c)",
+										"product": {
+											"name": "12.4(10c)",
+											"product_id": "CSAFPID-105843"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(21)",
+										"product": {
+											"name": "12.4(21)",
+											"product_id": "CSAFPID-105844"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(16b)",
+										"product": {
+											"name": "12.4(16b)",
+											"product_id": "CSAFPID-106011"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(16a)",
+										"product": {
+											"name": "12.4(16a)",
+											"product_id": "CSAFPID-106125"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(23a)",
+										"product": {
+											"name": "12.4(23a)",
+											"product_id": "CSAFPID-106148"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(23c)",
+										"product": {
+											"name": "12.4(23c)",
+											"product_id": "CSAFPID-106419"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7f)",
+										"product": {
+											"name": "12.4(7f)",
+											"product_id": "CSAFPID-106434"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(18)",
+										"product": {
+											"name": "12.4(18)",
+											"product_id": "CSAFPID-106569"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(21a)",
+										"product": {
+											"name": "12.4(21a)",
+											"product_id": "CSAFPID-106680"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(13f)",
+										"product": {
+											"name": "12.4(13f)",
+											"product_id": "CSAFPID-106945"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(18c)",
+										"product": {
+											"name": "12.4(18c)",
+											"product_id": "CSAFPID-106998"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(5c)",
+										"product": {
+											"name": "12.4(5c)",
+											"product_id": "CSAFPID-107012"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(8d)",
+										"product": {
+											"name": "12.4(8d)",
+											"product_id": "CSAFPID-107299"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(12c)",
+										"product": {
+											"name": "12.4(12c)",
+											"product_id": "CSAFPID-107464"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(17a)",
+										"product": {
+											"name": "12.4(17a)",
+											"product_id": "CSAFPID-107558"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(18a)",
+										"product": {
+											"name": "12.4(18a)",
+											"product_id": "CSAFPID-107575"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(17b)",
+										"product": {
+											"name": "12.4(17b)",
+											"product_id": "CSAFPID-107597"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(7g)",
+										"product": {
+											"name": "12.4(7g)",
+											"product_id": "CSAFPID-107747"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)JK",
+										"product": {
+											"name": "12.3(8)JK",
+											"product_id": "CSAFPID-65520"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3JK"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YU",
+										"product": {
+											"name": "12.3(14)YU",
+											"product_id": "CSAFPID-65455"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YU1",
+										"product": {
+											"name": "12.3(14)YU1",
+											"product_id": "CSAFPID-104198"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YU"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(6)MR1",
+										"product": {
+											"name": "12.4(6)MR1",
+											"product_id": "CSAFPID-62619"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)MR",
+										"product": {
+											"name": "12.4(2)MR",
+											"product_id": "CSAFPID-65541"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)MR",
+										"product": {
+											"name": "12.4(4)MR",
+											"product_id": "CSAFPID-65548"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)MR",
+										"product": {
+											"name": "12.4(6)MR",
+											"product_id": "CSAFPID-65555"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)MR1",
+										"product": {
+											"name": "12.4(4)MR1",
+											"product_id": "CSAFPID-105076"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)MR1",
+										"product": {
+											"name": "12.4(2)MR1",
+											"product_id": "CSAFPID-107139"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4MR"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T",
+										"product": {
+											"name": "12.4(4)T",
+											"product_id": "CSAFPID-59292"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T1",
+										"product": {
+											"name": "12.4(4)T1",
+											"product_id": "CSAFPID-59293"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T2",
+										"product": {
+											"name": "12.4(4)T2",
+											"product_id": "CSAFPID-59294"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T3",
+										"product": {
+											"name": "12.4(4)T3",
+											"product_id": "CSAFPID-59295"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T",
+										"product": {
+											"name": "12.4(6)T",
+											"product_id": "CSAFPID-59296"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T1",
+										"product": {
+											"name": "12.4(6)T1",
+											"product_id": "CSAFPID-59297"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T2",
+										"product": {
+											"name": "12.4(6)T2",
+											"product_id": "CSAFPID-59298"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T4",
+										"product": {
+											"name": "12.4(4)T4",
+											"product_id": "CSAFPID-62571"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T5",
+										"product": {
+											"name": "12.4(2)T5",
+											"product_id": "CSAFPID-62575"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T3",
+										"product": {
+											"name": "12.4(6)T3",
+											"product_id": "CSAFPID-62576"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T",
+										"product": {
+											"name": "12.4(2)T",
+											"product_id": "CSAFPID-63499"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T",
+										"product": {
+											"name": "12.4(24)T",
+											"product_id": "CSAFPID-92384"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T8",
+										"product": {
+											"name": "12.4(4)T8",
+											"product_id": "CSAFPID-103531"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T1",
+										"product": {
+											"name": "12.4(22)T1",
+											"product_id": "CSAFPID-103595"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T5",
+										"product": {
+											"name": "12.4(6)T5",
+											"product_id": "CSAFPID-103968"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T8",
+										"product": {
+											"name": "12.4(6)T8",
+											"product_id": "CSAFPID-104247"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T5b",
+										"product": {
+											"name": "12.4(6)T5b",
+											"product_id": "CSAFPID-104322"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T11",
+										"product": {
+											"name": "12.4(6)T11",
+											"product_id": "CSAFPID-104523"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T4",
+										"product": {
+											"name": "12.4(6)T4",
+											"product_id": "CSAFPID-104587"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T6",
+										"product": {
+											"name": "12.4(4)T6",
+											"product_id": "CSAFPID-104777"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T",
+										"product": {
+											"name": "12.4(22)T",
+											"product_id": "CSAFPID-104810"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T7",
+										"product": {
+											"name": "12.4(6)T7",
+											"product_id": "CSAFPID-105092"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T10",
+										"product": {
+											"name": "12.4(6)T10",
+											"product_id": "CSAFPID-105337"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T3",
+										"product": {
+											"name": "12.4(2)T3",
+											"product_id": "CSAFPID-105532"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T4",
+										"product": {
+											"name": "12.4(2)T4",
+											"product_id": "CSAFPID-105716"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(24)T1",
+										"product": {
+											"name": "12.4(24)T1",
+											"product_id": "CSAFPID-105745"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T9",
+										"product": {
+											"name": "12.4(6)T9",
+											"product_id": "CSAFPID-106062"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T12",
+										"product": {
+											"name": "12.4(6)T12",
+											"product_id": "CSAFPID-106091"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T7",
+										"product": {
+											"name": "12.4(4)T7",
+											"product_id": "CSAFPID-106428"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T1",
+										"product": {
+											"name": "12.4(2)T1",
+											"product_id": "CSAFPID-106553"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T6",
+										"product": {
+											"name": "12.4(2)T6",
+											"product_id": "CSAFPID-106756"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)T2",
+										"product": {
+											"name": "12.4(2)T2",
+											"product_id": "CSAFPID-106835"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T6",
+										"product": {
+											"name": "12.4(6)T6",
+											"product_id": "CSAFPID-107438"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)T5a",
+										"product": {
+											"name": "12.4(6)T5a",
+											"product_id": "CSAFPID-107475"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)T2",
+										"product": {
+											"name": "12.4(22)T2",
+											"product_id": "CSAFPID-107524"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)T5",
+										"product": {
+											"name": "12.4(4)T5",
+											"product_id": "CSAFPID-107536"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YT",
+										"product": {
+											"name": "12.3(14)YT",
+											"product_id": "CSAFPID-65454"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YT1",
+										"product": {
+											"name": "12.3(14)YT1",
+											"product_id": "CSAFPID-104514"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YT"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)JX",
+										"product": {
+											"name": "12.3(11)JX",
+											"product_id": "CSAFPID-62614"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(7)JX9",
+										"product": {
+											"name": "12.3(7)JX9",
+											"product_id": "CSAFPID-104378"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)JX1",
+										"product": {
+											"name": "12.3(11)JX1",
+											"product_id": "CSAFPID-106100"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3JX"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB",
+										"product": {
+											"name": "12.4(2)XB",
+											"product_id": "CSAFPID-65539"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB1",
+										"product": {
+											"name": "12.4(2)XB1",
+											"product_id": "CSAFPID-103843"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB6",
+										"product": {
+											"name": "12.4(2)XB6",
+											"product_id": "CSAFPID-103889"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB7",
+										"product": {
+											"name": "12.4(2)XB7",
+											"product_id": "CSAFPID-104212"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB11",
+										"product": {
+											"name": "12.4(2)XB11",
+											"product_id": "CSAFPID-104304"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB3",
+										"product": {
+											"name": "12.4(2)XB3",
+											"product_id": "CSAFPID-104673"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB9",
+										"product": {
+											"name": "12.4(2)XB9",
+											"product_id": "CSAFPID-104807"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB8",
+										"product": {
+											"name": "12.4(2)XB8",
+											"product_id": "CSAFPID-105022"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB2",
+										"product": {
+											"name": "12.4(2)XB2",
+											"product_id": "CSAFPID-106250"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB10",
+										"product": {
+											"name": "12.4(2)XB10",
+											"product_id": "CSAFPID-106696"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB4",
+										"product": {
+											"name": "12.4(2)XB4",
+											"product_id": "CSAFPID-107329"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XB5",
+										"product": {
+											"name": "12.4(2)XB5",
+											"product_id": "CSAFPID-107393"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XA",
+										"product": {
+											"name": "12.4(2)XA",
+											"product_id": "CSAFPID-65538"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XA1",
+										"product": {
+											"name": "12.4(2)XA1",
+											"product_id": "CSAFPID-103949"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(2)XA2",
+										"product": {
+											"name": "12.4(2)XA2",
+											"product_id": "CSAFPID-106896"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM8",
+										"product": {
+											"name": "12.3(14)YM8",
+											"product_id": "CSAFPID-62617"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM12",
+										"product": {
+											"name": "12.3(14)YM12",
+											"product_id": "CSAFPID-103605"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM4",
+										"product": {
+											"name": "12.3(14)YM4",
+											"product_id": "CSAFPID-103639"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM3",
+										"product": {
+											"name": "12.3(14)YM3",
+											"product_id": "CSAFPID-103907"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM7",
+										"product": {
+											"name": "12.3(14)YM7",
+											"product_id": "CSAFPID-104116"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM1",
+										"product": {
+											"name": "12.3(14)YM1",
+											"product_id": "CSAFPID-104473"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM11",
+										"product": {
+											"name": "12.3(14)YM11",
+											"product_id": "CSAFPID-105118"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM9",
+										"product": {
+											"name": "12.3(14)YM9",
+											"product_id": "CSAFPID-105179"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM6",
+										"product": {
+											"name": "12.3(14)YM6",
+											"product_id": "CSAFPID-106027"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM10",
+										"product": {
+											"name": "12.3(14)YM10",
+											"product_id": "CSAFPID-106461"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM13",
+										"product": {
+											"name": "12.3(14)YM13",
+											"product_id": "CSAFPID-106527"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM5",
+										"product": {
+											"name": "12.3(14)YM5",
+											"product_id": "CSAFPID-106554"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(14)YM2",
+										"product": {
+											"name": "12.3(14)YM2",
+											"product_id": "CSAFPID-107397"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YM"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD",
+										"product": {
+											"name": "12.4(4)XD",
+											"product_id": "CSAFPID-65551"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD4",
+										"product": {
+											"name": "12.4(4)XD4",
+											"product_id": "CSAFPID-104006"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD10",
+										"product": {
+											"name": "12.4(4)XD10",
+											"product_id": "CSAFPID-104273"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD6",
+										"product": {
+											"name": "12.4(4)XD6",
+											"product_id": "CSAFPID-105144"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD12",
+										"product": {
+											"name": "12.4(4)XD12",
+											"product_id": "CSAFPID-105471"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD2",
+										"product": {
+											"name": "12.4(4)XD2",
+											"product_id": "CSAFPID-105598"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD8",
+										"product": {
+											"name": "12.4(4)XD8",
+											"product_id": "CSAFPID-105707"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD11",
+										"product": {
+											"name": "12.4(4)XD11",
+											"product_id": "CSAFPID-105766"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD1",
+										"product": {
+											"name": "12.4(4)XD1",
+											"product_id": "CSAFPID-105918"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD5",
+										"product": {
+											"name": "12.4(4)XD5",
+											"product_id": "CSAFPID-106017"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD7",
+										"product": {
+											"name": "12.4(4)XD7",
+											"product_id": "CSAFPID-106956"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD3",
+										"product": {
+											"name": "12.4(4)XD3",
+											"product_id": "CSAFPID-106974"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(4)XD9",
+										"product": {
+											"name": "12.4(4)XD9",
+											"product_id": "CSAFPID-107693"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XD"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YZ1",
+										"product": {
+											"name": "12.3(11)YZ1",
+											"product_id": "CSAFPID-62618"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YZ",
+										"product": {
+											"name": "12.3(11)YZ",
+											"product_id": "CSAFPID-65440"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)YZ2",
+										"product": {
+											"name": "12.3(11)YZ2",
+											"product_id": "CSAFPID-107270"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3YZ"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XT",
+										"product": {
+											"name": "12.4(6)XT",
+											"product_id": "CSAFPID-66062"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XT1",
+										"product": {
+											"name": "12.4(6)XT1",
+											"product_id": "CSAFPID-106381"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XT2",
+										"product": {
+											"name": "12.4(6)XT2",
+											"product_id": "CSAFPID-107566"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XT"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(6)XP",
+										"product": {
+											"name": "12.4(6)XP",
+											"product_id": "CSAFPID-63196"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XP"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(22)MD1",
+										"product": {
+											"name": "12.4(22)MD1",
+											"product_id": "CSAFPID-105316"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)MD",
+										"product": {
+											"name": "12.4(22)MD",
+											"product_id": "CSAFPID-107316"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4MD"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(8)ZA",
+										"product": {
+											"name": "12.3(8)ZA",
+											"product_id": "CSAFPID-63194"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(8)ZA1",
+										"product": {
+											"name": "12.3(8)ZA1",
+											"product_id": "CSAFPID-106101"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3ZA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.3(11)ZB",
+										"product": {
+											"name": "12.3(11)ZB",
+											"product_id": "CSAFPID-63189"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)ZB1",
+										"product": {
+											"name": "12.3(11)ZB1",
+											"product_id": "CSAFPID-107379"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.3(11)ZB2",
+										"product": {
+											"name": "12.3(11)ZB2",
+											"product_id": "CSAFPID-107733"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.3ZB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(22)XR2",
+										"product": {
+											"name": "12.4(22)XR2",
+											"product_id": "CSAFPID-105255"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)XR1",
+										"product": {
+											"name": "12.4(22)XR1",
+											"product_id": "CSAFPID-107061"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4XR"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(22)MDA",
+										"product": {
+											"name": "12.4(22)MDA",
+											"product_id": "CSAFPID-106363"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(22)MDA1",
+										"product": {
+											"name": "12.4(22)MDA1",
+											"product_id": "CSAFPID-106792"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4MDA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(24)YG1",
+										"product": {
+											"name": "12.4(24)YG1",
+											"product_id": "CSAFPID-107561"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4YG"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(21a)M1",
+										"product": {
+											"name": "12.4(21a)M1",
+											"product_id": "CSAFPID-103527"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(23b)M1",
+										"product": {
+											"name": "12.4(23b)M1",
+											"product_id": "CSAFPID-107845"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.4(5a)M0",
+										"product": {
+											"name": "12.4(5a)M0",
+											"product_id": "CSAFPID-107848"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4M"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.0(2)SQD8",
+										"product": {
+											"name": "15.0(2)SQD8",
+											"product_id": "CSAFPID-232850"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.0SQD"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2010-0581",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCsz89904",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-103595",
+					"CSAFPID-104810",
+					"CSAFPID-105745",
+					"CSAFPID-107524",
+					"CSAFPID-232850",
+					"CSAFPID-92384"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-sip"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised to\r\napply mitigation techniques to help limit exposure to the vulnerabilities.\r\nMitigation consists of allowing only legitimate devices to connect to affected\r\ndevices. To increase effectiveness, the mitigation must be coupled with\r\nanti-spoofing measures on the network edge. This action is required because SIP\r\ncan use UDP as the transport protocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices within the\r\nnetwork are available in the companion document \"Cisco Applied Mitigation\r\nBulletin: Identifying and Mitigating Exploitation of the Cisco Unified\r\nCommunications Manager Express and Cisco IOS Software H.323 and Session\r\nInitiation Protocol Denial of Service Vulnerabilities\", which is available at\r\nthe following location:\r\nhttp://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice\"].\r\n\r\nDisable SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the simplest and\r\nmost effective workaround is to disable SIP processing on the device. Some\r\nversions of Cisco IOS Software allow administrators to disable SIP with the\r\nfollowing commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\n\r\n\r\nWarning: When applying this workaround to devices that are processing Media\r\nGateway Control Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these circumstances,\r\nthis workaround should be implemented during a maintenance window when active\r\ncalls can be briefly stopped.\r\n\r\nThe show udp connections, show\r\ntcp brief all, and show processes | include\r\nSIP commands can be used to confirm that the SIP UDP and TCP\r\nports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, the output from the\r\nshow ip sockets command may still show the SIP ports\r\nopen, but sending traffic to them will cause the SIP process to emit the\r\nfollowing message:\r\n\r\n\r\n*Feb  2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services it is possible to use\r\nControl Plane Policing (CoPP) to block SIP traffic to the device from untrusted\r\nsources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T\r\nsupport the CoPP feature. CoPP may be configured on a device to protect the\r\nmanagement and control planes to minimize the risk and effectiveness of direct\r\ninfrastructure attacks by explicitly permitting only authorized traffic sent to\r\ninfrastructure devices in accordance with existing security policies and\r\nconfigurations. The following example can be adapted to specific network\r\nconfigurations:\r\n\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature.) If the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\n\r\n\r\nWarning: Because SIP can use UDP as a transport protocol, it is possible to\r\neasily spoof the IP address of the sender, which may defeat access control\r\nlists that permit communication to these ports from trusted IP\r\naddresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs) that match\r\nthe potential exploit packets with the \"permit\" action result in these packets\r\nbeing discarded by the policy-map \"drop\" function, while packets that match the\r\n\"deny\" action (not shown) are not affected by the policy-map drop function.\r\nAdditional information on the configuration and use of the CoPP feature can be\r\nfound at\r\nhttp://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"]\r\nand\r\nhttp://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n"
+				}
+			],
+			"title": "Cisco IOS Software Session Initiation Protocol Packet Parsing Arbitrary Code Execution Vulnerability"
+		},
+		{
+			"cve": "CVE-2010-0579",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtb93416",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-103494",
+					"CSAFPID-103502",
+					"CSAFPID-103503",
+					"CSAFPID-103527",
+					"CSAFPID-103531",
+					"CSAFPID-103573",
+					"CSAFPID-103575",
+					"CSAFPID-103605",
+					"CSAFPID-103638",
+					"CSAFPID-103639",
+					"CSAFPID-103650",
+					"CSAFPID-103773",
+					"CSAFPID-103777",
+					"CSAFPID-103815",
+					"CSAFPID-103843",
+					"CSAFPID-103862",
+					"CSAFPID-103886",
+					"CSAFPID-103889",
+					"CSAFPID-103907",
+					"CSAFPID-103949",
+					"CSAFPID-103953",
+					"CSAFPID-103968",
+					"CSAFPID-104006",
+					"CSAFPID-104048",
+					"CSAFPID-104083",
+					"CSAFPID-104116",
+					"CSAFPID-104136",
+					"CSAFPID-104179",
+					"CSAFPID-104198",
+					"CSAFPID-104208",
+					"CSAFPID-104212",
+					"CSAFPID-104247",
+					"CSAFPID-104248",
+					"CSAFPID-104266",
+					"CSAFPID-104273",
+					"CSAFPID-104304",
+					"CSAFPID-104322",
+					"CSAFPID-104369",
+					"CSAFPID-104378",
+					"CSAFPID-104381",
+					"CSAFPID-104386",
+					"CSAFPID-104448",
+					"CSAFPID-104473",
+					"CSAFPID-104474",
+					"CSAFPID-104481",
+					"CSAFPID-104487",
+					"CSAFPID-104500",
+					"CSAFPID-104514",
+					"CSAFPID-104523",
+					"CSAFPID-104533",
+					"CSAFPID-104587",
+					"CSAFPID-104612",
+					"CSAFPID-104640",
+					"CSAFPID-104657",
+					"CSAFPID-104670",
+					"CSAFPID-104673",
+					"CSAFPID-104692",
+					"CSAFPID-104777",
+					"CSAFPID-104788",
+					"CSAFPID-104802",
+					"CSAFPID-104807",
+					"CSAFPID-104844",
+					"CSAFPID-104854",
+					"CSAFPID-104876",
+					"CSAFPID-104878",
+					"CSAFPID-104909",
+					"CSAFPID-104955",
+					"CSAFPID-104979",
+					"CSAFPID-104980",
+					"CSAFPID-105022",
+					"CSAFPID-105034",
+					"CSAFPID-105067",
+					"CSAFPID-105076",
+					"CSAFPID-105092",
+					"CSAFPID-105113",
+					"CSAFPID-105116",
+					"CSAFPID-105118",
+					"CSAFPID-105144",
+					"CSAFPID-105174",
+					"CSAFPID-105179",
+					"CSAFPID-105193",
+					"CSAFPID-105205",
+					"CSAFPID-105271",
+					"CSAFPID-105272",
+					"CSAFPID-105337",
+					"CSAFPID-105348",
+					"CSAFPID-105369",
+					"CSAFPID-105391",
+					"CSAFPID-105434",
+					"CSAFPID-105471",
+					"CSAFPID-105480",
+					"CSAFPID-105484",
+					"CSAFPID-105497",
+					"CSAFPID-105503",
+					"CSAFPID-105523",
+					"CSAFPID-105532",
+					"CSAFPID-105571",
+					"CSAFPID-105585",
+					"CSAFPID-105594",
+					"CSAFPID-105598",
+					"CSAFPID-105637",
+					"CSAFPID-105707",
+					"CSAFPID-105716",
+					"CSAFPID-105720",
+					"CSAFPID-105748",
+					"CSAFPID-105763",
+					"CSAFPID-105766",
+					"CSAFPID-105797",
+					"CSAFPID-105808",
+					"CSAFPID-105843",
+					"CSAFPID-105844",
+					"CSAFPID-105911",
+					"CSAFPID-105918",
+					"CSAFPID-105933",
+					"CSAFPID-105964",
+					"CSAFPID-106011",
+					"CSAFPID-106017",
+					"CSAFPID-106027",
+					"CSAFPID-106060",
+					"CSAFPID-106062",
+					"CSAFPID-106081",
+					"CSAFPID-106091",
+					"CSAFPID-106092",
+					"CSAFPID-106094",
+					"CSAFPID-106100",
+					"CSAFPID-106101",
+					"CSAFPID-106125",
+					"CSAFPID-106141",
+					"CSAFPID-106147",
+					"CSAFPID-106148",
+					"CSAFPID-106179",
+					"CSAFPID-106250",
+					"CSAFPID-106296",
+					"CSAFPID-106304",
+					"CSAFPID-106312",
+					"CSAFPID-106324",
+					"CSAFPID-106381",
+					"CSAFPID-106385",
+					"CSAFPID-106391",
+					"CSAFPID-106419",
+					"CSAFPID-106421",
+					"CSAFPID-106428",
+					"CSAFPID-106433",
+					"CSAFPID-106434",
+					"CSAFPID-106437",
+					"CSAFPID-106461",
+					"CSAFPID-106469",
+					"CSAFPID-106527",
+					"CSAFPID-106531",
+					"CSAFPID-106553",
+					"CSAFPID-106554",
+					"CSAFPID-106569",
+					"CSAFPID-106582",
+					"CSAFPID-106609",
+					"CSAFPID-106612",
+					"CSAFPID-106672",
+					"CSAFPID-106680",
+					"CSAFPID-106696",
+					"CSAFPID-106713",
+					"CSAFPID-106716",
+					"CSAFPID-106745",
+					"CSAFPID-106751",
+					"CSAFPID-106756",
+					"CSAFPID-106773",
+					"CSAFPID-106790",
+					"CSAFPID-106793",
+					"CSAFPID-106835",
+					"CSAFPID-106872",
+					"CSAFPID-106895",
+					"CSAFPID-106896",
+					"CSAFPID-106924",
+					"CSAFPID-106945",
+					"CSAFPID-106956",
+					"CSAFPID-106974",
+					"CSAFPID-106983",
+					"CSAFPID-106998",
+					"CSAFPID-107012",
+					"CSAFPID-107066",
+					"CSAFPID-107075",
+					"CSAFPID-107099",
+					"CSAFPID-107104",
+					"CSAFPID-107136",
+					"CSAFPID-107139",
+					"CSAFPID-107157",
+					"CSAFPID-107160",
+					"CSAFPID-107238",
+					"CSAFPID-107270",
+					"CSAFPID-107299",
+					"CSAFPID-107307",
+					"CSAFPID-107314",
+					"CSAFPID-107329",
+					"CSAFPID-107367",
+					"CSAFPID-107379",
+					"CSAFPID-107382",
+					"CSAFPID-107392",
+					"CSAFPID-107393",
+					"CSAFPID-107394",
+					"CSAFPID-107397",
+					"CSAFPID-107438",
+					"CSAFPID-107464",
+					"CSAFPID-107475",
+					"CSAFPID-107536",
+					"CSAFPID-107542",
+					"CSAFPID-107558",
+					"CSAFPID-107559",
+					"CSAFPID-107566",
+					"CSAFPID-107575",
+					"CSAFPID-107582",
+					"CSAFPID-107596",
+					"CSAFPID-107597",
+					"CSAFPID-107603",
+					"CSAFPID-107608",
+					"CSAFPID-107640",
+					"CSAFPID-107671",
+					"CSAFPID-107693",
+					"CSAFPID-107733",
+					"CSAFPID-107747",
+					"CSAFPID-107764",
+					"CSAFPID-107845",
+					"CSAFPID-107848",
+					"CSAFPID-232850",
+					"CSAFPID-58331",
+					"CSAFPID-59292",
+					"CSAFPID-59293",
+					"CSAFPID-59294",
+					"CSAFPID-59295",
+					"CSAFPID-59296",
+					"CSAFPID-59297",
+					"CSAFPID-59298",
+					"CSAFPID-62555",
+					"CSAFPID-62570",
+					"CSAFPID-62571",
+					"CSAFPID-62573",
+					"CSAFPID-62574",
+					"CSAFPID-62575",
+					"CSAFPID-62576",
+					"CSAFPID-62603",
+					"CSAFPID-62614",
+					"CSAFPID-62616",
+					"CSAFPID-62617",
+					"CSAFPID-62618",
+					"CSAFPID-62619",
+					"CSAFPID-62622",
+					"CSAFPID-62623",
+					"CSAFPID-62625",
+					"CSAFPID-62626",
+					"CSAFPID-63189",
+					"CSAFPID-63194",
+					"CSAFPID-63196",
+					"CSAFPID-63197",
+					"CSAFPID-63198",
+					"CSAFPID-63204",
+					"CSAFPID-63378",
+					"CSAFPID-63379",
+					"CSAFPID-63380",
+					"CSAFPID-63381",
+					"CSAFPID-63384",
+					"CSAFPID-63385",
+					"CSAFPID-63386",
+					"CSAFPID-63499",
+					"CSAFPID-63501",
+					"CSAFPID-65434",
+					"CSAFPID-65435",
+					"CSAFPID-65437",
+					"CSAFPID-65439",
+					"CSAFPID-65440",
+					"CSAFPID-65453",
+					"CSAFPID-65454",
+					"CSAFPID-65455",
+					"CSAFPID-65471",
+					"CSAFPID-65490",
+					"CSAFPID-65509",
+					"CSAFPID-65510",
+					"CSAFPID-65511",
+					"CSAFPID-65513",
+					"CSAFPID-65514",
+					"CSAFPID-65517",
+					"CSAFPID-65520",
+					"CSAFPID-65527",
+					"CSAFPID-65528",
+					"CSAFPID-65529",
+					"CSAFPID-65530",
+					"CSAFPID-65532",
+					"CSAFPID-65538",
+					"CSAFPID-65539",
+					"CSAFPID-65541",
+					"CSAFPID-65542",
+					"CSAFPID-65543",
+					"CSAFPID-65544",
+					"CSAFPID-65545",
+					"CSAFPID-65546",
+					"CSAFPID-65548",
+					"CSAFPID-65551",
+					"CSAFPID-65552",
+					"CSAFPID-65554",
+					"CSAFPID-65555",
+					"CSAFPID-65559",
+					"CSAFPID-65560",
+					"CSAFPID-65561",
+					"CSAFPID-65562",
+					"CSAFPID-65899",
+					"CSAFPID-66062",
+					"CSAFPID-66207",
+					"CSAFPID-66213",
+					"CSAFPID-66328",
+					"CSAFPID-69755",
+					"CSAFPID-69757",
+					"CSAFPID-69758",
+					"CSAFPID-69759",
+					"CSAFPID-69760",
+					"CSAFPID-69761",
+					"CSAFPID-69762",
+					"CSAFPID-69763",
+					"CSAFPID-69776",
+					"CSAFPID-83376"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-sip"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised to\r\napply mitigation techniques to help limit exposure to the vulnerabilities.\r\nMitigation consists of allowing only legitimate devices to connect to affected\r\ndevices. To increase effectiveness, the mitigation must be coupled with\r\nanti-spoofing measures on the network edge. This action is required because SIP\r\ncan use UDP as the transport protocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices within the\r\nnetwork are available in the companion document \"Cisco Applied Mitigation\r\nBulletin: Identifying and Mitigating Exploitation of the Cisco Unified\r\nCommunications Manager Express and Cisco IOS Software H.323 and Session\r\nInitiation Protocol Denial of Service Vulnerabilities\", which is available at\r\nthe following location:\r\nhttp://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice\"].\r\n\r\nDisable SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the simplest and\r\nmost effective workaround is to disable SIP processing on the device. Some\r\nversions of Cisco IOS Software allow administrators to disable SIP with the\r\nfollowing commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\n\r\n\r\nWarning: When applying this workaround to devices that are processing Media\r\nGateway Control Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these circumstances,\r\nthis workaround should be implemented during a maintenance window when active\r\ncalls can be briefly stopped.\r\n\r\nThe show udp connections, show\r\ntcp brief all, and show processes | include\r\nSIP commands can be used to confirm that the SIP UDP and TCP\r\nports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, the output from the\r\nshow ip sockets command may still show the SIP ports\r\nopen, but sending traffic to them will cause the SIP process to emit the\r\nfollowing message:\r\n\r\n\r\n*Feb  2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services it is possible to use\r\nControl Plane Policing (CoPP) to block SIP traffic to the device from untrusted\r\nsources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T\r\nsupport the CoPP feature. CoPP may be configured on a device to protect the\r\nmanagement and control planes to minimize the risk and effectiveness of direct\r\ninfrastructure attacks by explicitly permitting only authorized traffic sent to\r\ninfrastructure devices in accordance with existing security policies and\r\nconfigurations. The following example can be adapted to specific network\r\nconfigurations:\r\n\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature.) If the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\n\r\n\r\nWarning: Because SIP can use UDP as a transport protocol, it is possible to\r\neasily spoof the IP address of the sender, which may defeat access control\r\nlists that permit communication to these ports from trusted IP\r\naddresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs) that match\r\nthe potential exploit packets with the \"permit\" action result in these packets\r\nbeing discarded by the policy-map \"drop\" function, while packets that match the\r\n\"deny\" action (not shown) are not affected by the policy-map drop function.\r\nAdditional information on the configuration and use of the CoPP feature can be\r\nfound at\r\nhttp://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"]\r\nand\r\nhttp://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n"
+				}
+			],
+			"title": "Cisco IOS Software SIP Message Handling Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2010-0580",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCsz48680",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-103595",
+					"CSAFPID-104810",
+					"CSAFPID-105255",
+					"CSAFPID-105316",
+					"CSAFPID-105745",
+					"CSAFPID-106363",
+					"CSAFPID-106792",
+					"CSAFPID-107061",
+					"CSAFPID-107316",
+					"CSAFPID-107524",
+					"CSAFPID-107561",
+					"CSAFPID-232850",
+					"CSAFPID-92384"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Session Initiation Protocol Denial of Service Vulnerabilities",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20100324-sip"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If the affected Cisco IOS device requires SIP for VoIP services, SIP\r\ncannot be disabled, and no workarounds are available. Users are advised to\r\napply mitigation techniques to help limit exposure to the vulnerabilities.\r\nMitigation consists of allowing only legitimate devices to connect to affected\r\ndevices. To increase effectiveness, the mitigation must be coupled with\r\nanti-spoofing measures on the network edge. This action is required because SIP\r\ncan use UDP as the transport protocol.\r\n\r\nAdditional mitigations that can be deployed on Cisco devices within the\r\nnetwork are available in the companion document \"Cisco Applied Mitigation\r\nBulletin: Identifying and Mitigating Exploitation of the Cisco Unified\r\nCommunications Manager Express and Cisco IOS Software H.323 and Session\r\nInitiation Protocol Denial of Service Vulnerabilities\", which is available at\r\nthe following location:\r\nhttp://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice[\"http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20100324-voice\"].\r\n\r\nDisable SIP Listening Ports\r\nFor devices that do not require SIP to be enabled, the simplest and\r\nmost effective workaround is to disable SIP processing on the device. Some\r\nversions of Cisco IOS Software allow administrators to disable SIP with the\r\nfollowing commands:\r\n\r\n\r\nsip-ua\r\n no transport udp\r\n no transport tcp\r\n no transport tcp tls\r\n\r\n\r\n\r\nWarning: When applying this workaround to devices that are processing Media\r\nGateway Control Protocol (MGCP) or H.323 calls, the device will not stop SIP\r\nprocessing while active calls are being processed. Under these circumstances,\r\nthis workaround should be implemented during a maintenance window when active\r\ncalls can be briefly stopped.\r\n\r\nThe show udp connections, show\r\ntcp brief all, and show processes | include\r\nSIP commands can be used to confirm that the SIP UDP and TCP\r\nports are closed after applying this workaround.\r\n\r\nDepending on the Cisco IOS Software version in use, the output from the\r\nshow ip sockets command may still show the SIP ports\r\nopen, but sending traffic to them will cause the SIP process to emit the\r\nfollowing message:\r\n\r\n\r\n*Feb  2 11:36:47.691: sip_udp_sock_process_read: SIP UDP Listener is DISABLED\r\n\r\nControl Plane Policing\r\nFor devices that need to offer SIP services it is possible to use\r\nControl Plane Policing (CoPP) to block SIP traffic to the device from untrusted\r\nsources. Cisco IOS Releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T\r\nsupport the CoPP feature. CoPP may be configured on a device to protect the\r\nmanagement and control planes to minimize the risk and effectiveness of direct\r\ninfrastructure attacks by explicitly permitting only authorized traffic sent to\r\ninfrastructure devices in accordance with existing security policies and\r\nconfigurations. The following example can be adapted to specific network\r\nconfigurations:\r\n\r\n\r\n\r\n!-- The 192.168.1.0/24 network and the 172.16.1.1 host are trusted.\r\n!-- Everything else is not trusted. The following access list is used\r\n!-- to determine what traffic needs to be dropped by a control plane\r\n!-- policy (the CoPP feature.) If the access list matches (permit)\r\n!-- then traffic will be dropped and if the access list does not\r\n!-- match (deny) then traffic will be processed by the router.\r\naccess-list 100 deny udp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5060\r\naccess-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 5061\r\naccess-list 100 deny udp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5060\r\naccess-list 100 deny tcp host 172.16.1.1 any eq 5061\r\naccess-list 100 permit udp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5060\r\naccess-list 100 permit tcp any any eq 5061\r\n\r\n\r\n!-- Permit (Police or Drop)/Deny (Allow) all other Layer3 and Layer4\r\n!-- traffic in accordance with existing security policies and\r\n!-- configurations for traffic that is authorized to be sent\r\n!-- to infrastructure devices.\r\n!-- Create a Class-Map for traffic to be policed by\r\n!-- the CoPP feature.\r\nclass-map match-all drop-sip-class\r\n  match access-group 100\r\n\r\n\r\n!-- Create a Policy-Map that will be applied to the\r\n!-- Control-Plane of the device.\r\npolicy-map control-plane-policy\r\n class drop-sip-class\r\n  drop\r\n\r\n\r\n!-- Apply the Policy-Map to the Control-Plane of the\r\n!-- device.\r\ncontrol-plane\r\n service-policy input control-plane-policy\r\n\r\n\r\n\r\nWarning: Because SIP can use UDP as a transport protocol, it is possible to\r\neasily spoof the IP address of the sender, which may defeat access control\r\nlists that permit communication to these ports from trusted IP\r\naddresses.\r\n\r\nIn the above CoPP example, the access control entries (ACEs) that match\r\nthe potential exploit packets with the \"permit\" action result in these packets\r\nbeing discarded by the policy-map \"drop\" function, while packets that match the\r\n\"deny\" action (not shown) are not affected by the policy-map drop function.\r\nAdditional information on the configuration and use of the CoPP feature can be\r\nfound at\r\nhttp://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"]\r\nand\r\nhttp://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html[\"http://www.cisco.com/en/US/docs/ios/12_3t/12_3t4/feature/guide/gtrtlimt.html\"].\r\n"
+				}
+			],
+			"title": "Cisco IOS Software Session Initiation Protocol Message Processing Arbitrary Code Execution Vulnerability"
+		}
+	]
+}

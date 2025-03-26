@@ -1,0 +1,140 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco Internetwork Operating System (IOS) Software release trains  12.2T, 12.3 and 12.3T may contain vulnerabilities in processing certain  Internet Key Exchange (IKE) Xauth messages when configured to be an Easy VPN  Server.\r\n\r\nSuccessful exploitation of these vulnerabilities may permit an  unauthorized user to complete authentication and potentially access network  resources.\r\n\r\n This advisory will be posted to    http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050406-xauth [\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050406-xauth\"]\r\n\r\nCisco has made free software available to address this vulnerability  for affected customers.",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This section provides details on affected products.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "This issue affects all Cisco devices running any unfixed version of  Cisco IOS that supports, and is configured for, Cisco Easy VPN Server Xauth  version 6 authentication.\r\n\r\nA Cisco device running Easy VPN Server and configured for Xauth  authentication will have the following line in the configuration:\r\n\r\n\r\n\n  crypto map <mapname> client authentication list <listname>\r\n\r\n The Easy VPN Server XAUTH feature may also be enabled underneath an  ISAKMP profile via a configuration similar to:\r\n\r\n\r\n\n  crypto isakmp profile <profilename>      match identity group <groupname>     client authentication list <listname>     isakmp authentication list <listname>     client configuration address respond     qos-group 2\r\n\r\nTo determine the software running on a Cisco product, log in to the  device and issue the 'show version' command to display the system banner. Cisco  IOS Software will identify itself as \"Internetwork Operating System Software\"  or simply \"IOS.\" On the next line of output, the image name will be displayed  between parentheses, followed by \"Version\" and the IOS release name. Other  Cisco devices will not have the show version command or will give different  output.\r\n\r\nThe following example identifies a Cisco product running IOS release  12.3(6) with an installed image name of C3640-I-M:\r\n\r\n\r\n\n  Cisco Internetwork Operating System Software   IOS (tm) 3600 Software (C3640-I-M), Version 12.3(6), RELEASE SOFTWARE (fc3)\r\n\r\nThe next example shows a product running IOS release 12.3(11)T3 with an  image name of C3845-ADVIPSERVICESK9-M:\r\n\r\n\r\n\n  Cisco IOS Software, 3800 Software (C3845-ADVIPSERVICESK9-M), Version 12.3(11)T3, RELEASE SOFTWARE (fc4)   Technical Support: http://www.cisco.com/techsupport   Copyright (c) 1986-2005 by Cisco Systems, Inc.\r\n\r\nAdditional information about Cisco IOS release naming can be found at    http://www.cisco.com/warp/public/620/1.html [\"http://www.cisco.com/warp/public/620/1.html\"].",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco Easy VPN Server is an IOS-only feature. Devices that do not run  IOS are not vulnerable.\r\n\r\nNo other Cisco products are currently known to be affected by these  vulnerabilities.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "IPSec is a framework of open standards that provides data  confidentiality, data integrity, and data authentication between participating  peers. IPSec provides these security services at the IP layer allowing for data  to be transmitted across a public network without fear of observation,  modification, or spoofing, thus enabling applications such as Virtual Private  Networks (VPNs). IPSec uses the Internet Key Exchange (IKE) protocol to provide  authentication of the IPSec peers, negotiate IPSec security associations (SA),  and establish IPSec keys.\r\n\r\n Extended Authentication (XAUTH) is an extension to IKE defined in an  expired Internet Engineering Task Force (IETF) Internet Draft,  draft-ietf-ipsec-isakmp-xauth-06.txt, which allows for organizations to utilize  existing legacy authentication methods in order to manage remote access.\r\n\r\n Successful VPN establishment consists of two levels of SA's known as  phases. Phase 1 authentication establishes session keys. Using the Xauth  feature, the client waits for a \"username/password\" challenge after the IKE  Phase 1 SA has been established. When the end user responds to the challenge,  the response is forwarded to the IPsec peers for an additional level of  authentication.\r\n\r\nThe    Cisco IOS Easy VPN Server feature [\"/en/US/products/sw/iosswrel/ps1839/products_feature_guides_list.html\"] introduced in IOS 12.2(8)T allows an  IOS device to act as a VPN concentrator, providing authentication and encrypted  access to network resources.\r\n\r\nTo determine if Cisco's Easy VPN Server XAUTH feature is enabled, check  the device's configuration for the following line:\r\n\r\n\r\n\n  crypto map <mapname> client authentication list <listname>\r\n\r\n The Easy VPN Server XAUTH feature may also be enabled underneath an  ISAKMP profile via a configuration similar to:\r\n\r\n\r\n\n  crypto isakmp profile <profilename>      match identity group <groupname>     client authentication list <listname>     isakmp authentication list <listname>     client configuration address respond     qos-group 2\r\n\r\nCertain packets sent to the IOS Easy VPN Server listening on User  Datgram Protocol (UDP) port 500 may permit an unauthorized user to complete  Xauth authentication and thereby gain access to network resources.\r\n\r\n\r\n\r\nIn order for the attack to succeed, an attacker must know the shared  group key to complete the IKE Phase 1 negotiation before the Xauth negotiation  takes place.\r\n\r\n This malformed packet vulnerability is documented as Cisco Bug ID    CSCin82407.  [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCin82407\"] (  registered [\"http://tools.cisco.com/RPF/register/register.do\"] )  customers only.\r\n\r\n\r\n\r\n A second vulnerability exists in a feature introduced in IOS 12.3(8)T  where an ISAKMP profile can be assigned to a remote access peer based on the  certificate the peer uses during IKE negotiation. If the ISAKMP profile  mandates XAUTH (AAA authentication and authorization lists are configured in  the profile), then the peer must perform XAUTH authentication after Phase 1  negotiation.\r\n\r\n\r\n\r\n A vulnerability exists where the ISAKMP profile is assigned but the  attributes that are configured in the ISAKMP profile are not processed. This  can result in a situtation where both the VPN client and VPN server are  expecting to hear something from the other end of the connection. Normally this  deadlock will be broken by idle timers tearing down the SA, but it is possible  for a malicious client to propose Phase 2 negotiation during this time which  may allow for the IPSec SA to be fully established.\r\n\r\n\r\n\r\n This issue only affects ISAKMP profiles matched by certificate maps.  Configurations with certificate maps configured will contain the commands:\r\n\r\n\r\n\n  crypto isakmp profile <profilename>      match certificate <mapname>\r\n\r\n This vulnerability is documented as Cisco Bug ID    CSCeg00277.  [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCeg00277\"] (  registered [\"http://tools.cisco.com/RPF/register/register.do\"] )  customers only.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "The effectiveness of any workaround is dependent on specific deployment  scenarios such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n     Using Strong Group Passwords\r\nBecause the preshared group password (also referred to as the group  key) must be known by an attacker, the use of a best practice to deploy strong  preshared group keys may mitigate a brute-force attack against this group  key.\r\n\r\nThe preshared key can be changed by using the following configuration  commands:\r\n\r\n\r\n\n      Router(config)#crypto isakmp client configuration group <group-name>       Router(config)#key <key>",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Each row of the Cisco IOS software table (below) describes a release  train and the platforms or products for which it is intended. If a given  release train is vulnerable, then the earliest possible releases that contain  the fix (the \"First Fixed Release\") and the anticipated date of availability  for each are listed in the \"Rebuild\" and \"Maintenance\" columns. A device  running a release in the given train that is earlier than the release in a  specific column (less than the First Fixed Release) is known to be vulnerable.  The release should be upgraded at least to the indicated release or a later  version (greater than or equal to the First Fixed Release label).\r\n\r\nFor further information on the terms \"Rebuild\" and \"Maintenance\" please  consult the following URL:\r\n\r\n   http://www.cisco.com/warp/public/620/1.html [\"http://www.cisco.com/warp/public/620/1.html\"]\r\n\r\nWhen considering software upgrades, please also consult    http://www.cisco.com/en/US/products/products_security_advisories_listing.html [\"/en/US/products/products_security_advisories_listing.html\"]and  any subsequent advisories to determine exposure and a complete upgrade  solution.\r\n\r\nIn all cases, customers should exercise caution to be certain the  devices to be upgraded contain sufficient memory and that current hardware and  software configurations will continue to be supported properly by the new  release. If the information is not clear, contact the Cisco Technical  Assistance Center (\"TAC\") for assistance.\r\n\r\nMajor Release\r\n\r\nAvailability of Repaired Releases\r\n\r\n Affected 12.2-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.2B\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2BC\r\n\r\n12.2(15)BC1f\r\n\r\n12.2(15)BC2e\r\n\r\n12.2BX\r\n\r\nVulnerable, contact TAC\r\n\r\n12.2BY\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2BZ\r\n\r\nVulnerable, contact TAC\r\n\r\n12.2CX\r\n\r\nMigrate to 12.3(9a)BC\r\n\r\n12.2CY\r\n\r\nMigrate to 12.2(15)BC1f or 12.2(15)BC2e\r\n\r\n12.2CZ\r\n\r\n12.2(15)CZ1\r\n\r\n12.2JK\r\n\r\n12.2(15)JK2\r\n\r\n12.2SU\r\n\r\n12.2(14)SU2\r\n\r\n12.2SX\r\n\r\nMigrate to 12.2(17d)SXB5\r\n\r\n12.2SXA\r\n\r\nMigrate to 12.2(17d)SXB5\r\n\r\n12.2SXB\r\n\r\n12.2(17d)SXB5\r\n\r\n12.2SXD\r\n\r\n12.2(18)SXD1\r\n\r\n12.2SY\r\n\r\nMigrate to 12.2(17d)SXB5\r\n\r\n12.2T\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2XJ\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2XK\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2XL\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2XM\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2XW\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2XZ\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YA\r\n\r\n12.2(4)YA8\r\n\r\n12.2YB\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YD\r\n\r\nMigrate to 12.3(8)T5 or later\r\n\r\n12.2YF\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YG\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YH\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YJ\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YL\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2YM\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2YN\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2YP\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YQ\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2YR\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2YT\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2YU\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2YV\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2YW\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2YX\r\n\r\nMigrate to 12.2(14)SU2 or later\r\n\r\n12.2YY\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2ZB\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2ZC\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2ZD\r\n\r\nMigrate to 12.3(14)T\r\n\r\n12.2ZE\r\n\r\nMigrate to 12.3 or later\r\n\r\n12.2ZF\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2ZG\r\n\r\nMigrate to 12.3(4)T8 or later\r\n\r\n12.2ZH\r\n\r\n12.2(13)ZH5\r\n\r\n12.2ZJ\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2ZK\r\n\r\nContact TAC\r\n\r\n12.2ZL\r\n\r\n12.2(15)ZL2 available TBD\r\n\r\n12.2ZN\r\n\r\nMigrate to 12.3T or later\r\n\r\n12.2ZP\r\n\r\nContact TAC\r\n\r\n Affected 12.3-Based Release\r\n\r\n Rebuild\r\n\r\n Maintenance\r\n\r\n12.3\r\n\r\n12.3(6e)\r\n\r\n12.3(9c)\r\n\r\n12.3(10a)\r\n\r\n12.3(12)\r\n\r\n12.3B\r\n\r\n12.3(5a)B3\r\n\r\n12.3BC\r\n\r\n12.3(9a)BC\r\n\r\n12.3BW\r\n\r\nMigrate to 12.3(7)T6 or later\r\n\r\n12.3T\r\n\r\n12.3(2)T9\r\n\r\n12.3(4)T8\r\n\r\n12.3(7)T7\r\n\r\n12.3(8)T5\r\n\r\n12.3(11)T2\r\n\r\n12.3(14)T\r\n\r\n12.3XA\r\n\r\n12.3(2)XA3 available TBD\r\n\r\n12.3XB\r\n\r\nMigrate to 12.3(8)T5 or later\r\n\r\n12.3XC\r\n\r\n12.3(2)XC3 available TBD\r\n\r\n12.3XD\r\n\r\n12.3(4)XD4\r\n\r\n12.3XE\r\n\r\n12.3(2)XE1\r\n\r\n12.3XF\r\n\r\nMigrate to 12.3(11)T2 or later\r\n\r\n12.3XG\r\n\r\n12.3(4)XG2\r\n\r\n12.3XH\r\n\r\nMigrate to 12.3(11)T2 or later\r\n\r\n12.3XI\r\n\r\nContact TAC\r\n\r\n12.3XJ\r\n\r\nContact TAC\r\n\r\n12.3XK\r\n\r\nMigrate to 12.3(11)T2 or later\r\n\r\n12.3XL\r\n\r\n12.3(11)XL\r\n\r\n12.3XM\r\n\r\nMigrate to 12.3(14)T or later\r\n\r\n12.3XN\r\n\r\nMigrate to 12.3(14)T or later\r\n\r\n12.3XQ\r\n\r\n12.3(4)XQ1\r\n\r\n12.3XR\r\n\r\n12.3(7)XR3\r\n\r\n12.3XS\r\n\r\n12.3(7)XS2\r\n\r\n12.3XT\r\n\r\nContact TAC\r\n\r\n12.3XU\r\n\r\n12.3(8)XU3\r\n\r\n12.3XW\r\n\r\nContact TAC\r\n\r\n12.3XX\r\n\r\n12.3(8)XX1\r\n\r\n12.3XY\r\n\r\nMigrate to 12.3(14)T\r\n\r\n12.3YA\r\n\r\n12.3(8)YA1\r\n\r\n12.3YC\r\n\r\n12.3(8)YC1\r\n\r\n12.3YD\r\n\r\n12.3(8)YD\r\n\r\n12.3YF\r\n\r\n12.3(11)YF\r\n\r\n12.3YG\r\n\r\n12.3(8)YG1\r\n\r\n12.3YH\r\n\r\n12.3(8)YH\r\n\r\n12.3YI\r\n\r\n12.3(8)YI available TBD\r\n\r\n12.3YJ\r\n\r\n12.3(11)YJ\r\n\r\n12.3YK\r\n\r\n12.3(11)YK",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious  use of the vulnerability described in this advisory.\r\n\r\nBoth vulnerabilities were reported by Cisco customers",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Vulnerabilities in the Internet Key Exchange Xauth Implementation",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050406-xauth"
+			}
+		],
+		"title": "Vulnerabilities in the Internet Key Exchange Xauth Implementation",
+		"tracking": {
+			"current_release_date": "2005-04-06T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:05:16+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20050406-xauth",
+			"initial_release_date": "2005-04-06T16:00:00+00:00",
+			"revision_history": [],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2005-1057",
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Vulnerabilities in the Internet Key Exchange Xauth Implementation",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050406-xauth"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific deployment  scenarios such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n     Using Strong Group Passwords\r\nBecause the preshared group password (also referred to as the group  key) must be known by an attacker, the use of a best practice to deploy strong  preshared group keys may mitigate a brute-force attack against this group  key.\r\n\r\nThe preshared key can be changed by using the following configuration  commands:\r\n\r\n\r\n\n      Router(config)#crypto isakmp client configuration group <group-name>       Router(config)#key <key>"
+				}
+			],
+			"title": "Cisco IOS XAUTH Unauthorized Access Vulnerabilities"
+		},
+		{
+			"cve": "CVE-2005-1058",
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Vulnerabilities in the Internet Key Exchange Xauth Implementation",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050406-xauth"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific deployment  scenarios such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n     Using Strong Group Passwords\r\nBecause the preshared group password (also referred to as the group  key) must be known by an attacker, the use of a best practice to deploy strong  preshared group keys may mitigate a brute-force attack against this group  key.\r\n\r\nThe preshared key can be changed by using the following configuration  commands:\r\n\r\n\r\n\n      Router(config)#crypto isakmp client configuration group <group-name>       Router(config)#key <key>"
+				}
+			],
+			"title": "Cisco IOS XAUTH Unauthorized Access Vulnerabilities"
+		}
+	]
+}

@@ -1,0 +1,209 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "These issues were found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_informational_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "For certain products that are running Cisco NX-OS Software and are configured for SSH authentication with an X.509 version 3 (X.509v3) certificate, two remote authorization methods are unsupported and could allow for privilege escalation: TACACS+ and certain configurations of Lightweight Directory Access Protocol (LDAP).\r\n\r\nTACACS+ does not properly validate the distinguished name (DN) of the X.509v3 certificate due to a logic error with authentication, authorization, and accounting (AAA).\r\nLDAP does not properly validate the DN of the X.509v3 certificate if the enable cert-dn-match configuration command is not present. The enable cert-dn-match configuration command is required for username validation of the DN of the X.509v3 certificate.\r\n\r\nBoth unsupported configurations could allow a user who is authenticating to the device to elevate their privilege level to Administrator because the DN programmed username on the X.509v3 certificate was not validated and therefore did not have to match the username being authenticated.\r\n\r\nCisco has released software updates that address the TACACS+ and LDAP authorization issues, along with updates to the documentation for Cisco NX-OS Software. See Details [\"#details\"] for information about configuration changes that can address these security issues.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "The following Cisco products are affected if they are running an affected release of Cisco NX-OS Software and they are configured for SSH authentication with X.509v3 certificates and remote authorization using TACACS+:\r\n\r\nMDS 9000 Series Multilayer Switches (CSCwd34476 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd34476\"])\r\nNexus 1000 Virtual Edge for VMware vSphere (CSCwc25702 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25702\"])\r\nNexus 1000V Switch for Microsoft Hyper-V (CSCwc25702 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25702\"])\r\nNexus 1000V Switch for VMware vSphere (CSCwc25702 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25702\"])\r\nNexus 3000 Series Switches (CSCwc17000 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc17000\"])\r\nNexus 5500 Platform Switches (CSCwc25697 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25697\"])\r\nNexus 5600 Platform Switches (CSCwc25697 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25697\"])\r\nNexus 6000 Series Switches (CSCwc25697 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25697\"])\r\nNexus 7000 Series Switches (CSCwc17198 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc17198\"])\r\nNexus 9000 Series Switches in standalone NX-OS mode (CSCwc17000 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc17000\"])\r\n\r\nFor information on how to determine whether a product is using this unsupported configuration, see Determine Whether Unsupported TACACS+ Authorization with SSH X.509v3 Certificates is Configured [\"#TACACSplus\"].\r\n\r\nThe following Cisco products are affected if they are running an affected release of Cisco NX-OS Software and they are configured for SSH authorization with X.509v3 certificates and remote authorization using an unsupported configuration of LDAP:\r\n\r\nMDS 9000 Series Multilayer Switches (CSCwd34477 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd34477\"])\r\nNexus 3000 Series Switches (CSCwd31232 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd31232\"])\r\nNexus 7000 Series Switches (CSCwd31263 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd31263\"])\r\nNexus 9000 Series Switches in standalone NX-OS mode (CSCwd31232 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd31232\"])\r\n\r\nFor information on how to determine whether a product is using this unsupported configuration, see Determine Whether LDAP Authorization with SSH X.509v3 Certificates is Using an Unsupported Configuration [\"#LDAP\"].\r\n  Determine Whether Unsupported TACACS+ Authorization with SSH X.509v3 Certificates is Configured\r\nTo determine whether a Cisco NX-OS device is configured to use TACACS+ for remote authorization, use the show running-config CLI command. The configuration is unsupported and the device is affected if the following CLI commands are present:\r\n\r\naaa authorization ssh-certificate default group groupname where the AAA group is configured for TACACS+\r\naaa group server tacacs+ groupname\r\n\r\nThe CLI of a device that is running a fixed release of Cisco NX-OS Software would not accept the unsupported configuration. The following example shows the error message that would be returned on a device that is running a fixed release:\r\n\r\n\r\nnxos# config\r\nEnter configuration commands, one per line.  End with CNTL/Z.\r\nnxos(config)# aaa authorization ssh-certificate default group tacacs1\r\naaa function not supported by configured method\r\ncould not update aaa configuration\r\n\r\nWhen a device is upgraded to a fixed release of Cisco NX-OS Software, any existing aaa authorization ssh-certificate default group groupname commands where the AAA group is configured for TACACS+ are removed from the configuration.\r\n  Determine Whether LDAP Authorization with SSH X.509v3 Certificates is Using an Unsupported Configuration\r\nTo determine whether a Cisco NX-OS device is configured to use LDAP for remote authorization, use the show running-config CLI command. The configuration is unsupported and the device is affected if the following conditions are true:\r\n\r\nThe CLI command aaa authorization ssh-certificate default group groupname where the AAA group is configured for LDAP is present.\r\nThe CLI command aaa group server ldap groupname is configured.\r\nThe LDAP configuration does not contain enable cert-dn-match.\r\n\r\nA device is running a supported configuration and is not affected if the CLI command show running-config ldap | include cert-dn-match returns output, as in the following example:\r\n\r\n\r\nnxos# show running-config ldap | include cert-dn-match\r\nenable cert-dn-match\r\n\r\nFor MDS 9000 Series and Nexus 7000 Series switches that are running a fixed release of Cisco NX-OS Software, the enable cert-dn-match configuration is enabled by default. Cisco recommends keeping this configuration enabled. For Nexus 3000 Series and 9000 Series switches that are running a fixed release, the enable cert-dn-match logic is always implemented, regardless of whether enable cert-dn-match is present in the configuration.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by these issues.\r\n\r\nCisco has confirmed that these issues do not affect the following Cisco products:\r\n\r\nFirepower 1000 Series\r\nFirepower 2100 Series\r\nFirepower 4100 Series\r\nFirepower 9300 Security Appliances\r\nNexus 9000 Series Fabric Switches in ACI mode\r\nUCS 6200 Series Fabric Interconnects\r\nUCS 6300 Series Fabric Interconnects\r\nUCS 6400 Series Fabric Interconnects\r\nUCS 6500 Series Fabric Interconnects",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco recommends the following configuration changes to prevent the security issues that are explained in this advisory:\r\n\r\nSSH with X.509v3 certificate-based authentication and TACACS+ authorization is unsupported. If the device requires X.509v3 certificate-based authentication, the only valid remote authorization option is LDAP. Use the NX-OS CLI command aaa authorization ssh-certificate default group groupname to reconfigure the AAA group from TACACS+ to LDAP.\r\nIf NX-OS CLI command aaa authorization ssh-certificate default group groupname is configured and the AAA group is configured for LDAP, add the enable cert-dn-match configuration command. Otherwise, this is an unsupported configuration.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n  Fixed Releases\r\nThe left column lists Cisco NX-OS products. The middle and right columns indicate whether the product is affected by the security issues that are described in this advisory and which releases prevent the issues for the specified remote authorization configuration.\r\n        Cisco NX-OS Product  First Fixed Release for TACACS+   First Fixed Release for LDAP          MDS 9000 Series Multilayer Switches  8.4(2f) (March 2023)\r\n9.3(2)  8.4(2f) (March 2023)\r\n9.3(2)      Nexus 1000 and 1000V Switches  No fixed planned1  Not applicable      Nexus 3000 Series and 9000 Series Switches  9.3(10)\r\n10.2(4)\r\n10.3(1)  9.3(11)2\r\n10.2(5)\r\n10.3(2)      Nexus 5500 and 5600 Platform Switches and Nexus 6000 Series Switches  7.3(12)N1(1)  Not applicable      Nexus 7000 Series Switches  8.2(9)\r\n8.4(7)  8.4(7)\r\n1. All products in the Nexus 1000 product family have reached the End of Software Maintenance milestone in the end-of-life process. See End-of-Sale and End-of-Life Announcement for the Cisco Nexus 1000V Virtual Switch for VMware vSphere [\"https://www.cisco.com/c/en/us/products/collateral/switches/nexus-1000v-switch-vmware-vsphere/eos-eol-notice-c51-741934.html\"] for details.\r\n2. Fixed releases of Cisco Nexus 3000 Series and 9000 Series Switches implement the enable cert-dn-match logic regardless of the configuration. This will be changed to be based off the enable cert-dn-match configuration parameter in a future release, which is tracked by CSCwe16785 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwe16785\"].\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.\r\n    Additional Resources\r\nFor help determining the best Cisco NX-OS Software release for a Cisco Nexus Switch, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\n\r\nCisco MDS Series Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html\"]\r\nCisco Nexus 1000V for VMware Switch [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus1000/sw/recommended_releases/b_Cisco_N1KV_VMware_MinRecommendedReleases.html\"]\r\nCisco Nexus 3000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html\"]\r\nCisco Nexus 5500 Platform Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html\"]\r\nCisco Nexus 5600 Platform Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5600/sw/release/recommended_releases/n5600_recommended_nx-os_releases.html\"]\r\nCisco Nexus 6000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 7000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 9000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html\"]\r\nCisco Nexus 9000 Series ACI-Mode Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/recommended-release/b_Recommended_Cisco_ACI_Releases.html\"]\r\n\r\nTo determine the best release for Cisco UCS Software, see the Recommended Releases documents in the release notes for the device.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the issues that are described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "These issues were found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco NX-OS Software SSH X.509v3 Certificate Authentication with Unsupported Remote Authorization Method Privilege Escalation Issues",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxos-x509v3-unsupportedconfig-ScRtAbUk"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwd34476",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd34476"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwc25702",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25702"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwc17000",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc17000"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwc25697",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc25697"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwc17198",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwc17198"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwd34477",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd34477"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwd31232",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd31232"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwd31263",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwd31263"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "End-of-Sale and End-of-Life Announcement for the Cisco Nexus 1000V Virtual Switch for VMware vSphere",
+				"url": "https://www.cisco.com/c/en/us/products/collateral/switches/nexus-1000v-switch-vmware-vsphere/eos-eol-notice-c51-741934.html"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwe16785",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwe16785"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;MDS Series Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 1000V for VMware Switch",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus1000/sw/recommended_releases/b_Cisco_N1KV_VMware_MinRecommendedReleases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 3000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 5500 Platform Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 5600 Platform Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5600/sw/release/recommended_releases/n5600_recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 6000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 7000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 9000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Nexus 9000 Series ACI-Mode Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/recommended-release/b_Recommended_Cisco_ACI_Releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco NX-OS Software SSH X.509v3 Certificate Authentication with Unsupported Remote Authorization Method Privilege Escalation Issues",
+		"tracking": {
+			"current_release_date": "2023-02-22T16:00:00+00:00",
+			"generator": {
+				"date": "2023-02-22T15:50:53+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-nxos-x509v3-unsupportedconfig-ScRtAbUk",
+			"initial_release_date": "2023-02-22T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-02-22T15:50:35+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {}
+}

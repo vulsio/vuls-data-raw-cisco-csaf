@@ -1,0 +1,146 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the Cisco Guard may enable an attacker to send a web  browser client to a malicious website with the use of Cross Site Scripting  (XSS) when the Guard is providing anti-spoofing services between the web  browser client and a webserver. The attacker may exploit this by providing a  malicious URL for the web browser client to go to, often in email, followed off  of a malicious website, or in an instant message. This issue may occur even if  the protected website does not allow XSS. A software upgrade is required to fix  this vulnerability. There is a workaround available to mitigate the effects of  the vulnerability.\r\n\r\nThis advisory is available at  http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060920-guardxss [\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060920-guardxss\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This section provides details on affected products.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "The following Cisco products are vulnerable.\r\n\r\n   Cisco Guard Appliance (Software Version 3.X)\r\n\r\n   Cisco Guard Blade (Software Version 4.X)\r\n\r\n   Cisco Guard Appliance [Software Version 5.0(3)]\r\n\r\n   Cisco Guard Appliance [Software Version 5.1(5)]",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products have been found to be vulnerable.\r\n\r\nThere are three ways to determine the software version that your Cisco  Guard DDoS mitigation appliance is running. An example of each method is shown  here:\r\n\r\n   Virtual terminal or local serial console connection\r\nTo determine the software version number through the local serial console use a serial cable and a terminal emulation program to connect to the appliance. Once you are connected, press the Enter key of your terminal and the Guard will present, without even logging in, the version of the software running on the devices:\r\nCisco Guard Version 3.1(0.12)\n GUARD login:\r\n    In this example the Cisco Guard is running software version 3.1.\r\nFor a virtual terminal, the procedure is the same except that no serial cable or terminal emulation program is needed (a standard keyboard and monitor are directly connected to the appliance).\r\n\r\n   Remote Secure Shell (SSH) connection\r\nTo obtain the software version number through a SSH session, use a SSH client to log in to the Cisco Guard and issue the show version command-line interface (CLI) command.\r\nprompt$ ssh admin@guard.example.com\nadmin@guard.example.com's password: Last login: Wed Nov 24 22:45:53 on ttyS0 admin@GUARD#show version Copyright (c) 2000-2004 Cisco Systems, Inc. All rights reserved.  Software License Agreement  [...]  Cisco Anomaly Guard Release: 3.1(0.12) Date:    2004/10/27 19:58:14  GUARD uptime is 3 weeks, 3 days, 17 hours, 53 minutes System Serial Number:  XXXXXXX\r\n    In this example, the Cisco Traffic Anomaly Guard is running software version 3.1.\r\n\r\n   Remote secure web session\r\nTo obtain the software version that Cisco Guard is running through a secure web interface, open the URL https://IP address of your Guard/ in a web browser, log in, and then click on the About link located on the top right section of the browser window.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Guard DDoS Mitigation Appliance is a distributed  denial-of-service (DDoS) protection system. Malicious DOS traffic is identified  with a Cisco Detector and diverted to the Guard for attack mitigation. Under  normal circumstances, the Guard plays no role in valid traffic; it is  specifically designed to deal with large volumes of invalid traffic.\r\n\r\n Cross Site Scripting (XSS) is an attack where a user follows a link  that contains an embedded script. The link often looks valid, and sends the  user to a valid site. The recipient website does not contain the link that is  sent and sends a meta-refresh back to the user without validating the data it  is sent. When receiving the meta-refresh, the web browser interprets the script  as an instruction from the website and the script is executed on the user's  machine .\r\n\r\n In this case, when the anti-spoofing feature is enabled, all diverted  HTTP traffic is inspected and then a meta-refresh is sent to the client  containing the original request. If the original URL contains a script and a  specific character sequence, the meta-refresh from the Guard will allow the  client machine to execute the malicious script.\r\n\r\n Several conditions are required to be true in order for the malicious  script to be processed:\r\n\r\n   The client user must follow a URL with a specifically formatted, embedded script to a site protected by the Guard.\r\n\r\n   The Guard must be running active basic protection, going through basic/redirect protection.\r\n\r\n   The specially crafted http request must be diverted through the Guard, and processed by the Guard.\r\n\r\n\r\nOnly if all of the above conditions are met will the client receive the  meta-refresh and process the embedded script.\r\n\r\n This vulnerability is being tracked by bug ID  CSCsf01438 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsf01438\"]            ( registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only)         .",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Changing the basic/redirect protection to basic/safe-reset protects the  client from executing the embedded script. Instead of providing a layer seven  http meta-refresh to the browser with the malicious URL intact, the Guard  provides a layer three TCP-RST to end the connection. This can cause minor  compatability issues, as some firewalls do not forward the TCP-RST. However,  this method protects users from any XSS attacks until the Guard can be upgraded  to a fixed version of code.\r\n\r\nTo turn off basic/redirect and configure basic/safe-reset, please  follow the example below.\r\n\r\n\r\nShow the zone.\r\n\r\n\r\nuser@GUARD#show zone test\n ...skipped   **** USER FILTERS **** Row Source IP Source Mask     Proto DPort Frg Action Rate Burst Units RxRate(pps) 10  *         255.255.255.255 6     80    no  basic/redirect  user@GUARD#config t user@GUARD-conf#zone test user@GUARD-conf-zone-test#no user-filter 10\r\n\r\n\r\nConfigure basic/safe-reset dynamic filter.\r\n\r\n\r\nuser@GUARD-conf-zone-test#user-filter 10 basic/safe-reset * 6 80\n\r\n\r\n\r\nShow that the filter is applied.\r\n\r\n\r\nuser@GUARD#show zone test\n ...skipped   **** USER FILTERS **** Row Source IP Source Mask     Proto DPort Frg Action Rate Burst Units RxRate(pps) 10  *         255.255.255.255 6     80    no  basic/safe-reset\r\n\r\n\r\nFor more information, please refer to the configuration guide:\r\n\r\n  http://www.cisco.com/en/US/products/ps5888/products_configuration_guide_chapter09186a00804b7d13.html#wp1135548 [\"/en/US/docs/security/anomaly_detection_mitigation/appliances/guard/v5.0/configuration/guide/conffilt.html#wp1135548\"]",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability is fixed in version 5.1(6) of the Cisco Anomaly  Guard code.\r\n\r\nWhen considering software upgrades, also consult  http://www.cisco.com/go/psirt [\"http://www.cisco.com/go/psirt\"]  and any subsequent advisories to determine exposure and a complete upgrade  solution.\r\n\r\nIn all cases, customers should exercise caution to be certain the  devices to be upgraded contain sufficient memory and that current hardware and  software configurations will continue to be supported properly by the new  release. If the information is not clear, contact the Cisco Technical  Assistance Center (\"TAC\") or your contracted maintenance provider for  assistance.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious  use of the vulnerability described in this advisory.\r\n\r\nThis vulnerability was reported to Cisco by a customer.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "external",
+				"summary": "Understanding Cross-Site Scripting (XSS) Threat Vectors",
+				"url": "http://tools.cisco.com/security/center/content/CiscoAppliedMitigationBulletin/cisco-amb-20060922-understanding-xss"
+			},
+			{
+				"category": "self",
+				"summary": "Cisco Guard Enables Cross Site Scripting",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060920-guardxss"
+			}
+		],
+		"title": "Cisco Guard Enables Cross Site Scripting",
+		"tracking": {
+			"current_release_date": "2012-01-02T12:18:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:14:51+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20060920-guardxss",
+			"initial_release_date": "2006-09-20T16:00:00+00:00",
+			"revision_history": [],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Guard DDoS Mitigation Appliance",
+						"product": {
+							"name": "Cisco Guard DDoS Mitigation Appliance ",
+							"product_id": "CSAFPID-5791"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2006-4909",
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5791"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco Guard Enables Cross Site Scripting",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20060920-guardxss"
+				}
+			],
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Changing the basic/redirect protection to basic/safe-reset protects the  client from executing the embedded script. Instead of providing a layer seven  http meta-refresh to the browser with the malicious URL intact, the Guard  provides a layer three TCP-RST to end the connection. This can cause minor  compatability issues, as some firewalls do not forward the TCP-RST. However,  this method protects users from any XSS attacks until the Guard can be upgraded  to a fixed version of code.\r\n\r\nTo turn off basic/redirect and configure basic/safe-reset, please  follow the example below.\r\n\r\n\r\nShow the zone.\r\n\r\n\r\nuser@GUARD#show zone test\n ...skipped   **** USER FILTERS **** Row Source IP Source Mask     Proto DPort Frg Action Rate Burst Units RxRate(pps) 10  *         255.255.255.255 6     80    no  basic/redirect  user@GUARD#config t user@GUARD-conf#zone test user@GUARD-conf-zone-test#no user-filter 10\r\n\r\n\r\nConfigure basic/safe-reset dynamic filter.\r\n\r\n\r\nuser@GUARD-conf-zone-test#user-filter 10 basic/safe-reset * 6 80\n\r\n\r\n\r\nShow that the filter is applied.\r\n\r\n\r\nuser@GUARD#show zone test\n ...skipped   **** USER FILTERS **** Row Source IP Source Mask     Proto DPort Frg Action Rate Burst Units RxRate(pps) 10  *         255.255.255.255 6     80    no  basic/safe-reset\r\n\r\n\r\nFor more information, please refer to the configuration guide:\r\n\r\n  http://www.cisco.com/en/US/products/ps5888/products_configuration_guide_chapter09186a00804b7d13.html#wp1135548 [\"/en/US/docs/security/anomaly_detection_mitigation/appliances/guard/v5.0/configuration/guide/conffilt.html#wp1135548\"]"
+				}
+			],
+			"scores": [
+				{
+					"products": [
+						"CSAFPID-5791"
+					]
+				},
+				{
+					"products": [
+						"CSAFPID-5791"
+					]
+				}
+			],
+			"title": "DO NOT PUBLISH UNTIL Sept 20 -- Cisco Guard Cross-Site Scripting Vulnerability"
+		}
+	]
+}

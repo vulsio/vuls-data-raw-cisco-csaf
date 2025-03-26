@@ -1,0 +1,479 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "The Cisco IOS Software implementation of the multicast Domain Name System (mDNS) feature contains the following vulnerabilities when processing mDNS packets that could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition:\r\n\r\n    Cisco IOS Software mDNS Gateway Memory Leak Vulnerability\r\n    Cisco IOS Software mDNS Gateway Denial of Service Vulnerability\r\n\r\nCisco has released software updates that address these vulnerabilities. This advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140924-mdns[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140924-mdns\"]\n\r\n\n\r\nNote: The September 24, 2014, Cisco IOS Software Security Advisory bundled publication includes six Cisco Security Advisories. All advisories address vulnerabilities in Cisco IOS Software. Individual publication links are in Cisco Event Response: Semiannual Cisco IOS Software Security Advisory Bundled Publication at the following link:\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep14.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep14.html\"]\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco devices that are running affected Cisco IOS Software or Cisco IOS XE Software are vulnerable. Cisco mDNS Gateway functionality is enabled by default on Cisco IOS and Cisco IOS XE Software. There is no specific configuration on the affected device needed to process mDNS packets.\n\r\n\n\r\nTo determine whether a Cisco IOS device or Cisco IOS XE device would process mDNS packets, log into the device and issue either of the following command line interface (CLI) commands show ip socket, show udp, or show control-plane host open-ports. If the output shows any IP addresses listening on port UDP 5353, the device is vulnerable.\n\r\n\n\r\nThe following example shows a Cisco IOS device that is affected by these vulnerabilities. The device is vulnerable because the socket is opened on UDP port 5353:\r\n\r\nRouter#show ip socket  \r\nProto Remote Port Local Port In Out Stat TTY OutputIF \r\n17 --listen-- 192.168.0.1 67 0 0 1 0 \r\n17 --listen-- 192.168.0.1 68 0 0 1 0 \r\n17 --listen-- 224.0.0.251 5353 0 0 1 0\r\nRouter#\r\n\r\nRouter#sho udp \r\nProto        Remote      Port      Local       Port  In Out  Stat TTY OutputIF\r\n17     224.0.0.251      5353 --any--          5353   0   0 1000021   0 \r\n17(v6) FF02::FB         5353 --any--          5353   0   0 1020021   0 \r\nRouter#\r\n\r\nRouter#sho control-plane host open-ports \r\nActive internet connections (servers and established)\r\nProt               Local Address             Foreign Address                  Service    State\r\n tcp                        *:22                         *:0               SSH-Server   LISTEN\r\n tcp                        *:23                         *:0                   Telnet   LISTEN\r\n udp                      *:5353               224.0.0.251:0         IOS host service   LISTEN\r\nRouter#\r\n\r\n\r\nNote: The behavior of Cisco IOS and Cisco IOS XE Software prior to the fix for Cisco bug ID CSCum51028 is to turn the mDNS functionality on by default. This behavior was changed through Cisco bug ID CSCum51028 and is now disabled by default. If the administrator wants to enable mDNS functionality, it must be manually configured on a device.\n\r\n\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.2(4)M5 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), 15.2(4)M5, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\nCompiled Fri 13-Sep-13 16:44 by prod_rel_team\r\n!--- output truncated \r\n\r\nAdditional information about Cisco IOS Software release naming conventions is available in White Paper: Cisco IOS and NX-OS Software Reference Guide[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS XR Software is not affected by these vulnerabilities.\n\r\n\n\r\nNo other Cisco products are currently known to be affected by these vulnerabilities.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco's Service Discovery Gateway (mDNS Gateway) is an IOS component that allows for controlled and secure access to services and devices across subnets. It listens to service announcements on all configured network segments and builds a cache of services and addresses.\n\r\n\n\r\nCisco IOS Software mDNS Gateway Memory Leak Vulnerability\n\r\n\n\r\nA vulnerability in the multicast Domain Name System (mDNS) implementation of Cisco IOS Software could allow an unauthenticated, remote attacker to cause a memory leak condition, which could eventually lead to an interface wedge or a reload of the affected device.\n\r\n\n\r\nThe vulnerability is due to improper parsing of malformed mDNS packets sent to an affected device. An attacker could exploit this vulnerability by sending malformed mDNS packets to be processed by an affected device. An exploit could allow the attacker to cause a memory leak condition, which could eventually lead to an interface wedge or a reload of the affected device.\n\r\n\n\r\nThis vulnerability can be exploited using both IPv4 and IPv6 packets. The vulnerability can be triggered by malformed UDP packets destined for port 5353 using either IPv4/IPv6 unicast address of any interface configured on a device, IPv4 multicast address 224.0.0.251, or IPv6 multicast address FF02::FB.\n\r\n\n\r\nThis vulnerability can only be triggered by the traffic destined to an affected device and cannot be exploited with traffic transiting an affected device.\n\r\n\n\r\nIn devices that meet the vulnerable configuration criteria, malformed UDP mDNS packets could trigger this vulnerability. An attacker with knowledge of the infrastructure could craft mDNS packets with set conditions to exploit this vulnerability. Successful exploitation of the vulnerability could result in a memory leak that can lead to an interface wedge and eventually a reload of the affected device. Recovery from an interface queue wedge condition requires a reload of the device, which could result in a denial of service (DoS) condition.\n\r\n\n\r\nAn interface queue wedge is a class of vulnerability in which certain packets are received and queued by a Cisco IOS router or switch but, due to a processing error, are never removed from the queue. Consult the Workarounds section of this advisory for more information about queue wedges and some detection mechanisms that may be used to identify a blocked interface on Cisco IOS Software. Also see the Cisco Security Blog \"Cisco IOS Queue Wedges Explained\" at the following link: http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/[\"http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/\"]\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCuj58950[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuj58950\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2014-3358.\n\r\n\n\r\nCisco IOS Software mDNS Gateway Denial of Service Vulnerability\n\r\n\n\r\nA vulnerability in the multicast DNS (mDNS) gateway function of Cisco IOS Software could allow an unauthenticated, remote attacker to reload the vulnerable device.\n\r\n\n\r\nThe vulnerability is due to improper validation of mDNS packets. An attacker could exploit this vulnerability by sending malformed IPv4 or IPv6 packets on UDP port 5353. An exploit could allow the attacker to cause a denial of service (DoS) condition.\n\r\n\n\r\nThis vulnerability can be exploited using both IPv4 and IPv6 packets. The vulnerability can be triggered by malformed UDP packets destined for port 5353 using either IPv4/IPv6 unicast address of any interface configured on a device, IPv4 multicast address 224.0.0.251, or IPv6 multicast address FF02::FB.\n\r\n\n\r\nThis vulnerability can only be triggered by the traffic destined to an affected device and cannot be exploited with traffic transiting an affected device.\n\r\n\n\r\nIn devices that meet the vulnerable configuration criteria, malformed UDP mDNS packets could trigger this vulnerability. An attacker with knowledge of the infrastructure could craft mDNS packets with set conditions to exploit this vulnerability. Successful exploitation of the vulnerability can result in a reload of the affected device.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCul90866[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCul90866\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2014-3357.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "Access Control Lists\n\r\n\n\r\nOn Cisco IOS and Cisco IOS XE Software releases that do not have a fix for Cisco bug ID CSCum51028, there is currently no way to manually close the port or disable the service.\n\r\n\n\r\nOn those releases, a possible workaround consists of configuring an extended access control list (ACL) that can be created and applied to an interface to block traffic destined to UDP port 5353.\n\r\n\n\r\nBecause the mDNS feature in this vulnerability utilizes UDP as a transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses. In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger workaround than ACLs alone.\n\r\n\n\r\nThe ACL example below should be included as part of the deployed interface access-list, which will help protect the device from traffic destined to UDP port 5353:\r\n\r\n!---\r\n!--- Deny IPv4 mDNS traffic to a device\r\n!--- \r\n\r\naccess-list 150 deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv4 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\naccess-list 150 permit ip any any  \r\n\r\n!---\r\n!--- Deny IPv6 mDNS traffic to a device\r\n!--- \n\r\nipv6 access-list v6_list\r\n  deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv6 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\npermit ipv6 any any  \r\n\r\n!--- Apply access-list to all interfaces (only one example\r\n!--- shown)  \r\n\r\ninterface fastEthernet 2/0 \r\nip access-group 150 in\r\n  ipv6 traffic-filter v6_list in\r\n\r\n\r\nControl Plane Policing\n\r\n\n\r\nControl Plane Policing (CoPP) can be used to block untrusted UDP traffic to the device. Cisco IOS Software releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T support the CoPP feature. CoPP can be configured on a device to help protect the management and control planes and minimize the risk and effectiveness of direct infrastructure attacks by explicitly permitting only authorized traffic that is sent to infrastructure devices in accordance with existing security policies and configurations. \n\r\n\n\r\nThe CoPP example below should be included as part of the deployed CoPP, which will help protect the device from traffic destined to UDP port 5353:\r\n\r\n!---\r\n!--- Match IPv4 mDNS traffic with permit statement\r\n!--- \r\n\r\naccess-list 150 permit udp any any eq 5353  \r\n\r\n!--- Permit (Police or Drop)/Deny (Allow) all other Layer3 and \r\n!--- Layer4 IPv4 traffic in accordance with existing security policies \r\n!--- and configurations for traffic that is authorized to be sent \r\n!--- to infrastructure devices \r\n!--- \r\n\r\naccess-list 150 deny ip any any  \r\n\r\n!--- Create a Class-Map for traffic to be policed by\r\n!--- the CoPP feature\r\n!---\r\n\r\nclass-map match-all drop-udp-class \r\nmatch access-group 150\r\n\r\n!--- Create a Policy-Map that will be applied to the \r\n!--- Control-Plane of the device.  \r\n\r\npolicy-map drop-udp-traffic class drop-udp-class drop  \r\n\r\n!--- Apply the Policy-Map to the \r\n!--- Control-Plane of the device  \r\n\r\ncontrol-plane service-policy \r\ninput drop-udp-traffic\r\n\r\n\r\nIn the above CoPP example, the access control list entries (ACE) that match the potential exploit packets with the \"permit\" action result in these packets being discarded by the policy-map \"drop\" function, while packets that match the \"deny\" action (not shown) are not affected by the policy-map \"drop\" function. Please note that the policy-map syntax is different in the 12.2S and 12.0S Cisco IOS software trains:\r\n\r\npolicy-map drop-udp-traffic \r\n  class drop-udp-class \r\n  police 32000 1500 1500 conform-action drop exceed-action drop\r\n\r\n\r\nNote: Cisco does not recommend deploying CoPP for IPv6 traffic.\n\r\n\n\r\nAdditional information on the configuration and use of the CoPP feature can be found in the documents, \"Control Plane Policing Implementation Best Practices\" and \"Control Plane Policing\" at the following links: http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_4t/12_4t4/htcpp.html[\"http://www.cisco.com/en/US/docs/ios/12_4t/12_4t4/htcpp.html\"]\n\r\n\n\r\nOn Cisco IOS and Cisco IOS XE Software releases that have a fix for Cisco bug ID CSCum51028, mDNS Gateway functionality can be disabled by configuring the no service-routing mdns-sd command-line interface global configuration (CLI) command.\n\r\n\n\r\nThe following identification mechanisms exist for the Cisco IOS Software mDNS Memory Leak Vulnerability:\n\r\n\n\r\nEmbedded Event Manager\n\r\n\n\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect an interface queue wedge that is caused by this vulnerability. The policy allows administrators to monitor the interfaces on a Cisco IOS device and detect when the interface input queues are full. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade, implement suitable mitigations or reload the device to clear the input queue.\n\r\n\n\r\nThe Tcl script is available for download at the \"Cisco Beyond: Embedded Event Manager (EEM) Scripting Community\" at the following link: https://supportforums.cisco.com/docs/DOC-19337[\"https://supportforums.cisco.com/docs/DOC-19337\"]\n\r\n\n\r\nAlso see the Cisco Security Blog \"Cisco IOS Queue Wedges Explained\" at the following link: http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/[\"http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/\"]\n\r\n\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the Cisco Applied Mitigation Bulletin companion document for this advisory, which is available at the following link: http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023\"]",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\n\r\n\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\n\n\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n    \r\n        \r\n    \r\n    \r\n        Cisco IOS Software\r\n        Cisco has provided a tool to help customers determine their exposure to vulnerabilities in Cisco IOS Software. The Cisco IOS Software Checker[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] allows customers to perform the following tasks:\r\n\r\n        \r\n            Initiate a search by selecting releases from the drop-down menu or uploading a file from a local system \r\n            Enter show version command output for the tool to parse \r\n            Create a customized search by including all previously published Cisco Security Advisories, a specific publication, or all advisories in the September 2014 bundled publication \r\n        \r\n        The tool will identify any Cisco Security Advisories that impact a queried software release and the earliest release that corrects all vulnerabilities in each Cisco Security Advisory (\"First Fixed\").  If applicable, the tool will also return the earliest possible release that corrects all vulnerabilities in all displayed advisories (\"Combined First Fixed\").  Please visit the Cisco IOS Software Checker[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] or simply enter a Cisco IOS Software release in the following field to determine whether it is affected by any of the advisories in this bundled publication. \r\n\r\n        (Example entry: 15.1(4)M2)\r\n        \r\n\r\n        \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n\r\n            \r\n            \r\n\r\n        \r\n    \r\n\r\nCisco IOS XE Software\r\nCisco IOS XE Software is affected by the vulnerabilities that are disclosed in this document.\n\r\n\n\r\nFor a mapping of Cisco IOS XE Software releases to Cisco IOS Software releases, refer to Cisco IOS XE 2 Release Notes[\"http://www.cisco.com/en/US/docs/ios/ios_xe/2/release/notes/rnasr21.html#wp2310700\"], Cisco IOS XE 3S Release Notes[\"http://www.cisco.com/en/US/docs/ios/ios_xe/3/release/notes/asr1k_rn_3s_sys_req.html#wp2999052\"], and Cisco IOS XE 3SG Release Notes[\"http://www.cisco.com/en/US/docs/switches/lan/catalyst4500/release/note/OL_24726.html#wp2570252\"].\n\r\n\n\r\n\n\r\n\r\n    \r\n        \r\n            Cisco IOS XE Software Release\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2014 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            2.1.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            2.2.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            2.3.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            2.4.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            2.5.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            2.6.x\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.1.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.1.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.2.xSE\r\n            \r\n            Not vulnerable\r\n\r\n            \r\n            Vulnerable; migrate to 3.3.2SE\r\n        \r\n        \r\n            3.2.xSG\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xXO\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.2.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.3.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.3.xSE\r\n            3.3.2SE\r\n            3.3.2SE\r\n        \r\n        \r\n            3.3.xSG\r\n            Not vulnerable.\r\n            Vulnerable; migrate to 3.4.4SG or later.\r\n        \r\n        \r\n            3.3.xXO\r\n            3.3.1XO\r\n            3.3.1XO\r\n        \r\n        \r\n            3.3.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.4.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.4.xSG\r\n            Not vulnerable\r\n            3.4.4SG\r\n        \r\n        \r\n            3.4.xSQ\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.5.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.5.xE\r\n            3.5.2E\r\n            3.5.2E\r\n        \r\n        \r\n            3.6.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.6.xE\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.7.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.7.6S or later.\r\n        \r\n        \r\n            3.7.xE\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.8.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.10.4S or later.\r\n        \r\n        \r\n            3.9.xS\r\n            Not vulnerable\r\n            Vulnerable; migrate to 3.10.4S or later.\r\n        \r\n        \r\n            3.10.xS\r\n            Not vulnerable\r\n            3.10.4S\r\n        \r\n        \r\n            3.11.xS\r\n            3.11.1S\r\n            Vulnerable; migrate to 3.12S or later.\r\n        \r\n        \r\n            3.12.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n        \r\n            3.13.xS\r\n            Not vulnerable\r\n            Not vulnerable\r\n        \r\n    \r\n\r\n\n\r\n\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected by any of the vulnerabilities that are disclosed in the September 2014 Cisco IOS Software Security Advisory Bundled Publication.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerabilities that are described in this advisory.\n\r\n\n\r\nThese vulnerabilities were discovered during the internal investigation.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "external",
+				"summary": "Identifying and Mitigating Exploitation of the Multiple Vulnerabilities in Cisco IOS Software Multicast Domain Name System",
+				"url": "http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023"
+			},
+			{
+				"category": "self",
+				"summary": "Multiple Vulnerabilities in Cisco IOS Software Multicast Domain Name System",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140924-mdns"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Software Multicast Domain Name System Gateway Memory Leak Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAlert.x?alertId=35607"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Software Multicast Domain Name System Gateway Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/viewAlert.x?alertId=35608"
+			}
+		],
+		"title": "Multiple Vulnerabilities in Cisco IOS Software Multicast Domain Name System",
+		"tracking": {
+			"current_release_date": "2014-09-24T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:24:49+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20140924-mdns",
+			"initial_release_date": "2014-09-24T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2014-09-24T15:46:16+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY",
+										"product": {
+											"name": "15.1(2)SY",
+											"product_id": "CSAFPID-184932"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)SY1",
+										"product": {
+											"name": "15.1(2)SY1",
+											"product_id": "CSAFPID-188061"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SY"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(1)T",
+										"product": {
+											"name": "15.4(1)T",
+											"product_id": "CSAFPID-115981"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.4(1)T1",
+										"product": {
+											"name": "15.4(1)T1",
+											"product_id": "CSAFPID-196255"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E",
+										"product": {
+											"name": "15.2(1)E",
+											"product_id": "CSAFPID-183811"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(1)E1",
+										"product": {
+											"name": "15.2(1)E1",
+											"product_id": "CSAFPID-195469"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.4(1)S",
+										"product": {
+											"name": "15.4(1)S",
+											"product_id": "CSAFPID-187147"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.4S"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0SE",
+										"product": {
+											"name": "3.3.0SE",
+											"product_id": "CSAFPID-196218"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.3.1SE",
+										"product": {
+											"name": "3.3.1SE",
+											"product_id": "CSAFPID-196925"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3SE"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.3.0XO",
+										"product": {
+											"name": "3.3.0XO",
+											"product_id": "CSAFPID-196220"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.3XO"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.5.0E",
+										"product": {
+											"name": "3.5.0E",
+											"product_id": "CSAFPID-197145"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.5.1E",
+										"product": {
+											"name": "3.5.1E",
+											"product_id": "CSAFPID-206168"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.5E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.11.0S",
+										"product": {
+											"name": "3.11.0S",
+											"product_id": "CSAFPID-203353"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.11S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "17.9.1",
+										"product": {
+											"name": "17.9.1",
+											"product_id": "CSAFPID-278025"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "17.9"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2014-3358",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuj58950",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-115981",
+					"CSAFPID-183811",
+					"CSAFPID-184932",
+					"CSAFPID-187147",
+					"CSAFPID-188061",
+					"CSAFPID-196255",
+					"CSAFPID-196218",
+					"CSAFPID-196220",
+					"CSAFPID-196925",
+					"CSAFPID-197145",
+					"CSAFPID-203353",
+					"CSAFPID-278025"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS Software Multicast Domain Name System",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140924-mdns"
+				}
+			],
+			"release_date": "2014-09-24T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Access Control Lists\n\r\n\n\r\nOn Cisco IOS and Cisco IOS XE Software releases that do not have a fix for Cisco bug ID CSCum51028, there is currently no way to manually close the port or disable the service.\n\r\n\n\r\nOn those releases, a possible workaround consists of configuring an extended access control list (ACL) that can be created and applied to an interface to block traffic destined to UDP port 5353.\n\r\n\n\r\nBecause the mDNS feature in this vulnerability utilizes UDP as a transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses. In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger workaround than ACLs alone.\n\r\n\n\r\nThe ACL example below should be included as part of the deployed interface access-list, which will help protect the device from traffic destined to UDP port 5353:\r\n\r\n!---\r\n!--- Deny IPv4 mDNS traffic to a device\r\n!--- \r\n\r\naccess-list 150 deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv4 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\naccess-list 150 permit ip any any  \r\n\r\n!---\r\n!--- Deny IPv6 mDNS traffic to a device\r\n!--- \n\r\nipv6 access-list v6_list\r\n  deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv6 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\npermit ipv6 any any  \r\n\r\n!--- Apply access-list to all interfaces (only one example\r\n!--- shown)  \r\n\r\ninterface fastEthernet 2/0 \r\nip access-group 150 in\r\n  ipv6 traffic-filter v6_list in\r\n\r\n\r\nControl Plane Policing\n\r\n\n\r\nControl Plane Policing (CoPP) can be used to block untrusted UDP traffic to the device. Cisco IOS Software releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T support the CoPP feature. CoPP can be configured on a device to help protect the management and control planes and minimize the risk and effectiveness of direct infrastructure attacks by explicitly permitting only authorized traffic that is sent to infrastructure devices in accordance with existing security policies and configurations. \n\r\n\n\r\nThe CoPP example below should be included as part of the deployed CoPP, which will help protect the device from traffic destined to UDP port 5353:\r\n\r\n!---\r\n!--- Match IPv4 mDNS traffic with permit statement\r\n!--- \r\n\r\naccess-list 150 permit udp any any eq 5353  \r\n\r\n!--- Permit (Police or Drop)/Deny (Allow) all other Layer3 and \r\n!--- Layer4 IPv4 traffic in accordance with existing security policies \r\n!--- and configurations for traffic that is authorized to be sent \r\n!--- to infrastructure devices \r\n!--- \r\n\r\naccess-list 150 deny ip any any  \r\n\r\n!--- Create a Class-Map for traffic to be policed by\r\n!--- the CoPP feature\r\n!---\r\n\r\nclass-map match-all drop-udp-class \r\nmatch access-group 150\r\n\r\n!--- Create a Policy-Map that will be applied to the \r\n!--- Control-Plane of the device.  \r\n\r\npolicy-map drop-udp-traffic class drop-udp-class drop  \r\n\r\n!--- Apply the Policy-Map to the \r\n!--- Control-Plane of the device  \r\n\r\ncontrol-plane service-policy \r\ninput drop-udp-traffic\r\n\r\n\r\nIn the above CoPP example, the access control list entries (ACE) that match the potential exploit packets with the \"permit\" action result in these packets being discarded by the policy-map \"drop\" function, while packets that match the \"deny\" action (not shown) are not affected by the policy-map \"drop\" function. Please note that the policy-map syntax is different in the 12.2S and 12.0S Cisco IOS software trains:\r\n\r\npolicy-map drop-udp-traffic \r\n  class drop-udp-class \r\n  police 32000 1500 1500 conform-action drop exceed-action drop\r\n\r\n\r\nNote: Cisco does not recommend deploying CoPP for IPv6 traffic.\n\r\n\n\r\nAdditional information on the configuration and use of the CoPP feature can be found in the documents, \"Control Plane Policing Implementation Best Practices\" and \"Control Plane Policing\" at the following links: http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_4t/12_4t4/htcpp.html[\"http://www.cisco.com/en/US/docs/ios/12_4t/12_4t4/htcpp.html\"]\n\r\n\n\r\nOn Cisco IOS and Cisco IOS XE Software releases that have a fix for Cisco bug ID CSCum51028, mDNS Gateway functionality can be disabled by configuring the no service-routing mdns-sd command-line interface global configuration (CLI) command.\n\r\n\n\r\nThe following identification mechanisms exist for the Cisco IOS Software mDNS Memory Leak Vulnerability:\n\r\n\n\r\nEmbedded Event Manager\n\r\n\n\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect an interface queue wedge that is caused by this vulnerability. The policy allows administrators to monitor the interfaces on a Cisco IOS device and detect when the interface input queues are full. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade, implement suitable mitigations or reload the device to clear the input queue.\n\r\n\n\r\nThe Tcl script is available for download at the \"Cisco Beyond: Embedded Event Manager (EEM) Scripting Community\" at the following link: https://supportforums.cisco.com/docs/DOC-19337[\"https://supportforums.cisco.com/docs/DOC-19337\"]\n\r\n\n\r\nAlso see the Cisco Security Blog \"Cisco IOS Queue Wedges Explained\" at the following link: http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/[\"http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/\"]\n\r\n\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the Cisco Applied Mitigation Bulletin companion document for this advisory, which is available at the following link: http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023\"]"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-115981",
+						"CSAFPID-183811",
+						"CSAFPID-184932",
+						"CSAFPID-187147",
+						"CSAFPID-188061",
+						"CSAFPID-196255",
+						"CSAFPID-196218",
+						"CSAFPID-196220",
+						"CSAFPID-196925",
+						"CSAFPID-197145",
+						"CSAFPID-203353",
+						"CSAFPID-278025"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-115981",
+						"CSAFPID-183811",
+						"CSAFPID-184932",
+						"CSAFPID-187147",
+						"CSAFPID-188061",
+						"CSAFPID-196255",
+						"CSAFPID-196218",
+						"CSAFPID-196220",
+						"CSAFPID-196925",
+						"CSAFPID-197145",
+						"CSAFPID-203353",
+						"CSAFPID-278025"
+					]
+				}
+			],
+			"title": "Cisco IOS Software mDNS Gateway Memory Leak Vulnerability"
+		},
+		{
+			"cve": "CVE-2014-3357",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCul90866",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-115981",
+					"CSAFPID-183811",
+					"CSAFPID-184932",
+					"CSAFPID-187147",
+					"CSAFPID-188061",
+					"CSAFPID-195469",
+					"CSAFPID-196255",
+					"CSAFPID-196218",
+					"CSAFPID-196220",
+					"CSAFPID-196925",
+					"CSAFPID-197145",
+					"CSAFPID-203353",
+					"CSAFPID-206168",
+					"CSAFPID-278025"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS Software Multicast Domain Name System",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140924-mdns"
+				}
+			],
+			"release_date": "2014-09-24T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "Access Control Lists\n\r\n\n\r\nOn Cisco IOS and Cisco IOS XE Software releases that do not have a fix for Cisco bug ID CSCum51028, there is currently no way to manually close the port or disable the service.\n\r\n\n\r\nOn those releases, a possible workaround consists of configuring an extended access control list (ACL) that can be created and applied to an interface to block traffic destined to UDP port 5353.\n\r\n\n\r\nBecause the mDNS feature in this vulnerability utilizes UDP as a transport, it is possible to spoof the sender's IP address, which may defeat ACLs that permit communication to these ports from trusted IP addresses. In addition to ACLs, administrators should enable uRPF, a security feature of Cisco IOS Software that verifies the reachability of the source address in packets being forwarded. The combination of these two technologies offers a stronger workaround than ACLs alone.\n\r\n\n\r\nThe ACL example below should be included as part of the deployed interface access-list, which will help protect the device from traffic destined to UDP port 5353:\r\n\r\n!---\r\n!--- Deny IPv4 mDNS traffic to a device\r\n!--- \r\n\r\naccess-list 150 deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv4 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\naccess-list 150 permit ip any any  \r\n\r\n!---\r\n!--- Deny IPv6 mDNS traffic to a device\r\n!--- \n\r\nipv6 access-list v6_list\r\n  deny udp any any eq 5353  \r\n\r\n!--- Permit/deny all other Layer 3 and Layer 4 IPv6 traffic in \r\n!--- accordance with existing security policies and \r\n!--- configurations. Permit all other traffic to transit the\r\n!--- device.  \r\n\r\npermit ipv6 any any  \r\n\r\n!--- Apply access-list to all interfaces (only one example\r\n!--- shown)  \r\n\r\ninterface fastEthernet 2/0 \r\nip access-group 150 in\r\n  ipv6 traffic-filter v6_list in\r\n\r\n\r\nControl Plane Policing\n\r\n\n\r\nControl Plane Policing (CoPP) can be used to block untrusted UDP traffic to the device. Cisco IOS Software releases 12.0S, 12.2SX, 12.2S, 12.3T, 12.4, and 12.4T support the CoPP feature. CoPP can be configured on a device to help protect the management and control planes and minimize the risk and effectiveness of direct infrastructure attacks by explicitly permitting only authorized traffic that is sent to infrastructure devices in accordance with existing security policies and configurations. \n\r\n\n\r\nThe CoPP example below should be included as part of the deployed CoPP, which will help protect the device from traffic destined to UDP port 5353:\r\n\r\n!---\r\n!--- Match IPv4 mDNS traffic with permit statement\r\n!--- \r\n\r\naccess-list 150 permit udp any any eq 5353  \r\n\r\n!--- Permit (Police or Drop)/Deny (Allow) all other Layer3 and \r\n!--- Layer4 IPv4 traffic in accordance with existing security policies \r\n!--- and configurations for traffic that is authorized to be sent \r\n!--- to infrastructure devices \r\n!--- \r\n\r\naccess-list 150 deny ip any any  \r\n\r\n!--- Create a Class-Map for traffic to be policed by\r\n!--- the CoPP feature\r\n!---\r\n\r\nclass-map match-all drop-udp-class \r\nmatch access-group 150\r\n\r\n!--- Create a Policy-Map that will be applied to the \r\n!--- Control-Plane of the device.  \r\n\r\npolicy-map drop-udp-traffic class drop-udp-class drop  \r\n\r\n!--- Apply the Policy-Map to the \r\n!--- Control-Plane of the device  \r\n\r\ncontrol-plane service-policy \r\ninput drop-udp-traffic\r\n\r\n\r\nIn the above CoPP example, the access control list entries (ACE) that match the potential exploit packets with the \"permit\" action result in these packets being discarded by the policy-map \"drop\" function, while packets that match the \"deny\" action (not shown) are not affected by the policy-map \"drop\" function. Please note that the policy-map syntax is different in the 12.2S and 12.0S Cisco IOS software trains:\r\n\r\npolicy-map drop-udp-traffic \r\n  class drop-udp-class \r\n  police 32000 1500 1500 conform-action drop exceed-action drop\r\n\r\n\r\nNote: Cisco does not recommend deploying CoPP for IPv6 traffic.\n\r\n\n\r\nAdditional information on the configuration and use of the CoPP feature can be found in the documents, \"Control Plane Policing Implementation Best Practices\" and \"Control Plane Policing\" at the following links: http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html[\"http://www.cisco.com/web/about/security/intelligence/coppwp_gs.html\"] and http://www.cisco.com/en/US/docs/ios/12_4t/12_4t4/htcpp.html[\"http://www.cisco.com/en/US/docs/ios/12_4t/12_4t4/htcpp.html\"]\n\r\n\n\r\nOn Cisco IOS and Cisco IOS XE Software releases that have a fix for Cisco bug ID CSCum51028, mDNS Gateway functionality can be disabled by configuring the no service-routing mdns-sd command-line interface global configuration (CLI) command.\n\r\n\n\r\nThe following identification mechanisms exist for the Cisco IOS Software mDNS Memory Leak Vulnerability:\n\r\n\n\r\nEmbedded Event Manager\n\r\n\n\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect an interface queue wedge that is caused by this vulnerability. The policy allows administrators to monitor the interfaces on a Cisco IOS device and detect when the interface input queues are full. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade, implement suitable mitigations or reload the device to clear the input queue.\n\r\n\n\r\nThe Tcl script is available for download at the \"Cisco Beyond: Embedded Event Manager (EEM) Scripting Community\" at the following link: https://supportforums.cisco.com/docs/DOC-19337[\"https://supportforums.cisco.com/docs/DOC-19337\"]\n\r\n\n\r\nAlso see the Cisco Security Blog \"Cisco IOS Queue Wedges Explained\" at the following link: http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/[\"http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/\"]\n\r\n\n\r\nAdditional mitigations that can be deployed on Cisco devices within the network are available in the Cisco Applied Mitigation Bulletin companion document for this advisory, which is available at the following link: http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023[\"http://tools.cisco.com/security/center/viewAMBAlert.x?alertId=35023\"]"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-115981",
+						"CSAFPID-183811",
+						"CSAFPID-184932",
+						"CSAFPID-187147",
+						"CSAFPID-188061",
+						"CSAFPID-195469",
+						"CSAFPID-196255",
+						"CSAFPID-196218",
+						"CSAFPID-196220",
+						"CSAFPID-196925",
+						"CSAFPID-197145",
+						"CSAFPID-203353",
+						"CSAFPID-206168",
+						"CSAFPID-278025"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-115981",
+						"CSAFPID-183811",
+						"CSAFPID-184932",
+						"CSAFPID-187147",
+						"CSAFPID-188061",
+						"CSAFPID-195469",
+						"CSAFPID-196255",
+						"CSAFPID-196218",
+						"CSAFPID-196220",
+						"CSAFPID-196925",
+						"CSAFPID-197145",
+						"CSAFPID-203353",
+						"CSAFPID-206168",
+						"CSAFPID-278025"
+					]
+				}
+			],
+			"title": "Cisco IOS Software mDNS Gateway Denial of Service Vulnerability"
+		}
+	]
+}

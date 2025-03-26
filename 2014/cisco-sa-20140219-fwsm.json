@@ -1,0 +1,170 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco Firewall Services Module (FWSM) Software contains a vulnerability that could allow an unauthenticated, remote attacker to cause a reload of an affected system.\n\r\n\n\r\nThe vulnerability is due to a race condition when releasing the memory allocated by the cut-through proxy function. An attacker could exploit this vulnerability by sending traffic to match the condition that triggers cut-through proxy authentication.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. Workarounds that mitigate the vulnerability are not available. This advisory is available at the following link: http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140219-fwsm[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140219-fwsm\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco FWSM Software for Cisco Catalyst 6500 Series Switches and Cisco\r\n7600 Series Routers is affected by this vulnerability. Consult the \"Software Versions and Fixes\" section of this\r\nsecurity advisory for more information about the affected releases.\n\r\n\n\r\nCisco FWSM Software has reached the end of software maintenance releases\r\nmilestone. Cisco FWSM customers are encouraged to contact their Cisco\r\nrepresentative for available replacement.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco FWSM is affected by this vulnerability if the cut-through proxy function is enabled. This function can be enabled for authentication, authorization and accounting via the match command or include commands. To determine whether this feature is in use, use the show running-config aaa authentication| include match|include command and verify that it returns output. Configurations that use an external AAA server or the Cisco FWSM local user database for AAA are vulnerable.\n\r\n\n\r\nThe following example shows a Cisco FWSM configured to authenticate traffic matching the access list SERVER_AUTH through the external AAA server called AuthOutbound. The configuration in the example is implemented with the match command.\n\r\n\n\r\n\r\nFWSM/admin# show running-config aaa authentication| include match|include \naaa authentication match SERVER_AUTH inside AuthOutbound\n\n\r\n\r\nThe following example shows an equivalent configuration implemented with the include command.\n\r\n\n\r\n\r\n\r\n\r\nFWSM/admin# show running-config aaa authentication| include match|include \naaa authentication include SERVER_AUTH inside AuthOutbound\r\n\r\n\n\r\nThe cut-through proxy function is not enabled by default on Cisco FWSM Software.\n\r\n\n\r\nDetermine the Running Software Version\r\nTo determine the version of the Cisco FWSM software that is running on a device, administrators can issue the show version command, as shown in the following example:\r\n\r\nFWSM> show version\r\n\r\nFWSM Firewall Version 4.0(16)\r\n[...]\r\n\r\n\n\r\nCustomers who use the Cisco Adaptive Security Device Manager (ASDM) to\r\nmanage their devices can find the version of the software displayed in\r\nthe table in the login window or in the upper left corner of the Cisco\r\nASDM window. The version notation is similar to the following example:\r\n\r\nFWSM Version: 4.0(16)\r\n\r\n\n\r\nVersion information can also be obtained from the Cisco Catalyst 6500\r\nSeries Switch or the Cisco 7600 Series Router.  To determine the version\r\nof Cisco FWSM Software that is running on a device, issue the show module\r\ncommand from Cisco IOS Software or Cisco Catalyst Operating System\r\nSoftware to identify which modules and submodules are installed on the\r\nsystem.\n\r\n\n\r\nThe following example shows a system with a Cisco FWSM (WS-SVC-FWM-1) installed in slot 2:\r\n\r\nswitch>show module\r\nMod Ports Card Type                              Model              Serial No.\r\n--- ----- -------------------------------------- ------------------ -----------\r\n  1   16  SFM-capable 16 port 1000mb GBIC        WS-X6516-GBIC      SAL06334NS9\r\n  2    6  Firewall Module                        WS-SVC-FWM-1       SAD10360485\r\n  3    8  Intrusion Detection System             WS-SVC-IDSM-2      SAD0932089Z\r\n  4    4  SLB Application Processor Complex      WS-X6066-SLB-APC   SAD093004BD\r\n  5    2  Supervisor Engine 720 (Active)         WS-SUP720-3B       SAL0934888E\r\n\r\nMod MAC addresses                       Hw    Fw           Sw           Status\r\n--- ---------------------------------- ------ ------------ ------------ -------\r\n  1  0009.11e3.ade8 to 0009.11e3.adf7   5.1   6.3(1)       8.7(0.22)BUB Ok\r\n  2  0018.ba41.5092 to 0018.ba41.5099   4.0   7.2(1)       4.0(16)      Ok\r\n  3  0014.a90c.9956 to 0014.a90c.995d   5.0   7.2(1)       7.0(4)E4     Ok\r\n  4  0014.a90c.66e6 to 0014.a90c.66ed   1.7   Unknown      Unknown      PwrDown\r\n  5  0013.c42e.7fe0 to 0013.c42e.7fe3   4.4   8.1(3)       12.2(33)SXH8 Ok\r\n\r\n[...]\r\n\r\n\n\r\nAfter locating the correct slot, issue the show module <slot number> command to identify the software version that is running, as shown in the following example:\r\n\r\nswitch>show module 2\r\nMod Ports Card Type                              Model              Serial No.\r\n--- ----- -------------------------------------- ------------------ -----------\r\n  2    6  Firewall Module                        WS-SVC-FWM-1       SAD10360485\r\n\r\nMod MAC addresses                       Hw    Fw           Sw           Status\r\n--- ---------------------------------- ------ ------------ ------------ -------\r\n  2  0018.ba41.5092 to 0018.ba41.5099   4.0   7.2(1)       4.0(16)      Ok\r\n\r\n[...]\r\n\r\n\n\r\nThe preceding example shows that the Cisco FWSM is running software version 4.0(16) as indicated by the Sw column.\n\r\n\n\r\nIf a Virtual Switching System (VSS) is used to allow two physical Cisco\r\nCatalyst 6500 Series Switches to operate as a single logical virtual\r\nswitch, the show module switch all command can display\r\nthe software version of all FWSMs that belong to switch 1 and switch 2.\r\nThe output from this command will be similar to the output from show module  but will include module information for the modules in each switch in the VSS.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco ASA Software is not affected by this vulnerability.\n\r\n\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco FWSM is a high-speed, integrated firewall module for Cisco\r\nCatalyst 6500 Series Switches and Cisco 7600 Series Routers. The FWSM\r\noffers firewall services with stateful packet filtering and deep packet\r\ninspection.\n\r\n\n\r\nCisco FWSM Software supports the cut-through proxy feature for AAA network access services. \n\r\n\n\r\nA vulnerability in the cut-through proxy function of  Cisco Firewall Services Module (FWSM)\r\nSoftware could allow an unauthenticated, remote attacker to cause a\r\nreload of the affected system.\n\r\n\n\r\n\r\nThe vulnerability is due to a race\r\ncondition when releasing the memory allocated by the cut-through proxy function. An attacker could exploit this vulnerability by sending\r\ntraffic to match the condition that triggers cut-through proxy authentication. An exploit could allow the attacker to\r\ntrigger a reload of the affected system. Repeated exploitation could result in a denial of service (DoS) condition.\n\r\n\n\r\nNote: This vulnerability affects both routed and transparent\r\nfirewall mode in both single and multiple context mode. This\r\nvulnerability can be triggered by IP version 4 (IPv4) traffic only. Transit traffic and traffic directed to the FWSM device can be used to trigger this vulnerability. Configurations that use an external AAA server or the Cisco\r\nFWSM local user database for AAA vulnerable.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID CSCuj16824[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuj16824\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned\r\nCommon Vulnerabilities and Exposures (CVE) ID CVE-2014-0710.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that mitigate this vulnerability other than disabling the cut-through proxy feature.\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\nThe following table gives information on the release that fixes this vulnerability for each of the major release versions.\n\r\n\n\r\n\r\n    \r\n        \r\n             \r\n             3.1 \n\r\n            \r\n            \r\n            3.2 \n\r\n            \r\n            \r\n            4.0 \n\r\n            \r\n            \r\n            4.1 \n\r\n            \r\n            \r\n        \r\n        \r\n            CSCuj16824 - Cisco FWSM Cut-Through Proxy Denial of Service Vulnerability1\n\r\n            \r\n            Migrate to 3.2.x or later\n\r\n            \r\n             3.2(28) \n\r\n            \r\n            Migrate to 4.1 or later \n\r\n            \r\n             4.1(15) \n\r\n            \r\n        \r\n    \r\n\r\n\n\r\n1 This vulnerability does not affect Cisco FWSM Software releases prior to 3.1(21), 3.2(21), 4.0(16), and 4.1(6).\n\r\n\n\r\nNote:\r\nCisco FWSM Software has reached the end of software maintenance releases\r\nmilestone. Cisco FWSM customers are encouraged to contact their Cisco\r\nrepresentative for an available replacement.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found during the resolution of support cases.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Firewall Services Module Cut-Through Proxy Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140219-fwsm"
+			}
+		],
+		"title": "Cisco Firewall Services Module Cut-Through Proxy Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2014-02-19T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:23:59+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20140219-fwsm",
+			"initial_release_date": "2014-02-19T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2014-02-19T15:53:16+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Firewall Services Module (FWSM)",
+						"product": {
+							"name": "Cisco Firewall Services Module (FWSM) ",
+							"product_id": "CSAFPID-5176"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2014-0710",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuj16824",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5176"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco Firewall Services Module Cut-Through Proxy Denial of Service Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140219-fwsm"
+				}
+			],
+			"release_date": "2014-02-19T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There are no workarounds that mitigate this vulnerability other than disabling the cut-through proxy feature.\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5176"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-5176"
+					]
+				}
+			],
+			"title": "Cisco FWSM Cut-Through Proxy Denial of Service Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,2474 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco ASA 5500 Series Adaptive Security Appliances (ASA) and Cisco\r\nCatalyst 6500 Series ASA Services Module (ASASM) may be affected by the\r\nfollowing vulnerabilities:\n\r\n\r\n    DHCP Memory Allocation Denial of Service Vulnerability\r\n    SSL VPN Authentication Denial of Service Vulnerability\r\n    SIP Inspection Media Update Denial of Service Vulnerability\r\n    DCERPC Inspection Buffer Overflow Vulnerability\r\n    Two DCERPC Inspection Denial Of Service Vulnerabilities\r\n\r\nThese vulnerabilities are independent of each other; a release that is\r\naffected by one of the vulnerabilities may not be affected by the\r\nothers.\n\r\n\n\r\nSuccessful exploitation of any of these vulnerabilities could allow an unauthenticated remote attacker to trigger a reload of the affected device. Exploitation of the DCERPC Inspection Buffer Overflow Vulnerability could additionally cause a stack overflow and possibly the execution of arbitrary commands.\r\n\r\nCisco has released software updates that address these vulnerabilities. Workarounds are available for some of these vulnerabilities. This advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa\"]\n\r\n\n\r\nNote: The Cisco Firewall Services Module for Cisco Catalyst 6500 and Cisco 7600 Series (FWSM) may be affected by some of the vulnerabilities listed above. \n\r\nA separate Cisco Security Advisory has been published to disclose the\r\nvulnerabilities that affect the Cisco FWSM. This advisory is available\r\nat:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-fwsm[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-fwsm\"]\n\r\n\n\r\nThe Cisco ASA 1000V Cloud Firewall and Cisco ASA-CX Context-Aware Security are not affected by any of these vulnerabilities.",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst\r\n6500 Series ASA Services Module are affected by multiple\r\nvulnerabilities. Affected versions of Cisco ASA Software will vary\r\ndepending on the specific vulnerability. Consult the \"Software Versions\r\nand Fixes\" section of this security advisory for more information about\r\nthe affected versions.\n\r\n\n\r\nCisco PIX Security Appliances may be affected by some of the\r\nvulnerabilities described in this security advisory. Cisco PIX has\r\nreached end of software maintenance. Cisco PIX Security Appliance\r\ncustomers are encouraged to migrate to Cisco ASA 5500 Series Adaptive\r\nSecurity Appliances. Consult the dedicated section for Cisco PIX\r\nSecurity Appliances in the \"Vulnerable Products\" section of this\r\nsecurity advisory for more information about affected versions.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "For specific version information, refer to the \"Software Versions and Fixes\" section of this advisory.\n\r\n\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nThis vulnerability is triggered when the Cisco ASA Software processes a DHCP request. DHCP relay and DHCP server features will trigger the DHCP request packet process. If either feature is enabled, the Cisco ASA Software may be vulnerable.\r\n\n\r\nTo determine whether the DHCP server feature is enabled on Cisco ASA Software use the\r\nshow dhcpd state command and verify that at least one interface is configured\r\nfor DHCP server. The following example shows the Cisco ASA Software with DHCP\r\nserver enabled on the inside interface \r\n\r\n\r\nciscoasa# show dhcpd state\r\nContext  Configured as DHCP Server\r\nInterface inside, Configured for DHCP SERVER\r\n\r\n\r\nTo determine whether the DHCP relay feature is enabled on Cisco ASA Software use the\r\nshow dhcprelay state command and verify that DHCP relay is active. The following example shows the Cisco ASA Software with DHCP relay enabled.\r\n\r\n\r\nciscoasa# show dhcprelay state\nContext  Configured as DHCP Relay\nInterface outside, Configured for DHCP RELAY SERVER\nInterface inside, Configured for DHCP RELAY\r\n\n\r\n\r\nNote: By default, DHCP server is enabled on the inside interface of the Cisco ASA 5505 and on the management interface of all other Cisco ASA 5500 Series Adaptive Security Appliances. DHCP server is disabled by default on Cisco Catalyst 6500 Series ASA Services Module.\r\n\r\nDHCP relay feature is not enabled by default on any Cisco ASA 5500 Series Adaptive Security Appliances and Cisco\r\nCatalyst 6500 Series ASA Services Module platforms. \r\n\r\n\n\r\n\n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\nThis vulnerability may affect Cisco ASA Software configured for Clientless or AnyConnect SSL VPN. Cisco ASA Software configured as an IPsec VPN Server, IPsec/L2TP VPN Server or IKEv2 AnyConnect VPN server is not affected. Because this vulnerability is triggered when receiving a crafted authentication challenge-response, Cisco ASA Software is not affected when configured to use the AAA protocol that does not support the challenge option or with the challenge option disabled. \r\n\r\nTo be affected, the Cisco ASA Software should have SSL VPN enabled and the\r\ntunnel group configured to authenticate to a remote AAA server using a\r\nAAA protocol that has the AAA challenge option enabled. \n\r\n\n\r\nCurrently the following AAA setup may be configured with the challenge option enabled and hence be considered vulnerable:\r\n\r\n\r\n    Native RSA SecurID (also known as SDI) - This is vulnerable when the SecureID server requires a challenge response from the user.\r\n    RADIUS and TACACS+ authentication challenge - These are vulnerable when the AAA server uses a token-based authentication system which is capable of sending challenge requests to authenticating users.\r\n    Active Directory password management via RADIUS or LDAP.  In these cases the Cisco ASA Software facilitates a user password change prior to authentication with Active Directory.\r\n\r\nOther AAA authentication methods supported by the Cisco ASA Software such as HTTP form-based or using NT LAN Manager (NTLM) and Kerberos authentication protocols\r\nare not affected by this vulnerability.\n\r\n\n\r\nTo determine whether Cisco ASA Software has SSL VPN enabled use the show\r\nrunning-config webvpn command and verify that SSL VPN is enabled on at least one\r\ninterface.  The following example shows the Cisco ASA Software with SSL VPN enabled\r\non the outside interface:\r\n\r\n\r\nciscoasa# show running-config webvpn\r\nwebvpn\r\n enable outside\r\n\r\n\r\nTo determine whether the Cisco ASA Software has the tunnel group configured for\r\na remote AAA server, use the show running-config tunnel-group\r\n general-attributes command and verify that the\r\nauthentication-server-group is set to authenticate to a remote AAA\r\nserver.  The following example shows the Cisco ASA Software with the tunnel group\r\nWebVPN configured to authenticate against a remote AAA server with tag labeled RSA.\r\n\r\n\r\nciscoasa#show running-config tunnel-group WebVPN general-attributes\r\ntunnel-group WebVPN general-attributes\r\n authentication-server-group RSA\r\n\r\nTo determine which AAA protocol is in use for a given AAA server, use the show aaa-server . The AAA protocol in use is indicated under Server Group. The following example shows a AAA server with tag labeled RSA which is using RSA SecurID (SDI) as AAA protocol: \r\n\r\n\r\nciscoasa# show aaa-server RSA\nServer Group:    RSA\nServer Protocol: sdi\r\n\r\n\r\nNote: SSL VPN is not enabled by default. The default AAA setting for tunnel\r\ngroup is LOCAL which is not affected by this vulnerability.\r\n\r\n\n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\nThe Cisco ASA Software may be affected by this vulnerability if Session Initiation Protocol (SIP) inspection is enabled.\n\r\n\n\r\nTo determine whether SIP inspection is enabled use the\r\nshow service-policy inspect sip command. The following example shows Cisco ASA Software\r\nwith SIP inspection enabled: \n\r\n\n\r\n\r\nciscoasa# show service-policy | include sip\n      Inspect: sip , packet 67, drop 0, reset-drop 0\n\n\n\r\n\r\n\r\nNote: SIP inspection functionality is enabled by default.\r\n\r\n\n\r\n\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of Service Vulnerabilities\n\r\n\n\r\nCisco ASA Software is affected by these vulnerabilities if DCERPC inspection is enabled.\n\r\n\n\r\nTo determine whether the DCERPC inspection is enabled use the\r\nshow service-policy | include dcerpc  command. The following example shows the Cisco ASA\r\nSoftware with DCERPC inspection enabled: \n\r\n\n\r\n\r\nciscoasa# show  service-policy | include dcerpc\n      Inspect: dcerpc, packet 0, drop 0, reset-drop 0\n\n\r\n\r\n\r\nNote: DCERPC inspection is not enabled by default.\r\n\r\n\n\r\n\n\r\n\r\nDetermine the Running Software Version\r\nTo determine whether a vulnerable version of Cisco ASA Software is running on an appliance, administrators can issue the show version\r\ncommand. The following example shows a Cisco ASA 5500 Series Adaptive\r\nSecurity Appliance that is running software version 8.4(1):\r\n\r\n\r\nciscoasa#show version | include Version\nCisco Adaptive Security Appliance Software Version 8.4(1) \nDevice Manager Version 6.4(1)\n\r\nCustomers who use Cisco Adaptive Security Device Manager (ASDM) to\r\nmanage devices can locate the software version in the table that is\r\ndisplayed in the login window or upper-left corner of the Cisco ASDM\r\nwindow.\r\n\r\n\n\r\nInformation about Cisco PIX Security Appliance Software\r\nAll versions of the Cisco PIX Security Appliance Software are affected by the DHCP Memory Allocation Denial of Service Vulnerability.\n\r\n\n\r\nCisco PIX Security Appliance Software is not affected by any other vulnerabilities described in this security advisory.\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco ASA 1000V Cloud Firewall and Cisco ASA-CX Context-Aware Security are not affected by any of these vulnerabilities.\n\r\n\n\r\nWith the exception of the Cisco FWSM, no other Cisco products are currently known to be affected by these vulnerabilities.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The following section provides additional information about each vulnerability.\n\r\n\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nDHCP is a\r\nprotocol that supplies automatic configuration parameters such as an IP\r\naddress with a subnet mask, default gateway, DNS server, and WINS server\r\nIP address to hosts. \r\n\r\nThe\r\nCisco ASA Software can act as a DHCP server or a DHCP client. When it operates\r\nas a server, the Cisco ASA Software provides network configuration parameters\r\ndirectly to DHCP clients.  \r\n\r\nA\r\nvulnerability exists in the implementation of the Dynamic Host\r\nConfiguration Protocol (DHCP) Server functionality that\r\nwould allow an unauthenticated, remote attacker to trigger a reload of\r\nthe affected device. This vulnerability is due to a failure in\r\nallocating memory for an internal DHCP data structure upon receiving\r\ncrafted DHCP packets. An attacker could exploit this vulnerability by\r\nsending a sequence of crafted DHCP packets to the affected system \r\n\r\nNote: This vulnerability may be triggered by both transit traffic and traffic directed to the affected device. This vulnerability affects both routed and transparent firewall modes in both single-context and multicontext modes. This vulnerability can be triggered only by\r\nIPv4 traffic. \r\n\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID, CSCtw84068[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtw84068\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-4643\n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThe Cisco ASA Software includes two types of SSL VPN, which is a technology for remote access to corporate resources:\n\r\n\r\n    Clientless SSL VPN provides access to Web applications, such as email, and\r\n    corporate portals via Web browsers and Java components. It requires no\r\n    client software.\r\n    \r\n    The AnyConnect SSL VPN Client.\r\n\r\n\n\r\nA vulnerability exists in the implementation of the\r\nauthentication, authorization and accounting (AAA) code for remote\r\nthe SSL VPN (Clientless and AnyConnect) feature that could allow an\r\nunauthenticated, remote attacker to trigger a reload of the affected\r\nsystem. This vulnerability is due to insufficient validation of  a crafted\r\nauthentication response when a AAA challenge-response is required to complete the\r\nauthentication process. An attacker could exploit this vulnerability by\r\ntrying to authenticate on an ASA configured for SSL VPN with a\r\ncrafted authentication challenge response.\r\nThis\r\nvulnerability affects a Cisco ASA Software configured for Clientless or AnyConnect SSL VPN. Cisco ASA Software configured as an IPsec VPN Server, IPSEC/L2TP VPN Server or IKEv2 AnyConnect server is not affected.\r\n\r\nNote:\r\nOnly traffic destined to the affected device can be used to exploit\r\nthis vulnerability. This vulnerability affects only Cisco ASA Software configured in\r\nrouted and single context mode. This vulnerability can be triggered by\r\nIPv4 traffic only.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID, CSCtz04566[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtz04566\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-4659\n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\nSession Initiation Protocol (SIP) as defined by the\r\nInternet Engineering Task Force (IETF), enables call handling sessions,\r\nparticularly two-party audio conferences. SIP works with Session Description Protocol (SDP)\r\nfor call signaling. SDP specifies the ports for the media stream.\r\nCisco ASA Software supports dynamic allocation of ports for media stream via a dedicated SIP inspection engine.\r\n\r\nA vulnerability exists in the SIP inspection engine code of the Cisco ASA Software, that\r\nmay allow an unauthenticated, remote attacker to trigger a reload of\r\nthe affected device.  This vulnerability is due to improper processing\r\nof SIP media update packets. An attacker could exploit this vulnerability by sending a crafted SIP packet through the affected system. The\r\npackets that trigger this vulnerability must be part of an established\r\nSIP inspection session that needs to be inspected by the affected system.\n\r\n\n\r\nNote: Only transit traffic can be used to exploit this vulnerability.  This\r\nvulnerability affects both routed and transparent firewall mode in both\r\nsingle and multi-context mode. This vulnerability can be triggered by\r\nIPv4 and IPv6 traffic. \r\n\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID, CSCtr63728[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtr63728\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-4660\n\r\n\n\r\nDCERPC Inspection Buffer Overflow Vulnerability\n\r\n\n\r\nDCERPC is a protocol that is widely used by Microsoft distributed client and server applications that allows software\r\nclients to remotely execute programs on a server.\n\r\n\n\r\nA vulnerability exists in the DCERPC inspection engine that would allow an\r\nunauthenticated, remote attacker to cause a reload of the affected system or to overflow the stack and possibly execute arbitrary commands. The vulnerability is due to insufficient validation of DCERPC packets within a valid DCERPC session. An attacker could exploit this vulnerability by\r\nsending a crafted DCERPC packet that needs to be inspected by the affected system.\n\n\r\n\n\r\nNote: Only transit traffic can be used to exploit\r\nthis vulnerability. This vulnerability affects both routed and\r\ntransparent firewall mode in both single and multi-context mode. This\r\nvulnerability can be triggered by IPv4 and IPv6 traffic.\n\r\n\n\r\nThis vulnerability is documented in Cisco bug ID, CSCtr21359[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtr21359\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-4661\n\r\n\n\r\nDCERPC Inspection Denial Of Service Vulnerabilities\n\r\n\n\r\nTwo vulnerabilities exist in the DCERPC inspection engine that would allow an\r\nunauthenticated, remote attacker to cause a reload of the affected system. The vulnerabilities are due to insufficient validation of DCERPC packets within a valid DCERPC session. An attacker could exploit this vulnerability by\r\nsending a crafted DCERPC packet that needs to be inspected by the affected system.\n\r\n\n\r\nNote: Only transit traffic can be used to exploit\r\nthese vulnerabilities. This vulnerabilities affects both routed and\r\ntransparent firewall mode in both single and multi-context mode. These vulnerabilities can be triggered by IPv4 and IPv6 traffic.\n\r\n\n\r\nThese vulnerabilities are documented in Cisco bug IDs, CSCtr21376[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtr21376\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and CSCtr21346[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtr21346\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and have been assigned Common Vulnerabilities and Exposures (CVE) IDs CVE-2012-4662 and  CVE-2012-4663\n\r\n\n\r\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\n\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\n\r\n    \r\n        \r\n            Vulnerability\r\n            Major Release\n\r\n            \r\n            First Fixed Release\n\r\n            \r\n        \r\n        \r\n            \n\r\n            DHCP Memory Allocation Denial of Service Vulnerability - CSCtw84068\r\n            \n\r\n            \r\n            7.0\r\n            7.2(5.8)\n\r\n            \r\n        \r\n        \r\n            7.1\r\n            7.2(5.8)\n\r\n            \r\n        \r\n        \r\n            7.2\r\n            7.2(5.8)\n\r\n            \r\n        \r\n        \r\n            8.0\r\n            8.0(5.28)\n\r\n            \r\n        \r\n        \r\n            8.1\r\n            8.1(2.56)\n\r\n            \r\n        \r\n        \r\n            8.2\r\n            8.2(5.27) \r\n        \r\n        \r\n            8.3\r\n            8.3(2.31)\r\n        \r\n        \r\n            8.4\r\n            8.4(3.10)\r\n        \r\n        \r\n            8.5\r\n            8.5(1.9)\n\r\n            \r\n        \r\n        \r\n            8.6\r\n            8.6(1.5)\n\r\n            \r\n        \r\n    \r\n\r\n\n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\n\r\n    \r\n        \r\n            Vulnerability\r\n            Major Release\n\r\n            \r\n            First Fixed Release\n\r\n            \r\n        \r\n        \r\n            \n\r\n            SSL VPN Authentication Denial of Service Vulnerability - CSCtz04566\r\n            \n\r\n            \r\n            7.0\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.1\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.2\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            8.0\r\n             Not Affected\n\r\n            \r\n        \r\n        \r\n            8.1\r\n             Not Affected\n\r\n            \r\n        \r\n        \r\n            8.2\r\n            8.2(5.30)\r\n        \r\n        \r\n            8.3\r\n            8.3(2.34)\n\r\n            \r\n        \r\n        \r\n            8.4\r\n            Not Affected \r\n        \r\n        \r\n            8.5\r\n            Not Affected \r\n        \r\n        \r\n            8.6\r\n            Not Affected\r\n        \r\n    \r\n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\n    \r\n        \r\n            Vulnerability\r\n            Major Release\n\r\n            \r\n            First Fixed Release\n\r\n            \r\n        \r\n        \r\n            \n\r\n            SIP Inspection Media Update Denial of Service Vulnerability - CSCtr63728\r\n            \n\r\n            \r\n            7.0\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.1\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.2\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            8.0\r\n            Not Affected \n\r\n            \r\n        \r\n        \r\n            8.1\r\n            Not Affected\r\n        \r\n        \r\n            8.2\r\n            8.2(5.17)\r\n        \r\n        \r\n            8.3\r\n            8.3(2.28)\r\n        \r\n        \r\n            8.4\r\n            8.4(2.13)\r\n        \r\n        \r\n            8.5\r\n            8.5(1.4)\r\n        \r\n        \r\n            8.6\r\n            8.6(1.5)\n\r\n            \r\n        \r\n    \r\n\r\n\n\r\nDCERPC Inspection Buffer Overflow Vulnerability\n\r\n\n\r\n\r\n    \r\n        \r\n            Vulnerability\r\n            Major Release\n\r\n            \r\n            First Fixed Release\n\r\n            \r\n        \r\n        \r\n            DCERPC Inspection Buffer Overflow Vulnerability -\r\n            CSCtr21359\r\n            \n\r\n            \r\n            7.0\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.1\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.2\r\n            Not Affected \r\n        \r\n        \r\n            8.0\r\n            Not Affected \r\n        \r\n        \r\n            8.1\r\n            Not Affected \r\n        \r\n        \r\n            8.2\r\n            Not Affected \r\n        \r\n        \r\n            8.3\r\n            8.3(2.34) \r\n        \r\n        \r\n            8.4\r\n            8.4(4.4) \r\n        \r\n        \r\n            8.5\r\n            8.5(1.13) \r\n        \r\n        \r\n            8.6\r\n            8.6(1.3) \r\n        \r\n    \r\n\r\n\n\r\nDCERPC Inspection Denial Of Service Vulnerabilities\n\r\n\n\r\n\r\n    \r\n        \r\n            Vulnerability\r\n            Major Release\n\r\n            \r\n            First Fixed Release\n\r\n            \r\n        \r\n        \r\n            DCERPC Inspection Denial Of Service Vulnerabilities - CSCtr21376\r\n            and CSCtr21346\n\r\n            \r\n            7.0\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.1\r\n            Not Affected\n\r\n            \r\n        \r\n        \r\n            7.2\r\n            Not Affected \r\n        \r\n        \r\n            8.0\r\n            Not Affected \r\n        \r\n        \r\n            8.1\r\n            Not Affected \r\n        \r\n        \r\n            8.2\r\n            Not Affected \r\n        \r\n        \r\n            8.3\r\n            8.3(2.25) \r\n        \r\n        \r\n            8.4\r\n            8.4(2.5) \r\n        \r\n        \r\n            8.5\r\n            8.5(1.13) \r\n        \r\n        \r\n            8.6\r\n            Not Affected \r\n        \r\n    \r\n\r\n\n\r\n\n\r\nRecommended Releases\r\nThe following table lists all recommended releases. These recommended\r\nreleases contain the fixes for all vulnerabilities in this advisory.\r\nCisco recommends upgrading to a release that is equal to or later than\r\nthese recommended releases.\r\n\r\n\r\n    \r\n        \r\n            \r\n            Major Release\r\n\r\n            \r\n            \r\n            Recommended Release\r\n\r\n            \r\n        \r\n        \r\n            7.0 \r\n            7.2(5.8) \r\n        \r\n        \r\n            7.1 \r\n            7.2(5.8) \r\n        \r\n        \r\n            7.2 \r\n            7.2(5.8) \r\n        \r\n        \r\n            8.0 \r\n            8.0(5.28) \r\n        \r\n        \r\n            8.1 \r\n            8.1(2.56) \r\n        \r\n        \r\n            8.2 \r\n            8.2(5.33) \r\n        \r\n        \r\n            8.3 \r\n            8.3(2.34) \r\n        \r\n        \r\n            8.4 \r\n            8.4(4.5) \r\n        \r\n        \r\n            8.5 \r\n            8.5(1.14) \r\n        \r\n        \r\n            8.6 \r\n            8.6(1.5) \r\n        \r\n    \r\n\r\n\n\r\nSoftware Download\r\nCisco ASA Software can be downloaded from the Software Center on Cisco.com by visiting http://www.cisco.com/cisco/software/navigator.html[\"http://www.cisco.com/cisco/software/navigator.html\"]\r\nFor Cisco ASA 5500 Series Adaptive Security Appliances, navigate to Products\r\n> Security > Firewalls > Adaptive Security Appliances (ASA) > Cisco ASA\r\n5500 Series Adaptive Security Appliances >  > Adaptive Security Appliance (ASA) Software. Please note that some of these versions are interim versions and they can be found by expanding the Interim tab on the download page.\r\n\r\nFor Cisco Catalyst 6500 Series ASA Services Module, navigate to Products\r\n> Cisco Interfaces and Modules > Cisco Services Modules >Cisco\r\nCatalyst 6500 Series ASA Services Module > ASA Services Module\r\n(ASASM) Software. Please note that some of these versions are interim versions and they can be found by expanding the Interim tab on the download page.\r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerabilities that are described in this advisory. \r\n\r\nAll the vulnerabilities described in this security advisory were found\r\nduring internal testing or discovered during the resolution of customer\r\nsupport cases.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+			}
+		],
+		"title": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+		"tracking": {
+			"current_release_date": "2012-10-10T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:19:56+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20121010-asa",
+			"initial_release_date": "2012-10-10T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2012-10-10T14:31:24+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Firewall Services Module (FWSM)",
+						"product": {
+							"name": "Cisco Firewall Services Module (FWSM) ",
+							"product_id": "CSAFPID-5176"
+						}
+					},
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.0.1",
+										"product": {
+											"name": "7.0.1",
+											"product_id": "CSAFPID-54555"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.1.4",
+										"product": {
+											"name": "7.0.1.4",
+											"product_id": "CSAFPID-54556"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.4",
+										"product": {
+											"name": "7.0.4",
+											"product_id": "CSAFPID-55253"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.4.2",
+										"product": {
+											"name": "7.0.4.2",
+											"product_id": "CSAFPID-55254"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.2",
+										"product": {
+											"name": "7.0.2",
+											"product_id": "CSAFPID-55255"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.3",
+										"product": {
+											"name": "7.0.3",
+											"product_id": "CSAFPID-55256"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.7.1",
+										"product": {
+											"name": "7.0.7.1",
+											"product_id": "CSAFPID-70758"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.8",
+										"product": {
+											"name": "7.0.8",
+											"product_id": "CSAFPID-91015"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.7",
+										"product": {
+											"name": "7.0.7",
+											"product_id": "CSAFPID-91016"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6",
+										"product": {
+											"name": "7.0.6",
+											"product_id": "CSAFPID-91017"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.5",
+										"product": {
+											"name": "7.0.5",
+											"product_id": "CSAFPID-91018"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.5.12",
+										"product": {
+											"name": "7.0.5.12",
+											"product_id": "CSAFPID-115151"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.4",
+										"product": {
+											"name": "7.0.6.4",
+											"product_id": "CSAFPID-115153"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.8",
+										"product": {
+											"name": "7.0.6.8",
+											"product_id": "CSAFPID-115154"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.18",
+										"product": {
+											"name": "7.0.6.18",
+											"product_id": "CSAFPID-115155"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.22",
+										"product": {
+											"name": "7.0.6.22",
+											"product_id": "CSAFPID-115156"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.26",
+										"product": {
+											"name": "7.0.6.26",
+											"product_id": "CSAFPID-115157"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.29",
+										"product": {
+											"name": "7.0.6.29",
+											"product_id": "CSAFPID-115158"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.6.32",
+										"product": {
+											"name": "7.0.6.32",
+											"product_id": "CSAFPID-115159"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.7.4",
+										"product": {
+											"name": "7.0.7.4",
+											"product_id": "CSAFPID-115160"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.7.9",
+										"product": {
+											"name": "7.0.7.9",
+											"product_id": "CSAFPID-115161"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.7.12",
+										"product": {
+											"name": "7.0.7.12",
+											"product_id": "CSAFPID-115162"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.8.2",
+										"product": {
+											"name": "7.0.8.2",
+											"product_id": "CSAFPID-115163"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.8.8",
+										"product": {
+											"name": "7.0.8.8",
+											"product_id": "CSAFPID-115164"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.8.12",
+										"product": {
+											"name": "7.0.8.12",
+											"product_id": "CSAFPID-115165"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.0.8.13",
+										"product": {
+											"name": "7.0.8.13",
+											"product_id": "CSAFPID-115166"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.1.2.61",
+										"product": {
+											"name": "7.1.2.61",
+											"product_id": "CSAFPID-70759"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2",
+										"product": {
+											"name": "7.1.2",
+											"product_id": "CSAFPID-91014"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.81",
+										"product": {
+											"name": "7.1.2.81",
+											"product_id": "CSAFPID-91091"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.64",
+										"product": {
+											"name": "7.1.2.64",
+											"product_id": "CSAFPID-115197"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.72",
+										"product": {
+											"name": "7.1.2.72",
+											"product_id": "CSAFPID-115198"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.16",
+										"product": {
+											"name": "7.1.2.16",
+											"product_id": "CSAFPID-115199"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.20",
+										"product": {
+											"name": "7.1.2.20",
+											"product_id": "CSAFPID-115200"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.24",
+										"product": {
+											"name": "7.1.2.24",
+											"product_id": "CSAFPID-115201"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.28",
+										"product": {
+											"name": "7.1.2.28",
+											"product_id": "CSAFPID-115202"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.38",
+										"product": {
+											"name": "7.1.2.38",
+											"product_id": "CSAFPID-115203"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.42",
+										"product": {
+											"name": "7.1.2.42",
+											"product_id": "CSAFPID-115204"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.46",
+										"product": {
+											"name": "7.1.2.46",
+											"product_id": "CSAFPID-115205"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.49",
+										"product": {
+											"name": "7.1.2.49",
+											"product_id": "CSAFPID-115206"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.1.2.53",
+										"product": {
+											"name": "7.1.2.53",
+											"product_id": "CSAFPID-115207"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "7.2.2.34",
+										"product": {
+											"name": "7.2.2.34",
+											"product_id": "CSAFPID-70760"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.3.1",
+										"product": {
+											"name": "7.2.3.1",
+											"product_id": "CSAFPID-70763"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2",
+										"product": {
+											"name": "7.2.2",
+											"product_id": "CSAFPID-70764"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4",
+										"product": {
+											"name": "7.2.4",
+											"product_id": "CSAFPID-91011"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.3",
+										"product": {
+											"name": "7.2.3",
+											"product_id": "CSAFPID-91012"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1",
+										"product": {
+											"name": "7.2.1",
+											"product_id": "CSAFPID-91013"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.27",
+										"product": {
+											"name": "7.2.4.27",
+											"product_id": "CSAFPID-91089"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.30",
+										"product": {
+											"name": "7.2.4.30",
+											"product_id": "CSAFPID-91090"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.5",
+										"product": {
+											"name": "7.2.5",
+											"product_id": "CSAFPID-100027"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.33",
+										"product": {
+											"name": "7.2.4.33",
+											"product_id": "CSAFPID-111872"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1.9",
+										"product": {
+											"name": "7.2.1.9",
+											"product_id": "CSAFPID-115208"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1.13",
+										"product": {
+											"name": "7.2.1.13",
+											"product_id": "CSAFPID-115209"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1.19",
+										"product": {
+											"name": "7.2.1.19",
+											"product_id": "CSAFPID-115210"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.1.24",
+										"product": {
+											"name": "7.2.1.24",
+											"product_id": "CSAFPID-115211"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2.6",
+										"product": {
+											"name": "7.2.2.6",
+											"product_id": "CSAFPID-115212"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2.10",
+										"product": {
+											"name": "7.2.2.10",
+											"product_id": "CSAFPID-115213"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2.14",
+										"product": {
+											"name": "7.2.2.14",
+											"product_id": "CSAFPID-115214"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2.18",
+										"product": {
+											"name": "7.2.2.18",
+											"product_id": "CSAFPID-115215"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2.19",
+										"product": {
+											"name": "7.2.2.19",
+											"product_id": "CSAFPID-115216"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.2.22",
+										"product": {
+											"name": "7.2.2.22",
+											"product_id": "CSAFPID-115217"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.3.12",
+										"product": {
+											"name": "7.2.3.12",
+											"product_id": "CSAFPID-115218"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.3.16",
+										"product": {
+											"name": "7.2.3.16",
+											"product_id": "CSAFPID-115219"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.6",
+										"product": {
+											"name": "7.2.4.6",
+											"product_id": "CSAFPID-115220"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.9",
+										"product": {
+											"name": "7.2.4.9",
+											"product_id": "CSAFPID-115221"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.18",
+										"product": {
+											"name": "7.2.4.18",
+											"product_id": "CSAFPID-115222"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.4.25",
+										"product": {
+											"name": "7.2.4.25",
+											"product_id": "CSAFPID-115223"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.5.2",
+										"product": {
+											"name": "7.2.5.2",
+											"product_id": "CSAFPID-115224"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.5.4",
+										"product": {
+											"name": "7.2.5.4",
+											"product_id": "CSAFPID-115225"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "7.2.5.7",
+										"product": {
+											"name": "7.2.5.7",
+											"product_id": "CSAFPID-115257"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "7.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.0.2.11",
+										"product": {
+											"name": "8.0.2.11",
+											"product_id": "CSAFPID-70761"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4",
+										"product": {
+											"name": "8.0.4",
+											"product_id": "CSAFPID-91003"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.3",
+										"product": {
+											"name": "8.0.3",
+											"product_id": "CSAFPID-91004"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.2",
+										"product": {
+											"name": "8.0.2",
+											"product_id": "CSAFPID-91005"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.1.2",
+										"product": {
+											"name": "8.0.1.2",
+											"product_id": "CSAFPID-91006"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.25",
+										"product": {
+											"name": "8.0.4.25",
+											"product_id": "CSAFPID-91021"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.28",
+										"product": {
+											"name": "8.0.4.28",
+											"product_id": "CSAFPID-91022"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.33",
+										"product": {
+											"name": "8.0.4.33",
+											"product_id": "CSAFPID-92319"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.32",
+										"product": {
+											"name": "8.0.4.32",
+											"product_id": "CSAFPID-92322"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.5",
+										"product": {
+											"name": "8.0.5",
+											"product_id": "CSAFPID-97262"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.2.15",
+										"product": {
+											"name": "8.0.2.15",
+											"product_id": "CSAFPID-115226"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.3.6",
+										"product": {
+											"name": "8.0.3.6",
+											"product_id": "CSAFPID-115227"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.3.12",
+										"product": {
+											"name": "8.0.3.12",
+											"product_id": "CSAFPID-115228"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.3.19",
+										"product": {
+											"name": "8.0.3.19",
+											"product_id": "CSAFPID-115229"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.3",
+										"product": {
+											"name": "8.0.4.3",
+											"product_id": "CSAFPID-115230"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.9",
+										"product": {
+											"name": "8.0.4.9",
+											"product_id": "CSAFPID-115231"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.16",
+										"product": {
+											"name": "8.0.4.16",
+											"product_id": "CSAFPID-115232"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.23",
+										"product": {
+											"name": "8.0.4.23",
+											"product_id": "CSAFPID-115233"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.4.31",
+										"product": {
+											"name": "8.0.4.31",
+											"product_id": "CSAFPID-115234"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.5.20",
+										"product": {
+											"name": "8.0.5.20",
+											"product_id": "CSAFPID-115235"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.5.23",
+										"product": {
+											"name": "8.0.5.23",
+											"product_id": "CSAFPID-115236"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.5.25",
+										"product": {
+											"name": "8.0.5.25",
+											"product_id": "CSAFPID-115237"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.0.5.27",
+										"product": {
+											"name": "8.0.5.27",
+											"product_id": "CSAFPID-115258"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.0"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.2.0.45",
+										"product": {
+											"name": "8.2.0.45",
+											"product_id": "CSAFPID-70762"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.1",
+										"product": {
+											"name": "8.2.1",
+											"product_id": "CSAFPID-97260"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2",
+										"product": {
+											"name": "8.2.2",
+											"product_id": "CSAFPID-97261"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2.10",
+										"product": {
+											"name": "8.2.2.10",
+											"product_id": "CSAFPID-99994"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.3",
+										"product": {
+											"name": "8.2.3",
+											"product_id": "CSAFPID-108072"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.4",
+										"product": {
+											"name": "8.2.4",
+											"product_id": "CSAFPID-108074"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.1.11",
+										"product": {
+											"name": "8.2.1.11",
+											"product_id": "CSAFPID-115241"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2.9",
+										"product": {
+											"name": "8.2.2.9",
+											"product_id": "CSAFPID-115242"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2.12",
+										"product": {
+											"name": "8.2.2.12",
+											"product_id": "CSAFPID-115243"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2.16",
+										"product": {
+											"name": "8.2.2.16",
+											"product_id": "CSAFPID-115244"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.4.1",
+										"product": {
+											"name": "8.2.4.1",
+											"product_id": "CSAFPID-115245"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.4.4",
+										"product": {
+											"name": "8.2.4.4",
+											"product_id": "CSAFPID-115246"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.5",
+										"product": {
+											"name": "8.2.5",
+											"product_id": "CSAFPID-115247"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.5.13",
+										"product": {
+											"name": "8.2.5.13",
+											"product_id": "CSAFPID-115248"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.5.22",
+										"product": {
+											"name": "8.2.5.22",
+											"product_id": "CSAFPID-115260"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.5.26",
+										"product": {
+											"name": "8.2.5.26",
+											"product_id": "CSAFPID-115261"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.2.2.17",
+										"product": {
+											"name": "8.2.2.17",
+											"product_id": "CSAFPID-116857"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.1.1",
+										"product": {
+											"name": "8.1.1",
+											"product_id": "CSAFPID-91009"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2",
+										"product": {
+											"name": "8.1.2",
+											"product_id": "CSAFPID-91010"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.15",
+										"product": {
+											"name": "8.1.2.15",
+											"product_id": "CSAFPID-91019"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.16",
+										"product": {
+											"name": "8.1.2.16",
+											"product_id": "CSAFPID-91020"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.19",
+										"product": {
+											"name": "8.1.2.19",
+											"product_id": "CSAFPID-91088"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.23",
+										"product": {
+											"name": "8.1.2.23",
+											"product_id": "CSAFPID-92320"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.24",
+										"product": {
+											"name": "8.1.2.24",
+											"product_id": "CSAFPID-92321"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.50",
+										"product": {
+											"name": "8.1.2.50",
+											"product_id": "CSAFPID-112137"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.1.6",
+										"product": {
+											"name": "8.1.1.6",
+											"product_id": "CSAFPID-115238"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.13",
+										"product": {
+											"name": "8.1.2.13",
+											"product_id": "CSAFPID-115239"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.49",
+										"product": {
+											"name": "8.1.2.49",
+											"product_id": "CSAFPID-115240"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.1.2.55",
+										"product": {
+											"name": "8.1.2.55",
+											"product_id": "CSAFPID-115259"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.3.1.1",
+										"product": {
+											"name": "8.3.1.1",
+											"product_id": "CSAFPID-99996"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.1",
+										"product": {
+											"name": "8.3.1",
+											"product_id": "CSAFPID-99997"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2",
+										"product": {
+											"name": "8.3.2",
+											"product_id": "CSAFPID-108069"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2.23",
+										"product": {
+											"name": "8.3.2.23",
+											"product_id": "CSAFPID-112138"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2.25",
+										"product": {
+											"name": "8.3.2.25",
+											"product_id": "CSAFPID-112800"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.1.4",
+										"product": {
+											"name": "8.3.1.4",
+											"product_id": "CSAFPID-115249"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.1.6",
+										"product": {
+											"name": "8.3.1.6",
+											"product_id": "CSAFPID-115250"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2.4",
+										"product": {
+											"name": "8.3.2.4",
+											"product_id": "CSAFPID-115251"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2.13",
+										"product": {
+											"name": "8.3.2.13",
+											"product_id": "CSAFPID-115252"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2.31",
+										"product": {
+											"name": "8.3.2.31",
+											"product_id": "CSAFPID-115262"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.3.2.33",
+										"product": {
+											"name": "8.3.2.33",
+											"product_id": "CSAFPID-115263"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.4.1",
+										"product": {
+											"name": "8.4.1",
+											"product_id": "CSAFPID-108073"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.2",
+										"product": {
+											"name": "8.4.2",
+											"product_id": "CSAFPID-112139"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.1.3",
+										"product": {
+											"name": "8.4.1.3",
+											"product_id": "CSAFPID-115253"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.1.11",
+										"product": {
+											"name": "8.4.1.11",
+											"product_id": "CSAFPID-115254"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.2.8",
+										"product": {
+											"name": "8.4.2.8",
+											"product_id": "CSAFPID-115255"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.3",
+										"product": {
+											"name": "8.4.3",
+											"product_id": "CSAFPID-115256"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.3.8",
+										"product": {
+											"name": "8.4.3.8",
+											"product_id": "CSAFPID-115264"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.3.9",
+										"product": {
+											"name": "8.4.3.9",
+											"product_id": "CSAFPID-115265"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.4",
+										"product": {
+											"name": "8.4.4",
+											"product_id": "CSAFPID-115266"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.4.1",
+										"product": {
+											"name": "8.4.4.1",
+											"product_id": "CSAFPID-185251"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.4.4.3",
+										"product": {
+											"name": "8.4.4.3",
+											"product_id": "CSAFPID-185252"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.5.1",
+										"product": {
+											"name": "8.5.1",
+											"product_id": "CSAFPID-112136"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.5.1.1",
+										"product": {
+											"name": "8.5.1.1",
+											"product_id": "CSAFPID-112140"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.5.1.6",
+										"product": {
+											"name": "8.5.1.6",
+											"product_id": "CSAFPID-115269"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.5.1.7",
+										"product": {
+											"name": "8.5.1.7",
+											"product_id": "CSAFPID-115270"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.5"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "8.6.1.1",
+										"product": {
+											"name": "8.6.1.1",
+											"product_id": "CSAFPID-115268"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.6.1",
+										"product": {
+											"name": "8.6.1",
+											"product_id": "CSAFPID-115276"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "8.6.1.2",
+										"product": {
+											"name": "8.6.1.2",
+											"product_id": "CSAFPID-185176"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "8.6"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco Adaptive Security Appliance (ASA) Software"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2012-4643",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtw84068",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-100027",
+					"CSAFPID-108069",
+					"CSAFPID-108072",
+					"CSAFPID-108073",
+					"CSAFPID-108074",
+					"CSAFPID-111872",
+					"CSAFPID-112136",
+					"CSAFPID-112137",
+					"CSAFPID-112138",
+					"CSAFPID-112139",
+					"CSAFPID-112140",
+					"CSAFPID-112800",
+					"CSAFPID-115151",
+					"CSAFPID-115153",
+					"CSAFPID-115154",
+					"CSAFPID-115155",
+					"CSAFPID-115156",
+					"CSAFPID-115157",
+					"CSAFPID-115158",
+					"CSAFPID-115159",
+					"CSAFPID-115160",
+					"CSAFPID-115161",
+					"CSAFPID-115162",
+					"CSAFPID-115163",
+					"CSAFPID-115164",
+					"CSAFPID-115165",
+					"CSAFPID-115166",
+					"CSAFPID-115197",
+					"CSAFPID-115198",
+					"CSAFPID-115199",
+					"CSAFPID-115200",
+					"CSAFPID-115201",
+					"CSAFPID-115202",
+					"CSAFPID-115203",
+					"CSAFPID-115204",
+					"CSAFPID-115205",
+					"CSAFPID-115206",
+					"CSAFPID-115207",
+					"CSAFPID-115208",
+					"CSAFPID-115209",
+					"CSAFPID-115210",
+					"CSAFPID-115211",
+					"CSAFPID-115212",
+					"CSAFPID-115213",
+					"CSAFPID-115214",
+					"CSAFPID-115215",
+					"CSAFPID-115216",
+					"CSAFPID-115217",
+					"CSAFPID-115218",
+					"CSAFPID-115219",
+					"CSAFPID-115220",
+					"CSAFPID-115221",
+					"CSAFPID-115222",
+					"CSAFPID-115223",
+					"CSAFPID-115224",
+					"CSAFPID-115225",
+					"CSAFPID-115226",
+					"CSAFPID-115227",
+					"CSAFPID-115228",
+					"CSAFPID-115229",
+					"CSAFPID-115230",
+					"CSAFPID-115231",
+					"CSAFPID-115232",
+					"CSAFPID-115233",
+					"CSAFPID-115234",
+					"CSAFPID-115235",
+					"CSAFPID-115236",
+					"CSAFPID-115237",
+					"CSAFPID-115238",
+					"CSAFPID-115239",
+					"CSAFPID-115240",
+					"CSAFPID-115241",
+					"CSAFPID-115242",
+					"CSAFPID-115243",
+					"CSAFPID-115244",
+					"CSAFPID-115245",
+					"CSAFPID-115246",
+					"CSAFPID-115247",
+					"CSAFPID-115248",
+					"CSAFPID-115249",
+					"CSAFPID-115250",
+					"CSAFPID-115251",
+					"CSAFPID-115252",
+					"CSAFPID-115253",
+					"CSAFPID-115254",
+					"CSAFPID-115255",
+					"CSAFPID-115256",
+					"CSAFPID-115257",
+					"CSAFPID-115258",
+					"CSAFPID-115259",
+					"CSAFPID-115260",
+					"CSAFPID-115261",
+					"CSAFPID-115264",
+					"CSAFPID-115265",
+					"CSAFPID-115268",
+					"CSAFPID-115269",
+					"CSAFPID-115270",
+					"CSAFPID-115276",
+					"CSAFPID-116857",
+					"CSAFPID-185176",
+					"CSAFPID-54555",
+					"CSAFPID-54556",
+					"CSAFPID-55253",
+					"CSAFPID-55254",
+					"CSAFPID-55255",
+					"CSAFPID-55256",
+					"CSAFPID-70758",
+					"CSAFPID-70759",
+					"CSAFPID-70760",
+					"CSAFPID-70761",
+					"CSAFPID-70762",
+					"CSAFPID-70763",
+					"CSAFPID-70764",
+					"CSAFPID-91003",
+					"CSAFPID-91004",
+					"CSAFPID-91005",
+					"CSAFPID-91006",
+					"CSAFPID-91009",
+					"CSAFPID-91010",
+					"CSAFPID-91011",
+					"CSAFPID-91012",
+					"CSAFPID-91013",
+					"CSAFPID-91014",
+					"CSAFPID-91015",
+					"CSAFPID-91016",
+					"CSAFPID-91017",
+					"CSAFPID-91018",
+					"CSAFPID-91019",
+					"CSAFPID-91020",
+					"CSAFPID-91021",
+					"CSAFPID-91022",
+					"CSAFPID-91088",
+					"CSAFPID-91089",
+					"CSAFPID-91090",
+					"CSAFPID-91091",
+					"CSAFPID-92319",
+					"CSAFPID-92320",
+					"CSAFPID-92321",
+					"CSAFPID-92322",
+					"CSAFPID-97260",
+					"CSAFPID-97261",
+					"CSAFPID-97262",
+					"CSAFPID-99994",
+					"CSAFPID-99996",
+					"CSAFPID-99997"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+				}
+			],
+			"release_date": "2012-08-21T10:14:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100027",
+						"CSAFPID-108069",
+						"CSAFPID-108072",
+						"CSAFPID-108073",
+						"CSAFPID-108074",
+						"CSAFPID-111872",
+						"CSAFPID-112136",
+						"CSAFPID-112137",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-112800",
+						"CSAFPID-115151",
+						"CSAFPID-115153",
+						"CSAFPID-115154",
+						"CSAFPID-115155",
+						"CSAFPID-115156",
+						"CSAFPID-115157",
+						"CSAFPID-115158",
+						"CSAFPID-115159",
+						"CSAFPID-115160",
+						"CSAFPID-115161",
+						"CSAFPID-115162",
+						"CSAFPID-115163",
+						"CSAFPID-115164",
+						"CSAFPID-115165",
+						"CSAFPID-115166",
+						"CSAFPID-115197",
+						"CSAFPID-115198",
+						"CSAFPID-115199",
+						"CSAFPID-115200",
+						"CSAFPID-115201",
+						"CSAFPID-115202",
+						"CSAFPID-115203",
+						"CSAFPID-115204",
+						"CSAFPID-115205",
+						"CSAFPID-115206",
+						"CSAFPID-115207",
+						"CSAFPID-115208",
+						"CSAFPID-115209",
+						"CSAFPID-115210",
+						"CSAFPID-115211",
+						"CSAFPID-115212",
+						"CSAFPID-115213",
+						"CSAFPID-115214",
+						"CSAFPID-115215",
+						"CSAFPID-115216",
+						"CSAFPID-115217",
+						"CSAFPID-115218",
+						"CSAFPID-115219",
+						"CSAFPID-115220",
+						"CSAFPID-115221",
+						"CSAFPID-115222",
+						"CSAFPID-115223",
+						"CSAFPID-115224",
+						"CSAFPID-115225",
+						"CSAFPID-115226",
+						"CSAFPID-115227",
+						"CSAFPID-115228",
+						"CSAFPID-115229",
+						"CSAFPID-115230",
+						"CSAFPID-115231",
+						"CSAFPID-115232",
+						"CSAFPID-115233",
+						"CSAFPID-115234",
+						"CSAFPID-115235",
+						"CSAFPID-115236",
+						"CSAFPID-115237",
+						"CSAFPID-115238",
+						"CSAFPID-115239",
+						"CSAFPID-115240",
+						"CSAFPID-115241",
+						"CSAFPID-115242",
+						"CSAFPID-115243",
+						"CSAFPID-115244",
+						"CSAFPID-115245",
+						"CSAFPID-115246",
+						"CSAFPID-115247",
+						"CSAFPID-115248",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-115256",
+						"CSAFPID-115257",
+						"CSAFPID-115258",
+						"CSAFPID-115259",
+						"CSAFPID-115260",
+						"CSAFPID-115261",
+						"CSAFPID-115264",
+						"CSAFPID-115265",
+						"CSAFPID-115268",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-115276",
+						"CSAFPID-116857",
+						"CSAFPID-185176",
+						"CSAFPID-54555",
+						"CSAFPID-54556",
+						"CSAFPID-55253",
+						"CSAFPID-55254",
+						"CSAFPID-55255",
+						"CSAFPID-55256",
+						"CSAFPID-70758",
+						"CSAFPID-70759",
+						"CSAFPID-70760",
+						"CSAFPID-70761",
+						"CSAFPID-70762",
+						"CSAFPID-70763",
+						"CSAFPID-70764",
+						"CSAFPID-91003",
+						"CSAFPID-91004",
+						"CSAFPID-91005",
+						"CSAFPID-91006",
+						"CSAFPID-91009",
+						"CSAFPID-91010",
+						"CSAFPID-91011",
+						"CSAFPID-91012",
+						"CSAFPID-91013",
+						"CSAFPID-91014",
+						"CSAFPID-91015",
+						"CSAFPID-91016",
+						"CSAFPID-91017",
+						"CSAFPID-91018",
+						"CSAFPID-91019",
+						"CSAFPID-91020",
+						"CSAFPID-91021",
+						"CSAFPID-91022",
+						"CSAFPID-91088",
+						"CSAFPID-91089",
+						"CSAFPID-91090",
+						"CSAFPID-91091",
+						"CSAFPID-92319",
+						"CSAFPID-92320",
+						"CSAFPID-92321",
+						"CSAFPID-92322",
+						"CSAFPID-97260",
+						"CSAFPID-97261",
+						"CSAFPID-97262",
+						"CSAFPID-99994",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100027",
+						"CSAFPID-108069",
+						"CSAFPID-108072",
+						"CSAFPID-108073",
+						"CSAFPID-108074",
+						"CSAFPID-111872",
+						"CSAFPID-112136",
+						"CSAFPID-112137",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-112800",
+						"CSAFPID-115151",
+						"CSAFPID-115153",
+						"CSAFPID-115154",
+						"CSAFPID-115155",
+						"CSAFPID-115156",
+						"CSAFPID-115157",
+						"CSAFPID-115158",
+						"CSAFPID-115159",
+						"CSAFPID-115160",
+						"CSAFPID-115161",
+						"CSAFPID-115162",
+						"CSAFPID-115163",
+						"CSAFPID-115164",
+						"CSAFPID-115165",
+						"CSAFPID-115166",
+						"CSAFPID-115197",
+						"CSAFPID-115198",
+						"CSAFPID-115199",
+						"CSAFPID-115200",
+						"CSAFPID-115201",
+						"CSAFPID-115202",
+						"CSAFPID-115203",
+						"CSAFPID-115204",
+						"CSAFPID-115205",
+						"CSAFPID-115206",
+						"CSAFPID-115207",
+						"CSAFPID-115208",
+						"CSAFPID-115209",
+						"CSAFPID-115210",
+						"CSAFPID-115211",
+						"CSAFPID-115212",
+						"CSAFPID-115213",
+						"CSAFPID-115214",
+						"CSAFPID-115215",
+						"CSAFPID-115216",
+						"CSAFPID-115217",
+						"CSAFPID-115218",
+						"CSAFPID-115219",
+						"CSAFPID-115220",
+						"CSAFPID-115221",
+						"CSAFPID-115222",
+						"CSAFPID-115223",
+						"CSAFPID-115224",
+						"CSAFPID-115225",
+						"CSAFPID-115226",
+						"CSAFPID-115227",
+						"CSAFPID-115228",
+						"CSAFPID-115229",
+						"CSAFPID-115230",
+						"CSAFPID-115231",
+						"CSAFPID-115232",
+						"CSAFPID-115233",
+						"CSAFPID-115234",
+						"CSAFPID-115235",
+						"CSAFPID-115236",
+						"CSAFPID-115237",
+						"CSAFPID-115238",
+						"CSAFPID-115239",
+						"CSAFPID-115240",
+						"CSAFPID-115241",
+						"CSAFPID-115242",
+						"CSAFPID-115243",
+						"CSAFPID-115244",
+						"CSAFPID-115245",
+						"CSAFPID-115246",
+						"CSAFPID-115247",
+						"CSAFPID-115248",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-115256",
+						"CSAFPID-115257",
+						"CSAFPID-115258",
+						"CSAFPID-115259",
+						"CSAFPID-115260",
+						"CSAFPID-115261",
+						"CSAFPID-115264",
+						"CSAFPID-115265",
+						"CSAFPID-115268",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-115276",
+						"CSAFPID-116857",
+						"CSAFPID-185176",
+						"CSAFPID-54555",
+						"CSAFPID-54556",
+						"CSAFPID-55253",
+						"CSAFPID-55254",
+						"CSAFPID-55255",
+						"CSAFPID-55256",
+						"CSAFPID-70758",
+						"CSAFPID-70759",
+						"CSAFPID-70760",
+						"CSAFPID-70761",
+						"CSAFPID-70762",
+						"CSAFPID-70763",
+						"CSAFPID-70764",
+						"CSAFPID-91003",
+						"CSAFPID-91004",
+						"CSAFPID-91005",
+						"CSAFPID-91006",
+						"CSAFPID-91009",
+						"CSAFPID-91010",
+						"CSAFPID-91011",
+						"CSAFPID-91012",
+						"CSAFPID-91013",
+						"CSAFPID-91014",
+						"CSAFPID-91015",
+						"CSAFPID-91016",
+						"CSAFPID-91017",
+						"CSAFPID-91018",
+						"CSAFPID-91019",
+						"CSAFPID-91020",
+						"CSAFPID-91021",
+						"CSAFPID-91022",
+						"CSAFPID-91088",
+						"CSAFPID-91089",
+						"CSAFPID-91090",
+						"CSAFPID-91091",
+						"CSAFPID-92319",
+						"CSAFPID-92320",
+						"CSAFPID-92321",
+						"CSAFPID-92322",
+						"CSAFPID-97260",
+						"CSAFPID-97261",
+						"CSAFPID-97262",
+						"CSAFPID-99994",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				}
+			],
+			"title": "DHCP Memory Allocation Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2012-4663",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtr21346",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108069",
+					"CSAFPID-108073",
+					"CSAFPID-112136",
+					"CSAFPID-112138",
+					"CSAFPID-112139",
+					"CSAFPID-112140",
+					"CSAFPID-115249",
+					"CSAFPID-115250",
+					"CSAFPID-115251",
+					"CSAFPID-115252",
+					"CSAFPID-115253",
+					"CSAFPID-115254",
+					"CSAFPID-115255",
+					"CSAFPID-115269",
+					"CSAFPID-115270",
+					"CSAFPID-99996",
+					"CSAFPID-99997"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+				}
+			],
+			"release_date": "2012-08-21T10:26:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108073",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108073",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				}
+			],
+			"title": "DCERPC Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2012-4659",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtz04566",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108069",
+					"CSAFPID-108072",
+					"CSAFPID-108074",
+					"CSAFPID-112138",
+					"CSAFPID-112800",
+					"CSAFPID-115241",
+					"CSAFPID-115242",
+					"CSAFPID-115243",
+					"CSAFPID-115244",
+					"CSAFPID-115245",
+					"CSAFPID-115246",
+					"CSAFPID-115247",
+					"CSAFPID-115248",
+					"CSAFPID-115249",
+					"CSAFPID-115250",
+					"CSAFPID-115251",
+					"CSAFPID-115252",
+					"CSAFPID-115260",
+					"CSAFPID-115261",
+					"CSAFPID-115262",
+					"CSAFPID-115263",
+					"CSAFPID-116857",
+					"CSAFPID-70762",
+					"CSAFPID-97260",
+					"CSAFPID-97261",
+					"CSAFPID-99994",
+					"CSAFPID-99996",
+					"CSAFPID-99997"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+				}
+			],
+			"release_date": "2012-08-21T10:42:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108072",
+						"CSAFPID-108074",
+						"CSAFPID-112138",
+						"CSAFPID-112800",
+						"CSAFPID-115241",
+						"CSAFPID-115242",
+						"CSAFPID-115243",
+						"CSAFPID-115244",
+						"CSAFPID-115245",
+						"CSAFPID-115246",
+						"CSAFPID-115247",
+						"CSAFPID-115248",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115260",
+						"CSAFPID-115261",
+						"CSAFPID-115262",
+						"CSAFPID-115263",
+						"CSAFPID-116857",
+						"CSAFPID-70762",
+						"CSAFPID-97260",
+						"CSAFPID-97261",
+						"CSAFPID-99994",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108072",
+						"CSAFPID-108074",
+						"CSAFPID-112138",
+						"CSAFPID-112800",
+						"CSAFPID-115241",
+						"CSAFPID-115242",
+						"CSAFPID-115243",
+						"CSAFPID-115244",
+						"CSAFPID-115245",
+						"CSAFPID-115246",
+						"CSAFPID-115247",
+						"CSAFPID-115248",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115260",
+						"CSAFPID-115261",
+						"CSAFPID-115262",
+						"CSAFPID-115263",
+						"CSAFPID-116857",
+						"CSAFPID-70762",
+						"CSAFPID-97260",
+						"CSAFPID-97261",
+						"CSAFPID-99994",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				}
+			],
+			"title": "SSL VPN Authentication Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2012-4660",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtr63728",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108069",
+					"CSAFPID-108072",
+					"CSAFPID-108073",
+					"CSAFPID-108074",
+					"CSAFPID-112136",
+					"CSAFPID-112138",
+					"CSAFPID-112139",
+					"CSAFPID-112140",
+					"CSAFPID-112800",
+					"CSAFPID-115241",
+					"CSAFPID-115242",
+					"CSAFPID-115243",
+					"CSAFPID-115244",
+					"CSAFPID-115245",
+					"CSAFPID-115246",
+					"CSAFPID-115247",
+					"CSAFPID-115248",
+					"CSAFPID-115249",
+					"CSAFPID-115250",
+					"CSAFPID-115251",
+					"CSAFPID-115252",
+					"CSAFPID-115253",
+					"CSAFPID-115254",
+					"CSAFPID-115255",
+					"CSAFPID-70762",
+					"CSAFPID-97260",
+					"CSAFPID-97261",
+					"CSAFPID-99994",
+					"CSAFPID-99996",
+					"CSAFPID-99997"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+				}
+			],
+			"release_date": "2012-08-21T10:47:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108072",
+						"CSAFPID-108073",
+						"CSAFPID-108074",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-112800",
+						"CSAFPID-115241",
+						"CSAFPID-115242",
+						"CSAFPID-115243",
+						"CSAFPID-115244",
+						"CSAFPID-115245",
+						"CSAFPID-115246",
+						"CSAFPID-115247",
+						"CSAFPID-115248",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-70762",
+						"CSAFPID-97260",
+						"CSAFPID-97261",
+						"CSAFPID-99994",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108072",
+						"CSAFPID-108073",
+						"CSAFPID-108074",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-112800",
+						"CSAFPID-115241",
+						"CSAFPID-115242",
+						"CSAFPID-115243",
+						"CSAFPID-115244",
+						"CSAFPID-115245",
+						"CSAFPID-115246",
+						"CSAFPID-115247",
+						"CSAFPID-115248",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-70762",
+						"CSAFPID-97260",
+						"CSAFPID-97261",
+						"CSAFPID-99994",
+						"CSAFPID-99996",
+						"CSAFPID-99997"
+					]
+				}
+			],
+			"title": "SIP Inspection Media Update Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2012-4661",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtr21359,CSCtr27522",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108069",
+					"CSAFPID-108073",
+					"CSAFPID-112136",
+					"CSAFPID-112138",
+					"CSAFPID-112139",
+					"CSAFPID-112140",
+					"CSAFPID-112800",
+					"CSAFPID-115249",
+					"CSAFPID-115250",
+					"CSAFPID-115251",
+					"CSAFPID-115252",
+					"CSAFPID-115253",
+					"CSAFPID-115254",
+					"CSAFPID-115255",
+					"CSAFPID-115256",
+					"CSAFPID-115262",
+					"CSAFPID-115263",
+					"CSAFPID-115264",
+					"CSAFPID-115265",
+					"CSAFPID-115266",
+					"CSAFPID-115268",
+					"CSAFPID-115269",
+					"CSAFPID-115270",
+					"CSAFPID-115276",
+					"CSAFPID-185176",
+					"CSAFPID-185251",
+					"CSAFPID-185252",
+					"CSAFPID-99996",
+					"CSAFPID-99997",
+					"CSAFPID-5176"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+				}
+			],
+			"release_date": "2012-08-22T23:06:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 9,
+						"vectorString": "AV:N/AC:M/Au:N/C:C/I:P/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108073",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-112800",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-115256",
+						"CSAFPID-115262",
+						"CSAFPID-115263",
+						"CSAFPID-115264",
+						"CSAFPID-115265",
+						"CSAFPID-115266",
+						"CSAFPID-115268",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-115276",
+						"CSAFPID-185176",
+						"CSAFPID-185251",
+						"CSAFPID-185252",
+						"CSAFPID-99996",
+						"CSAFPID-99997",
+						"CSAFPID-5176"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 9,
+						"vectorString": "AV:N/AC:M/Au:N/C:C/I:P/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108073",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-112800",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115255",
+						"CSAFPID-115256",
+						"CSAFPID-115262",
+						"CSAFPID-115263",
+						"CSAFPID-115264",
+						"CSAFPID-115265",
+						"CSAFPID-115266",
+						"CSAFPID-115268",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-115276",
+						"CSAFPID-185176",
+						"CSAFPID-185251",
+						"CSAFPID-185252",
+						"CSAFPID-99996",
+						"CSAFPID-99997",
+						"CSAFPID-5176"
+					]
+				}
+			],
+			"title": "DCERPC Inspection Buffer Overflow Vulnerability"
+		},
+		{
+			"cve": "CVE-2012-4662",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtr21376,CSCtr27524",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-108069",
+					"CSAFPID-108073",
+					"CSAFPID-112136",
+					"CSAFPID-112138",
+					"CSAFPID-112139",
+					"CSAFPID-112140",
+					"CSAFPID-115249",
+					"CSAFPID-115250",
+					"CSAFPID-115251",
+					"CSAFPID-115252",
+					"CSAFPID-115253",
+					"CSAFPID-115254",
+					"CSAFPID-115269",
+					"CSAFPID-115270",
+					"CSAFPID-99996",
+					"CSAFPID-99997",
+					"CSAFPID-5176"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco ASA 5500 Series Adaptive Security Appliances and Cisco Catalyst 6500 Series ASA Services Module ",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20121010-asa"
+				}
+			],
+			"release_date": "2012-08-22T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following section contains information about a workaround, if available, for each vulnerability described in this security advisory.\r\n\r\nDHCP Memory Allocation Denial of Service Vulnerability\n\r\n\n\r\nBesides disabling the DHCP server and DHCP relay features, there are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSSL VPN Authentication Denial of Service Vulnerability\n\r\n\n\r\nThere are no workarounds that mitigate this vulnerability. \n\r\n\n\r\nSIP Inspection Media Update Denial of Service Vulnerability\n\r\n\n\r\n\r\nDisabling SIP inspection will mitigate this vulnerability.\r\n\n\r\nThe following commands will disable the SIP inspection that is configured by default:\r\n\r\n\r\nciscoasa(config)# policy-map global_policy\r\nciscoasa(config-pmap)# class inspection_default\r\nciscoasa(config-pmap-c)# no inspect sip\r\n\r\n\r\n\r\nDCERPC Inspection Buffer Overflow Vulnerability and DCERPC Inspection Denial Of\r\nService Vulnerabilities\r\n\r\nBesides disabling the DCERPC inspection, there are no workarounds that mitigate these vulnerabilities. \r\n\r\n\r\n \r\n\r\n\n\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108073",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-99996",
+						"CSAFPID-99997",
+						"CSAFPID-5176"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-108069",
+						"CSAFPID-108073",
+						"CSAFPID-112136",
+						"CSAFPID-112138",
+						"CSAFPID-112139",
+						"CSAFPID-112140",
+						"CSAFPID-115249",
+						"CSAFPID-115250",
+						"CSAFPID-115251",
+						"CSAFPID-115252",
+						"CSAFPID-115253",
+						"CSAFPID-115254",
+						"CSAFPID-115269",
+						"CSAFPID-115270",
+						"CSAFPID-99996",
+						"CSAFPID-99997",
+						"CSAFPID-5176"
+					]
+				}
+			],
+			"title": "DCERPC Inspection Denial of Service Vulnerability"
+		}
+	]
+}

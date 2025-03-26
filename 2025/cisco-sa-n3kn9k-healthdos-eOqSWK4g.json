@@ -1,0 +1,1914 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the health monitoring diagnostics of Cisco Nexus 3000 Series Switches and Cisco Nexus 9000 Series Switches in standalone NX-OS mode could allow an unauthenticated, adjacent attacker to cause the device to reload unexpectedly, resulting in a denial of service (DoS) condition.\r\n\r\nThis vulnerability is due to the incorrect handling of specific Ethernet frames. An attacker could exploit this vulnerability by sending a sustained rate of crafted Ethernet frames to an affected device. A successful exploit could allow the attacker to cause the device to reload.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the February 2025 Cisco FXOS and NX-OS Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: February 2025 Semiannual Cisco FXOS and NX-OS Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75528\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects the following Cisco products if they are running a vulnerable release of Cisco NX-OS Software, regardless of device configuration:\r\n\r\nNexus 3100 Series Switches\r\nNexus 3200 Series Switches\r\nNexus 3400 Series Switches\r\nNexus 3600 Series Switches\r\nNexus 9200 Series Switches in standalone NX-OS mode\r\nNexus 9300 Series Switches in standalone NX-OS mode\r\nNexus 9400 Series Switches in standalone NX-OS mode\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nFirepower 1000 Series\r\nFirepower 2100 Series\r\nFirepower 4100 Series\r\nFirepower 9300 Security Appliances\r\nMDS 9000 Series Multilayer Switches\r\nNexus 1000 Virtual Edge for VMware vSphere\r\nNexus 3000 Series Switches, other than the models listed in the Vulnerable Products [\"#vp\"] section\r\nNexus 5500 Platform Switches\r\nNexus 5600 Platform Switches\r\nNexus 6000 Series Switches\r\nNexus 7000 Series Switches\r\nNexus 9000 Series Switches in standalone NX-OS mode, other than the models listed in the Vulnerable Products [\"#vp\"] section\r\nNexus 9000 Series Fabric Switches in ACI mode\r\nSecure Firewall 3100 Series\r\nSecure Firewall 4200 Series\r\nUCS 6300 Series Fabric Interconnects\r\nUCS 6400 Series Fabric Interconnects\r\nUCS 6500 Series Fabric Interconnects",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Security Indicators of Compromise Reference Guide [\"https://sec.cloudapps.cisco.com/security/center/resources/iocs.html\"] lists commonly observed IoCs, which can help identify devices that may have been impacted by the vulnerability disclosed in this Cisco security advisory.\r\n\r\nA successful exploitation of this vulnerability could result in consecutive failures of the L2ACLRedirect health monitoring diagnostic test or, specifically on Nexus 3100 and 3200 Series Switches, the RewriteEngineLoopback health monitoring diagnostic test. If the test failed ten consecutive times, one of the following syslog messages would be logged in the system log file:\r\n\r\n\r\nSWITCH %$ VDC-1 %$ %DIAG_PORT_LB-2-L2ACLREDIRECT_LOOPBACK_TEST_FAIL: Module:1 Test:L2ACLRedirect Loopback failed 10 consecutive times. Faulty module: affected ports:1  Error:Loopback test failed. Packets lost on the SUP in the receive direction\r\n\r\nSWITCH %$ VDC-1 %$ %DIAG_PORT_LB-2-REWRITE_ENGINE_LOOPBACK_TEST_FAIL: Module:1 Test:RewriteEngine Loopback failed 10 consecutive times. Faulty module:  Error:Loopback test failed. Packets lost on the SUP in the receive direction\r\n\r\nThis log message would be followed by a reboot of the device with reason code Kernel Panic.\r\n\r\nFor more information about the L2ACLRedirect and RewriteEngineLoopback health monitoring diagnostic tests, see the Runtime or Health Monitoring Diagnostics [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/104x/config-guides/cisco-nexus-9000-series-nx-os-system-management-configuration-guide-release-104x/m-configuring-online-diagnostics-10x.html#id_112907\"] section of the Cisco Nexus 9000 Series NX-OS System Management Configuration Guide.\r\n\r\nNote: Failure of the L2ACLRedirect and RewriteEngineLoopback health monitoring diagnostic tests could also occur for reasons unrelated to this vulnerability and may not be the result of an exploitation of this vulnerability.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability. However, the workaround is not recommended for Cisco NX-OS Software releases that do not include a fix for Field Notice FN72433 [\"https://www.cisco.com/c/en/us/support/docs/field-notices/724/fn72433.html\"]. Implementing the workaround on those releases may result in prolonged control plane instability. For a list of affected releases and additional information, see the field notice [\"https://www.cisco.com/c/en/us/support/docs/field-notices/724/fn72433.html\"].\r\n\r\nTo stop the device from reloading when the diagnostic test L2ACLRedirect repeatedly fails, use the following configuration commands to override the default test behavior and only log failures:\r\n\r\n\r\nnxos# configure\r\n nxos(config)# event manager applet l2acl_override override __L2ACLRedirect\r\nnxos(config-applet)# action 1 syslog priority emergencies msg l2aclFailed\r\n\r\nThe following syslog messages would then appear in the system log file if the test failed ten consecutive times:\r\n\r\n\r\nSWITCH %$ VDC-1 %$ %DIAGCLIENT-2-EEM_ACTION_HM_SHUTDOWN: Test <L2ACLRedirect> has been disabled as a part of default EEM action\r\nSWITCH %$ VDC-1 %$ %DIAG_PORT_LB-2-L2ACLREDIRECT_LOOPBACK_TEST_FAIL: Module:1 Test:L2ACLRedirect Loopback failed 10 consecutive times. Faulty module: affected ports:1  Error:Loopback test failed. Packets lost on the SUP in the receive direction\r\nSWITCH %$ VDC-1 %$ %EEM_ACTION-0-EMERG: l2aclFailed\r\n\r\nFor Cisco Nexus 3100 and 3200 Series Switches, the failed test would be RewriteEngineLoopback, so the workaround is to override the RewriteEngineLoopback diagnostic test with the following configuration commands:\r\n\r\n\r\nnxos# configure\r\n nxos(config)# event manager applet rewrite_override override __RewriteEngineLoopback\r\nnxos(config-applet)# action 1 syslog priority emergencies msg RewriteEngineFailed\r\n\r\nThe following syslog messages would then appear in the system log file if the test failed ten consecutive times:\r\n\r\n\r\nSWITCH %$ VDC-1 %$ %DIAGCLIENT-2-EEM_ACTION_HM_SHUTDOWN: Test <RewriteEngineLoopback> has been disabled as a part of default EEM action\r\nSWITCH %$ VDC-1 %$ %DIAG_PORT_LB-2-L2ACLREDIRECT_LOOPBACK_TEST_FAIL: Module:1 Test:RewriteEngine Loopback failed 10 consecutive times. Faulty module: affected ports:1  Error:Loopback test failed. Packets lost on the SUP in the receive direction\r\nSWITCH %$ VDC-1 %$ %EEM_ACTION-0-EMERG: RewriteEngineFailed\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu\"] that address the vulnerability described in this advisory. Customers with service contracts that entitle them to regular software updates should obtain security fixes through their usual update channels.\r\n\r\nCustomers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nThe Cisco Support and Downloads page [\"https://www.cisco.com/c/en/us/support/index.html\"] on Cisco.com provides information about licensing and downloads. This page can also display customer device support coverage for customers who use the My Devices tool.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\nCustomers Without Service Contracts\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\nCisco NX-OS Software\r\nTo help customers determine their exposure to vulnerabilities in Cisco NX-OS Software, Cisco provides the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"]. This tool identifies any Cisco security advisories that impact a specific software release and the earliest release that fixes the vulnerabilities that are described in each advisory (���First Fixed���). If applicable, the tool also returns the earliest release that fixes all the vulnerabilities described in all the advisories that the Software Checker identifies (���Combined First Fixed���).\r\n\r\nTo use the tool, go to the Cisco Software Checker [\"https://sec.cloudapps.cisco.com/security/center/softwarechecker.x\"] page and follow the instructions. Alternatively, use the following form to search for vulnerabilities that affect a specific software release. To use the form, follow these steps:\r\n\r\nChoose which advisories the tool will search���only this advisory, only advisories with a Critical or High Security Impact Rating (SIR) [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr\"], or all advisories.\r\nChoose the appropriate software.\r\nChoose the appropriate platform.\r\nEnter a release number���for example, 7.0(3)I7(5) for Cisco Nexus 3000 Series Switches or 14.0(1h) for Cisco NX-OS Software in ACI mode.\r\nClick Check.\r\n\r\n     Only this advisory All Critical and High advisories All advisories  Cisco NX-OS Software Cisco NX-OS Software in ACI Mode  Any Platform MDS 9000 Series Multilayer Switches Nexus 1000V Series Switches Nexus 3000 Series Switches Nexus 5000 Series Switches Nexus 6000 Series Switches Nexus 7000 Series Switches Nexus 9000 Series Switches\r\n\r\n\r\n\r\n\r\n Additional Resources\r\nFor help determining the best Cisco NX-OS Software release for a Cisco Nexus Switch, see the following Recommended Releases documents. If a security advisory recommends a later release, Cisco recommends following the advisory guidance.\r\n\r\n\r\nCisco MDS Series Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html\"]\r\nCisco Nexus 3000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html\"]\r\nCisco Nexus 5500 Platform Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html\"]\r\nCisco Nexus 5600 Platform Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5600/sw/release/recommended_releases/n5600_recommended_nx-os_releases.html\"]\r\nCisco Nexus 6000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 7000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html\"]\r\nCisco Nexus 9000 Series Switches [\"http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html\"]\r\nCisco Nexus 9000 Series ACI-Mode Switches [\"https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/recommended-release/b_Recommended_Cisco_ACI_Releases.html\"]\r\n\r\nTo determine the best release for Cisco UCS Software, see the Recommended Releases documents in the release notes for the device.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Nexus 3000 and 9000 Series Switches Health Monitoring Diagnostics Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-n3kn9k-healthdos-eOqSWK4g"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco  Event Response: February 2025 Semiannual Cisco FXOS and NX-OS Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75528"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Indicators of Compromise Reference Guide",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/iocs.html"
+			},
+			{
+				"category": "external",
+				"summary": "Runtime or Health Monitoring Diagnostics",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/104x/config-guides/cisco-nexus-9000-series-nx-os-system-management-configuration-guide-release-104x/m-configuring-online-diagnostics-10x.html#id_112907"
+			},
+			{
+				"category": "external",
+				"summary": "Field Notice FN72433",
+				"url": "https://www.cisco.com/c/en/us/support/docs/field-notices/724/fn72433.html"
+			},
+			{
+				"category": "external",
+				"summary": "free software updates",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Support and Downloads page",
+				"url": "https://www.cisco.com/c/en/us/support/index.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/softwarechecker.x"
+			},
+			{
+				"category": "external",
+				"summary": "Security Impact Rating (SIR)",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco MDS Series Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/mds9000/sw/b_MDS_NX-OS_Recommended_Releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 3000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus3000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_3000_Series_Switches.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 5500 Platform Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5500/sw/release/recommended_releases/n5500_recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 5600 Platform Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus5600/sw/release/recommended_releases/n5600_recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 6000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus6000/sw/release/recommended_releases/recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 7000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/sw/nx-os/recommended_releases/recommended_nx-os_releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 9000 Series Switches",
+				"url": "http://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Nexus 9000 Series ACI-Mode Switches",
+				"url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/recommended-release/b_Recommended_Cisco_ACI_Releases.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco Nexus 3000 and 9000 Series Switches Health Monitoring Diagnostics Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2025-02-26T16:00:00+00:00",
+			"generator": {
+				"date": "2025-02-26T15:52:34+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-n3kn9k-healthdos-eOqSWK4g",
+			"initial_release_date": "2025-02-26T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2025-02-26T15:52:23+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "9.3(1)",
+										"product": {
+											"name": "9.3(1)",
+											"product_id": "CSAFPID-265568"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(2)",
+										"product": {
+											"name": "9.3(2)",
+											"product_id": "CSAFPID-271405"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(3)",
+										"product": {
+											"name": "9.3(3)",
+											"product_id": "CSAFPID-274557"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(1z)",
+										"product": {
+											"name": "9.3(1z)",
+											"product_id": "CSAFPID-276381"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(4)",
+										"product": {
+											"name": "9.3(4)",
+											"product_id": "CSAFPID-277347"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(5)",
+										"product": {
+											"name": "9.3(5)",
+											"product_id": "CSAFPID-278882"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(6)",
+										"product": {
+											"name": "9.3(6)",
+											"product_id": "CSAFPID-280558"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(5w)",
+										"product": {
+											"name": "9.3(5w)",
+											"product_id": "CSAFPID-280940"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(7)",
+										"product": {
+											"name": "9.3(7)",
+											"product_id": "CSAFPID-281984"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(7k)",
+										"product": {
+											"name": "9.3(7k)",
+											"product_id": "CSAFPID-282019"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(7a)",
+										"product": {
+											"name": "9.3(7a)",
+											"product_id": "CSAFPID-284264"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(8)",
+										"product": {
+											"name": "9.3(8)",
+											"product_id": "CSAFPID-284316"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(9)",
+										"product": {
+											"name": "9.3(9)",
+											"product_id": "CSAFPID-286439"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(10)",
+										"product": {
+											"name": "9.3(10)",
+											"product_id": "CSAFPID-288219"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(11)",
+										"product": {
+											"name": "9.3(11)",
+											"product_id": "CSAFPID-292868"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(12)",
+										"product": {
+											"name": "9.3(12)",
+											"product_id": "CSAFPID-299968"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(13)",
+										"product": {
+											"name": "9.3(13)",
+											"product_id": "CSAFPID-301137"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "9.3(14)",
+										"product": {
+											"name": "9.3(14)",
+											"product_id": "CSAFPID-302873"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "9.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "10.1(1)",
+										"product": {
+											"name": "10.1(1)",
+											"product_id": "CSAFPID-281488"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.1(2)",
+										"product": {
+											"name": "10.1(2)",
+											"product_id": "CSAFPID-282666"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.1(2t)",
+										"product": {
+											"name": "10.1(2t)",
+											"product_id": "CSAFPID-286109"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "10.1"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "10.2(1)",
+										"product": {
+											"name": "10.2(1)",
+											"product_id": "CSAFPID-284574"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(1q)",
+										"product": {
+											"name": "10.2(1q)",
+											"product_id": "CSAFPID-284892"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(2)",
+										"product": {
+											"name": "10.2(2)",
+											"product_id": "CSAFPID-286098"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(3)",
+										"product": {
+											"name": "10.2(3)",
+											"product_id": "CSAFPID-286833"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(2a)",
+										"product": {
+											"name": "10.2(2a)",
+											"product_id": "CSAFPID-287105"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(3t)",
+										"product": {
+											"name": "10.2(3t)",
+											"product_id": "CSAFPID-290556"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(4)",
+										"product": {
+											"name": "10.2(4)",
+											"product_id": "CSAFPID-290620"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(5)",
+										"product": {
+											"name": "10.2(5)",
+											"product_id": "CSAFPID-294841"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(3v)",
+										"product": {
+											"name": "10.2(3v)",
+											"product_id": "CSAFPID-300117"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(6)",
+										"product": {
+											"name": "10.2(6)",
+											"product_id": "CSAFPID-300748"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(7)",
+										"product": {
+											"name": "10.2(7)",
+											"product_id": "CSAFPID-301277"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.2(8)",
+										"product": {
+											"name": "10.2(8)",
+											"product_id": "CSAFPID-302635"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "10.2"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "10.3(1)",
+										"product": {
+											"name": "10.3(1)",
+											"product_id": "CSAFPID-289309"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(2)",
+										"product": {
+											"name": "10.3(2)",
+											"product_id": "CSAFPID-292658"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3)",
+										"product": {
+											"name": "10.3(3)",
+											"product_id": "CSAFPID-295511"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(99w)",
+										"product": {
+											"name": "10.3(99w)",
+											"product_id": "CSAFPID-299969"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3w)",
+										"product": {
+											"name": "10.3(3w)",
+											"product_id": "CSAFPID-300516"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(99x)",
+										"product": {
+											"name": "10.3(99x)",
+											"product_id": "CSAFPID-300517"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3o)",
+										"product": {
+											"name": "10.3(3o)",
+											"product_id": "CSAFPID-300741"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(4a)",
+										"product": {
+											"name": "10.3(4a)",
+											"product_id": "CSAFPID-300941"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3p)",
+										"product": {
+											"name": "10.3(3p)",
+											"product_id": "CSAFPID-300942"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(4)",
+										"product": {
+											"name": "10.3(4)",
+											"product_id": "CSAFPID-301024"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3q)",
+										"product": {
+											"name": "10.3(3q)",
+											"product_id": "CSAFPID-301106"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3x)",
+										"product": {
+											"name": "10.3(3x)",
+											"product_id": "CSAFPID-301289"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(5)",
+										"product": {
+											"name": "10.3(5)",
+											"product_id": "CSAFPID-301718"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(4g)",
+										"product": {
+											"name": "10.3(4g)",
+											"product_id": "CSAFPID-301720"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(3r)",
+										"product": {
+											"name": "10.3(3r)",
+											"product_id": "CSAFPID-302643"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.3(4h)",
+										"product": {
+											"name": "10.3(4h)",
+											"product_id": "CSAFPID-302884"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "10.3"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "10.4(1)",
+										"product": {
+											"name": "10.4(1)",
+											"product_id": "CSAFPID-300515"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.4(2)",
+										"product": {
+											"name": "10.4(2)",
+											"product_id": "CSAFPID-301115"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "10.4(3)",
+										"product": {
+											"name": "10.4(3)",
+											"product_id": "CSAFPID-301568"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "10.4"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "10.5(1)",
+										"product": {
+											"name": "10.5(1)",
+											"product_id": "CSAFPID-302754"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "10.5"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco NX-OS Software"
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Nexus 3000 Series Switches",
+						"product": {
+							"name": "Cisco Nexus 3000 Series Switches",
+							"product_id": "CSAFPID-265091"
+						}
+					},
+					{
+						"category": "product_name",
+						"name": "Cisco Nexus 9000 Series Switches",
+						"product": {
+							"name": "Cisco Nexus 9000 Series Switches",
+							"product_id": "CSAFPID-265096"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		],
+		"relationships": [
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(1) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-265568:265091"
+				},
+				"product_reference": "CSAFPID-265568",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(1) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-265568:265096"
+				},
+				"product_reference": "CSAFPID-265568",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(2) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-271405:265091"
+				},
+				"product_reference": "CSAFPID-271405",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(2) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-271405:265096"
+				},
+				"product_reference": "CSAFPID-271405",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(3) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-274557:265091"
+				},
+				"product_reference": "CSAFPID-274557",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(3) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-274557:265096"
+				},
+				"product_reference": "CSAFPID-274557",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(1z) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-276381:265096"
+				},
+				"product_reference": "CSAFPID-276381",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(4) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-277347:265091"
+				},
+				"product_reference": "CSAFPID-277347",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(4) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-277347:265096"
+				},
+				"product_reference": "CSAFPID-277347",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(5) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-278882:265091"
+				},
+				"product_reference": "CSAFPID-278882",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(5) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-278882:265096"
+				},
+				"product_reference": "CSAFPID-278882",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(6) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-280558:265091"
+				},
+				"product_reference": "CSAFPID-280558",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(6) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-280558:265096"
+				},
+				"product_reference": "CSAFPID-280558",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(5w) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-280940:265096"
+				},
+				"product_reference": "CSAFPID-280940",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(7) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-281984:265091"
+				},
+				"product_reference": "CSAFPID-281984",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(7) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-281984:265096"
+				},
+				"product_reference": "CSAFPID-281984",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(7k) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-282019:265091"
+				},
+				"product_reference": "CSAFPID-282019",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(7k) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-282019:265096"
+				},
+				"product_reference": "CSAFPID-282019",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(7a) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-284264:265091"
+				},
+				"product_reference": "CSAFPID-284264",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(7a) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-284264:265096"
+				},
+				"product_reference": "CSAFPID-284264",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(8) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-284316:265091"
+				},
+				"product_reference": "CSAFPID-284316",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(8) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-284316:265096"
+				},
+				"product_reference": "CSAFPID-284316",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(9) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-286439:265091"
+				},
+				"product_reference": "CSAFPID-286439",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(9) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-286439:265096"
+				},
+				"product_reference": "CSAFPID-286439",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(10) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-288219:265091"
+				},
+				"product_reference": "CSAFPID-288219",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(10) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-288219:265096"
+				},
+				"product_reference": "CSAFPID-288219",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(11) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-292868:265091"
+				},
+				"product_reference": "CSAFPID-292868",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(11) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-292868:265096"
+				},
+				"product_reference": "CSAFPID-292868",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(12) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-299968:265091"
+				},
+				"product_reference": "CSAFPID-299968",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(12) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-299968:265096"
+				},
+				"product_reference": "CSAFPID-299968",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(13) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-301137:265091"
+				},
+				"product_reference": "CSAFPID-301137",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(13) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301137:265096"
+				},
+				"product_reference": "CSAFPID-301137",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(14) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-302873:265091"
+				},
+				"product_reference": "CSAFPID-302873",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 9.3(14) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-302873:265096"
+				},
+				"product_reference": "CSAFPID-302873",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.1(1) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-281488:265091"
+				},
+				"product_reference": "CSAFPID-281488",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.1(1) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-281488:265096"
+				},
+				"product_reference": "CSAFPID-281488",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.1(2) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-282666:265091"
+				},
+				"product_reference": "CSAFPID-282666",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.1(2) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-282666:265096"
+				},
+				"product_reference": "CSAFPID-282666",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.1(2t) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-286109:265091"
+				},
+				"product_reference": "CSAFPID-286109",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(1) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-284574:265091"
+				},
+				"product_reference": "CSAFPID-284574",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(1) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-284574:265096"
+				},
+				"product_reference": "CSAFPID-284574",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(1q) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-284892:265096"
+				},
+				"product_reference": "CSAFPID-284892",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(2) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-286098:265091"
+				},
+				"product_reference": "CSAFPID-286098",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(2) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-286098:265096"
+				},
+				"product_reference": "CSAFPID-286098",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(3) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-286833:265091"
+				},
+				"product_reference": "CSAFPID-286833",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(3) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-286833:265096"
+				},
+				"product_reference": "CSAFPID-286833",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(2a) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-287105:265096"
+				},
+				"product_reference": "CSAFPID-287105",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(3t) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-290556:265091"
+				},
+				"product_reference": "CSAFPID-290556",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(4) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-290620:265091"
+				},
+				"product_reference": "CSAFPID-290620",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(4) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-290620:265096"
+				},
+				"product_reference": "CSAFPID-290620",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(5) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-294841:265091"
+				},
+				"product_reference": "CSAFPID-294841",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(5) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-294841:265096"
+				},
+				"product_reference": "CSAFPID-294841",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(3v) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-300117:265091"
+				},
+				"product_reference": "CSAFPID-300117",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(6) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-300748:265091"
+				},
+				"product_reference": "CSAFPID-300748",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(6) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300748:265096"
+				},
+				"product_reference": "CSAFPID-300748",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(7) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-301277:265091"
+				},
+				"product_reference": "CSAFPID-301277",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(7) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301277:265096"
+				},
+				"product_reference": "CSAFPID-301277",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(8) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-302635:265091"
+				},
+				"product_reference": "CSAFPID-302635",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.2(8) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-302635:265096"
+				},
+				"product_reference": "CSAFPID-302635",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(1) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-289309:265091"
+				},
+				"product_reference": "CSAFPID-289309",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(1) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-289309:265096"
+				},
+				"product_reference": "CSAFPID-289309",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(2) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-292658:265091"
+				},
+				"product_reference": "CSAFPID-292658",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(2) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-292658:265096"
+				},
+				"product_reference": "CSAFPID-292658",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-295511:265091"
+				},
+				"product_reference": "CSAFPID-295511",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-295511:265096"
+				},
+				"product_reference": "CSAFPID-295511",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(99w) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-299969:265096"
+				},
+				"product_reference": "CSAFPID-299969",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3w) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300516:265096"
+				},
+				"product_reference": "CSAFPID-300516",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(99x) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300517:265096"
+				},
+				"product_reference": "CSAFPID-300517",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3o) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300741:265096"
+				},
+				"product_reference": "CSAFPID-300741",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(4a) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-300941:265091"
+				},
+				"product_reference": "CSAFPID-300941",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(4a) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300941:265096"
+				},
+				"product_reference": "CSAFPID-300941",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3p) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300942:265096"
+				},
+				"product_reference": "CSAFPID-300942",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(4) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-301024:265091"
+				},
+				"product_reference": "CSAFPID-301024",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(4) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301024:265096"
+				},
+				"product_reference": "CSAFPID-301024",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3q) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301106:265096"
+				},
+				"product_reference": "CSAFPID-301106",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3x) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301289:265096"
+				},
+				"product_reference": "CSAFPID-301289",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(5) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-301718:265091"
+				},
+				"product_reference": "CSAFPID-301718",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(5) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301718:265096"
+				},
+				"product_reference": "CSAFPID-301718",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(4g) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301720:265096"
+				},
+				"product_reference": "CSAFPID-301720",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(3r) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-302643:265096"
+				},
+				"product_reference": "CSAFPID-302643",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.3(4h) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-302884:265096"
+				},
+				"product_reference": "CSAFPID-302884",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.4(1) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-300515:265091"
+				},
+				"product_reference": "CSAFPID-300515",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.4(1) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-300515:265096"
+				},
+				"product_reference": "CSAFPID-300515",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.4(2) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-301115:265091"
+				},
+				"product_reference": "CSAFPID-301115",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.4(2) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301115:265096"
+				},
+				"product_reference": "CSAFPID-301115",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.4(3) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-301568:265091"
+				},
+				"product_reference": "CSAFPID-301568",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.4(3) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-301568:265096"
+				},
+				"product_reference": "CSAFPID-301568",
+				"relates_to_product_reference": "CSAFPID-265096"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.5(1) when installed on Cisco Nexus 3000 Series Switches",
+					"product_id": "CSAFPID-302754:265091"
+				},
+				"product_reference": "CSAFPID-302754",
+				"relates_to_product_reference": "CSAFPID-265091"
+			},
+			{
+				"category": "installed_on",
+				"full_product_name": {
+					"name": "Cisco NX-OS Software 10.5(1) when installed on Cisco Nexus 9000 Series Switches",
+					"product_id": "CSAFPID-302754:265096"
+				},
+				"product_reference": "CSAFPID-302754",
+				"relates_to_product_reference": "CSAFPID-265096"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2025-20111",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwj98161"
+				},
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwk41797"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-265568:265091",
+					"CSAFPID-265568:265096",
+					"CSAFPID-271405:265091",
+					"CSAFPID-271405:265096",
+					"CSAFPID-274557:265091",
+					"CSAFPID-274557:265096",
+					"CSAFPID-276381:265096",
+					"CSAFPID-277347:265091",
+					"CSAFPID-277347:265096",
+					"CSAFPID-278882:265091",
+					"CSAFPID-278882:265096",
+					"CSAFPID-280558:265091",
+					"CSAFPID-280558:265096",
+					"CSAFPID-280940:265096",
+					"CSAFPID-281488:265091",
+					"CSAFPID-281488:265096",
+					"CSAFPID-281984:265091",
+					"CSAFPID-281984:265096",
+					"CSAFPID-282019:265091",
+					"CSAFPID-282019:265096",
+					"CSAFPID-282666:265091",
+					"CSAFPID-282666:265096",
+					"CSAFPID-284264:265091",
+					"CSAFPID-284264:265096",
+					"CSAFPID-284316:265091",
+					"CSAFPID-284316:265096",
+					"CSAFPID-284574:265091",
+					"CSAFPID-284574:265096",
+					"CSAFPID-284892:265096",
+					"CSAFPID-286098:265091",
+					"CSAFPID-286098:265096",
+					"CSAFPID-286109:265091",
+					"CSAFPID-286439:265091",
+					"CSAFPID-286439:265096",
+					"CSAFPID-286833:265091",
+					"CSAFPID-286833:265096",
+					"CSAFPID-287105:265096",
+					"CSAFPID-288219:265091",
+					"CSAFPID-288219:265096",
+					"CSAFPID-289309:265091",
+					"CSAFPID-289309:265096",
+					"CSAFPID-290556:265091",
+					"CSAFPID-290620:265091",
+					"CSAFPID-290620:265096",
+					"CSAFPID-292658:265091",
+					"CSAFPID-292658:265096",
+					"CSAFPID-292868:265091",
+					"CSAFPID-292868:265096",
+					"CSAFPID-294841:265091",
+					"CSAFPID-294841:265096",
+					"CSAFPID-295511:265091",
+					"CSAFPID-295511:265096",
+					"CSAFPID-299968:265091",
+					"CSAFPID-299968:265096",
+					"CSAFPID-299969:265096",
+					"CSAFPID-300117:265091",
+					"CSAFPID-300515:265091",
+					"CSAFPID-300515:265096",
+					"CSAFPID-300516:265096",
+					"CSAFPID-300517:265096",
+					"CSAFPID-300741:265096",
+					"CSAFPID-300748:265091",
+					"CSAFPID-300748:265096",
+					"CSAFPID-300941:265091",
+					"CSAFPID-300941:265096",
+					"CSAFPID-300942:265096",
+					"CSAFPID-301024:265091",
+					"CSAFPID-301024:265096",
+					"CSAFPID-301106:265096",
+					"CSAFPID-301115:265091",
+					"CSAFPID-301115:265096",
+					"CSAFPID-301137:265091",
+					"CSAFPID-301137:265096",
+					"CSAFPID-301277:265091",
+					"CSAFPID-301277:265096",
+					"CSAFPID-301289:265096",
+					"CSAFPID-301568:265091",
+					"CSAFPID-301568:265096",
+					"CSAFPID-301718:265091",
+					"CSAFPID-301718:265096",
+					"CSAFPID-301720:265096",
+					"CSAFPID-302635:265091",
+					"CSAFPID-302635:265096",
+					"CSAFPID-302643:265096",
+					"CSAFPID-302754:265091",
+					"CSAFPID-302754:265096",
+					"CSAFPID-302873:265091",
+					"CSAFPID-302873:265096",
+					"CSAFPID-302884:265096"
+				]
+			},
+			"release_date": "2025-02-26T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-265568:265091",
+						"CSAFPID-265568:265096",
+						"CSAFPID-271405:265091",
+						"CSAFPID-271405:265096",
+						"CSAFPID-274557:265091",
+						"CSAFPID-274557:265096",
+						"CSAFPID-276381:265096",
+						"CSAFPID-277347:265091",
+						"CSAFPID-277347:265096",
+						"CSAFPID-278882:265091",
+						"CSAFPID-278882:265096",
+						"CSAFPID-280558:265091",
+						"CSAFPID-280558:265096",
+						"CSAFPID-280940:265096",
+						"CSAFPID-281488:265091",
+						"CSAFPID-281488:265096",
+						"CSAFPID-281984:265091",
+						"CSAFPID-281984:265096",
+						"CSAFPID-282019:265091",
+						"CSAFPID-282019:265096",
+						"CSAFPID-282666:265091",
+						"CSAFPID-282666:265096",
+						"CSAFPID-284264:265091",
+						"CSAFPID-284264:265096",
+						"CSAFPID-284316:265091",
+						"CSAFPID-284316:265096",
+						"CSAFPID-284574:265091",
+						"CSAFPID-284574:265096",
+						"CSAFPID-284892:265096",
+						"CSAFPID-286098:265091",
+						"CSAFPID-286098:265096",
+						"CSAFPID-286109:265091",
+						"CSAFPID-286439:265091",
+						"CSAFPID-286439:265096",
+						"CSAFPID-286833:265091",
+						"CSAFPID-286833:265096",
+						"CSAFPID-287105:265096",
+						"CSAFPID-288219:265091",
+						"CSAFPID-288219:265096",
+						"CSAFPID-289309:265091",
+						"CSAFPID-289309:265096",
+						"CSAFPID-290556:265091",
+						"CSAFPID-290620:265091",
+						"CSAFPID-290620:265096",
+						"CSAFPID-292658:265091",
+						"CSAFPID-292658:265096",
+						"CSAFPID-292868:265091",
+						"CSAFPID-292868:265096",
+						"CSAFPID-294841:265091",
+						"CSAFPID-294841:265096",
+						"CSAFPID-295511:265091",
+						"CSAFPID-295511:265096",
+						"CSAFPID-299968:265091",
+						"CSAFPID-299968:265096",
+						"CSAFPID-299969:265096",
+						"CSAFPID-300117:265091",
+						"CSAFPID-300515:265091",
+						"CSAFPID-300515:265096",
+						"CSAFPID-300516:265096",
+						"CSAFPID-300517:265096",
+						"CSAFPID-300741:265096",
+						"CSAFPID-300748:265091",
+						"CSAFPID-300748:265096",
+						"CSAFPID-300941:265091",
+						"CSAFPID-300941:265096",
+						"CSAFPID-300942:265096",
+						"CSAFPID-301024:265091",
+						"CSAFPID-301024:265096",
+						"CSAFPID-301106:265096",
+						"CSAFPID-301115:265091",
+						"CSAFPID-301115:265096",
+						"CSAFPID-301137:265091",
+						"CSAFPID-301137:265096",
+						"CSAFPID-301277:265091",
+						"CSAFPID-301277:265096",
+						"CSAFPID-301289:265096",
+						"CSAFPID-301568:265091",
+						"CSAFPID-301568:265096",
+						"CSAFPID-301718:265091",
+						"CSAFPID-301718:265096",
+						"CSAFPID-301720:265096",
+						"CSAFPID-302635:265091",
+						"CSAFPID-302635:265096",
+						"CSAFPID-302643:265096",
+						"CSAFPID-302754:265091",
+						"CSAFPID-302754:265096",
+						"CSAFPID-302873:265091",
+						"CSAFPID-302873:265096",
+						"CSAFPID-302884:265096"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There is a workaround that addresses this vulnerability. However, the workaround is not recommended for Cisco NX-OS Software releases that do not include a fix for Field Notice FN72433 [\"https://www.cisco.com/c/en/us/support/docs/field-notices/724/fn72433.html\"]. Implementing the workaround on those releases may result in prolonged control plane instability. For a list of affected releases and additional information, see the field notice [\"https://www.cisco.com/c/en/us/support/docs/field-notices/724/fn72433.html\"].\r\n\r\nTo stop the device from reloading when the diagnostic test L2ACLRedirect repeatedly fails, use the following configuration commands to override the default test behavior and only log failures:\r\n\r\n\r\nnxos# configure\r\n nxos(config)# event manager applet l2acl_override override __L2ACLRedirect\r\nnxos(config-applet)# action 1 syslog priority emergencies msg l2aclFailed\r\n\r\nThe following syslog messages would then appear in the system log file if the test failed ten consecutive times:\r\n\r\n\r\nSWITCH %$ VDC-1 %$ %DIAGCLIENT-2-EEM_ACTION_HM_SHUTDOWN: Test <L2ACLRedirect> has been disabled as a part of default EEM action\r\nSWITCH %$ VDC-1 %$ %DIAG_PORT_LB-2-L2ACLREDIRECT_LOOPBACK_TEST_FAIL: Module:1 Test:L2ACLRedirect Loopback failed 10 consecutive times. Faulty module: affected ports:1  Error:Loopback test failed. Packets lost on the SUP in the receive direction\r\nSWITCH %$ VDC-1 %$ %EEM_ACTION-0-EMERG: l2aclFailed\r\n\r\nFor Cisco Nexus 3100 and 3200 Series Switches, the failed test would be RewriteEngineLoopback, so the workaround is to override the RewriteEngineLoopback diagnostic test with the following configuration commands:\r\n\r\n\r\nnxos# configure\r\n nxos(config)# event manager applet rewrite_override override __RewriteEngineLoopback\r\nnxos(config-applet)# action 1 syslog priority emergencies msg RewriteEngineFailed\r\n\r\nThe following syslog messages would then appear in the system log file if the test failed ten consecutive times:\r\n\r\n\r\nSWITCH %$ VDC-1 %$ %DIAGCLIENT-2-EEM_ACTION_HM_SHUTDOWN: Test <RewriteEngineLoopback> has been disabled as a part of default EEM action\r\nSWITCH %$ VDC-1 %$ %DIAG_PORT_LB-2-L2ACLREDIRECT_LOOPBACK_TEST_FAIL: Module:1 Test:RewriteEngine Loopback failed 10 consecutive times. Faulty module: affected ports:1  Error:Loopback test failed. Packets lost on the SUP in the receive direction\r\nSWITCH %$ VDC-1 %$ %EEM_ACTION-0-EMERG: RewriteEngineFailed\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-265568:265091",
+						"CSAFPID-265568:265096",
+						"CSAFPID-271405:265091",
+						"CSAFPID-271405:265096",
+						"CSAFPID-274557:265091",
+						"CSAFPID-274557:265096",
+						"CSAFPID-276381:265096",
+						"CSAFPID-277347:265091",
+						"CSAFPID-277347:265096",
+						"CSAFPID-278882:265091",
+						"CSAFPID-278882:265096",
+						"CSAFPID-280558:265091",
+						"CSAFPID-280558:265096",
+						"CSAFPID-280940:265096",
+						"CSAFPID-281488:265091",
+						"CSAFPID-281488:265096",
+						"CSAFPID-281984:265091",
+						"CSAFPID-281984:265096",
+						"CSAFPID-282019:265091",
+						"CSAFPID-282019:265096",
+						"CSAFPID-282666:265091",
+						"CSAFPID-282666:265096",
+						"CSAFPID-284264:265091",
+						"CSAFPID-284264:265096",
+						"CSAFPID-284316:265091",
+						"CSAFPID-284316:265096",
+						"CSAFPID-284574:265091",
+						"CSAFPID-284574:265096",
+						"CSAFPID-284892:265096",
+						"CSAFPID-286098:265091",
+						"CSAFPID-286098:265096",
+						"CSAFPID-286109:265091",
+						"CSAFPID-286439:265091",
+						"CSAFPID-286439:265096",
+						"CSAFPID-286833:265091",
+						"CSAFPID-286833:265096",
+						"CSAFPID-287105:265096",
+						"CSAFPID-288219:265091",
+						"CSAFPID-288219:265096",
+						"CSAFPID-289309:265091",
+						"CSAFPID-289309:265096",
+						"CSAFPID-290556:265091",
+						"CSAFPID-290620:265091",
+						"CSAFPID-290620:265096",
+						"CSAFPID-292658:265091",
+						"CSAFPID-292658:265096",
+						"CSAFPID-292868:265091",
+						"CSAFPID-292868:265096",
+						"CSAFPID-294841:265091",
+						"CSAFPID-294841:265096",
+						"CSAFPID-295511:265091",
+						"CSAFPID-295511:265096",
+						"CSAFPID-299968:265091",
+						"CSAFPID-299968:265096",
+						"CSAFPID-299969:265096",
+						"CSAFPID-300117:265091",
+						"CSAFPID-300515:265091",
+						"CSAFPID-300515:265096",
+						"CSAFPID-300516:265096",
+						"CSAFPID-300517:265096",
+						"CSAFPID-300741:265096",
+						"CSAFPID-300748:265091",
+						"CSAFPID-300748:265096",
+						"CSAFPID-300941:265091",
+						"CSAFPID-300941:265096",
+						"CSAFPID-300942:265096",
+						"CSAFPID-301024:265091",
+						"CSAFPID-301024:265096",
+						"CSAFPID-301106:265096",
+						"CSAFPID-301115:265091",
+						"CSAFPID-301115:265096",
+						"CSAFPID-301137:265091",
+						"CSAFPID-301137:265096",
+						"CSAFPID-301277:265091",
+						"CSAFPID-301277:265096",
+						"CSAFPID-301289:265096",
+						"CSAFPID-301568:265091",
+						"CSAFPID-301568:265096",
+						"CSAFPID-301718:265091",
+						"CSAFPID-301718:265096",
+						"CSAFPID-301720:265096",
+						"CSAFPID-302635:265091",
+						"CSAFPID-302635:265096",
+						"CSAFPID-302643:265096",
+						"CSAFPID-302754:265091",
+						"CSAFPID-302754:265096",
+						"CSAFPID-302873:265091",
+						"CSAFPID-302873:265096",
+						"CSAFPID-302884:265096"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 7.4,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-265568:265091",
+						"CSAFPID-265568:265096",
+						"CSAFPID-271405:265091",
+						"CSAFPID-271405:265096",
+						"CSAFPID-274557:265091",
+						"CSAFPID-274557:265096",
+						"CSAFPID-276381:265096",
+						"CSAFPID-277347:265091",
+						"CSAFPID-277347:265096",
+						"CSAFPID-278882:265091",
+						"CSAFPID-278882:265096",
+						"CSAFPID-280558:265091",
+						"CSAFPID-280558:265096",
+						"CSAFPID-280940:265096",
+						"CSAFPID-281488:265091",
+						"CSAFPID-281488:265096",
+						"CSAFPID-281984:265091",
+						"CSAFPID-281984:265096",
+						"CSAFPID-282019:265091",
+						"CSAFPID-282019:265096",
+						"CSAFPID-282666:265091",
+						"CSAFPID-282666:265096",
+						"CSAFPID-284264:265091",
+						"CSAFPID-284264:265096",
+						"CSAFPID-284316:265091",
+						"CSAFPID-284316:265096",
+						"CSAFPID-284574:265091",
+						"CSAFPID-284574:265096",
+						"CSAFPID-284892:265096",
+						"CSAFPID-286098:265091",
+						"CSAFPID-286098:265096",
+						"CSAFPID-286109:265091",
+						"CSAFPID-286439:265091",
+						"CSAFPID-286439:265096",
+						"CSAFPID-286833:265091",
+						"CSAFPID-286833:265096",
+						"CSAFPID-287105:265096",
+						"CSAFPID-288219:265091",
+						"CSAFPID-288219:265096",
+						"CSAFPID-289309:265091",
+						"CSAFPID-289309:265096",
+						"CSAFPID-290556:265091",
+						"CSAFPID-290620:265091",
+						"CSAFPID-290620:265096",
+						"CSAFPID-292658:265091",
+						"CSAFPID-292658:265096",
+						"CSAFPID-292868:265091",
+						"CSAFPID-292868:265096",
+						"CSAFPID-294841:265091",
+						"CSAFPID-294841:265096",
+						"CSAFPID-295511:265091",
+						"CSAFPID-295511:265096",
+						"CSAFPID-299968:265091",
+						"CSAFPID-299968:265096",
+						"CSAFPID-299969:265096",
+						"CSAFPID-300117:265091",
+						"CSAFPID-300515:265091",
+						"CSAFPID-300515:265096",
+						"CSAFPID-300516:265096",
+						"CSAFPID-300517:265096",
+						"CSAFPID-300741:265096",
+						"CSAFPID-300748:265091",
+						"CSAFPID-300748:265096",
+						"CSAFPID-300941:265091",
+						"CSAFPID-300941:265096",
+						"CSAFPID-300942:265096",
+						"CSAFPID-301024:265091",
+						"CSAFPID-301024:265096",
+						"CSAFPID-301106:265096",
+						"CSAFPID-301115:265091",
+						"CSAFPID-301115:265096",
+						"CSAFPID-301137:265091",
+						"CSAFPID-301137:265096",
+						"CSAFPID-301277:265091",
+						"CSAFPID-301277:265096",
+						"CSAFPID-301289:265096",
+						"CSAFPID-301568:265091",
+						"CSAFPID-301568:265096",
+						"CSAFPID-301718:265091",
+						"CSAFPID-301718:265096",
+						"CSAFPID-301720:265096",
+						"CSAFPID-302635:265091",
+						"CSAFPID-302635:265096",
+						"CSAFPID-302643:265096",
+						"CSAFPID-302754:265091",
+						"CSAFPID-302754:265096",
+						"CSAFPID-302873:265091",
+						"CSAFPID-302873:265096",
+						"CSAFPID-302884:265096"
+					]
+				}
+			],
+			"title": "Cisco Nexus 3000 and 9000 Series Switches Layer 2 Ethernet Denial of Service Vulnerability"
+		}
+	]
+}

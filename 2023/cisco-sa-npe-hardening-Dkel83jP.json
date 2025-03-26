@@ -1,0 +1,124 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "Cisco would like to thank Daniel Szameitat of E.ON Pentesting for reporting this issue."
+			}
+		],
+		"category": "csaf_informational_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco IOS Software and Cisco IOS XE Software images come in two types: The regular universalk9 image and the No Payload Encryption (NPE) universalk9_npe image. NPE images were introduced to satisfy import requirements in some countries that require that the platform does not support strong payload cryptography. As such, NPE images lack support for certain cryptographic features, most notably IPsec VPN and Secure Unified Communications.\r\n\r\nAs result, when running an NPE image, the CLI parser no longer supports commands that are related to those features. When such commands are entered on the CLI, the parser will respond with an error message that includes the invalid command. This is the expected behavior, but under some circumstances this could lead to a leak of cryptographic configuration settings.\r\n\r\nThe following sequence of events can lead to such a leak:\r\n\r\nThe device is booted and loads a universalk9 image. The device is then configured with one or more features that require configuring secrets or key material.\r\nThe image on the device is replaced by a universalk9_npe image and rebooted without removing the secrets or key material that was previously configured.\r\n\r\nThe software will then parse the existing configuration commands that are present on the startup-config but will not recognize the configuration commands that are related to configured strong payload cryptography features and it will print the corresponding error message to the console. In certain scenarios, these error messages may include confidential information like Internet Key Exchange (IKE) pre-shared keys.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this issue affected Cisco products if they were running Cisco IOS Software or Cisco IOS XE Software and had a strong payload cryptography feature enabled. Strong payload cryptography features include the following:\r\n\r\nInternet Protocol Security (IPsec) VPN\r\nLoRaWAN\r\nMedia Access Control Security (MACsec)\r\nSD-WAN\r\nSecure StackWise Virtual\r\nSecure Unified Communications\r\nSSL VPN\r\nWireless Personal Area Network (WPAN)",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this issue.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "To prevent the leaking of confidential information like IKE pre-shared keys, Cisco recommends that customers take all the following precautions:\r\n\r\nBe mindful of which type of image is copied onto a device. Do not store NPE images on devices that use strong payload cryptography features.\r\nEnable strong encryption (Type 6) if the device will be storing any credentials for which the device will need access to the plaintext version of such credential for normal operation.\r\nEnable strong hashing algorithms (Type 8 or Type 9) for non-recoverable passwords and keys.\r\nEnable the No Service Password-Recovery feature to prevent unauthorized users who have physical access to the device from loading an NPE image from an external resource.\r\nShould it become necessary to replace a regular universalk9 image with an NPE image on a given device, either remove any cryptographic-related configuration commands before restarting the device or completely remove the startup configuration and reconfigure the device from scratch.\r\n  Enable Strong Encryption and Hashing Algorithms for Passwords and Keys\r\nType 6\r\n\r\nCisco IOS Software and Cisco IOS XE Software can be configured to encrypt sensitive passwords and keys of which the actual password or key is required during operations that use an Advanced Encryption Standard (AES) symmetric cipher. Cisco IOS Software and Cisco IOS XE Software call this the Type 6 format, which uses a user-defined master key that is not stored in the router configuration and cannot be seen or obtained in any way while connected to the router.\r\n\r\nFor more information, including configuration steps and examples, see the following guides:\r\n\r\nConfiguring Type 6 Passwords in IOS XE [\"https://community.cisco.com/t5/networking-knowledge-base/configuring-type-6-passwords-in-ios-xe/ta-p/4438495\"]\r\nConfigure the Encrypt Pre-shared Keys in Cisco IOS Router [\"https://www.cisco.com/c/en/us/support/docs/security-vpn/ipsec-negotiation-ike-protocols/46420-pre-sh-keys-ios-rtr-cfg.html\"]\r\nInternet Key Exchange for IPsec VPNs Configuration Guide [\"https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_conn_ikevpn/configuration/xe-17/sec-ike-for-ipsec-vpns-xe-17-book/sec-encrypt-preshare.html\"]\r\n\r\nType 8 and Type 9\r\n\r\nType 8 passwords are stored as a PBKDF2 with SHA-256 hash, Type 9 passwords are stored as a SCRYPT hash. Type 8 and Type 9 passwords have been supported since Cisco IOS Software Release 15.3(3)M3 and are not reversible. In Cisco IOS XE Software releases 16.10.1 and later, Type 9 is the default for hashed passwords and secrets.\r\n\r\nTo enforce Type 8 passwords, specify algorithm-type sha256. To enforce Type 9 passwords, specify algorithm-type scrypt. For more information, see the enable algorithm-type [\"https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/security/d1/sec-d1-cr-book/sec-cr-e1.html#wp4278835710\"] section or the password algorithm-type [\"https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/security/s1/sec-s1-cr-book/sec-cr-t2.html#wp1699789103\"] section of the Cisco IOS Security Command Reference.\r\n  Enable the No Service Password-Recovery Feature\r\nThe No Service Password-Recovery feature is a security enhancement that prevents anyone with console access from accessing the router configuration and clearing the password. It also prevents anyone from changing the configuration register values and accessing NVRAM.\r\n\r\nThe No Service Password-Recovery feature is important in regards to the issue that is described in this advisory because it also prevents anyone with console access from breaking into ROMMON during bootup. With ROMMON access, an attacker could load an NPE image from an external source like a TFTP server or a USB drive to force the error condition even if no NPE image exists on the device flash.\r\n\r\nFor instructions on how to enable the No Service Password-Recovery feature, see the User Security Configuration Guide Cisco IOS Release 15 M and T [\"https://www.cisco.com/c/en/us/td/docs/ios/sec_user_services/configuration/guide/convert/user_security/sec_no_svc_pw_recvry.html\"].",
+				"title": "Recommendations"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "Cisco would like to thank Daniel Szameitat of E.ON Pentesting for reporting this issue.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Identifying and Mitigating Security Exposures When Using No Payload Encryption Images with Existing Cryptographic Configuration",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-npe-hardening-Dkel83jP"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Configuring Type 6 Passwords in IOS XE",
+				"url": "https://community.cisco.com/t5/networking-knowledge-base/configuring-type-6-passwords-in-ios-xe/ta-p/4438495"
+			},
+			{
+				"category": "external",
+				"summary": "Configure the Encrypt Pre-shared Keys in Cisco IOS Router",
+				"url": "https://www.cisco.com/c/en/us/support/docs/security-vpn/ipsec-negotiation-ike-protocols/46420-pre-sh-keys-ios-rtr-cfg.html"
+			},
+			{
+				"category": "external",
+				"summary": "Internet Key Exchange for IPsec VPNs Configuration Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_conn_ikevpn/configuration/xe-17/sec-ike-for-ipsec-vpns-xe-17-book/sec-encrypt-preshare.html"
+			},
+			{
+				"category": "external",
+				"summary": "enable algorithm-type",
+				"url": "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/security/d1/sec-d1-cr-book/sec-cr-e1.html#wp4278835710"
+			},
+			{
+				"category": "external",
+				"summary": "password algorithm-type",
+				"url": "https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/security/s1/sec-s1-cr-book/sec-cr-t2.html#wp1699789103"
+			},
+			{
+				"category": "external",
+				"summary": "User Security Configuration Guide Cisco IOS Release 15 M and T",
+				"url": "https://www.cisco.com/c/en/us/td/docs/ios/sec_user_services/configuration/guide/convert/user_security/sec_no_svc_pw_recvry.html"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Identifying and Mitigating Security Exposures When Using No Payload Encryption Images with Existing Cryptographic Configuration",
+		"tracking": {
+			"current_release_date": "2023-01-18T16:00:00+00:00",
+			"generator": {
+				"date": "2023-01-18T15:55:21+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-npe-hardening-Dkel83jP",
+			"initial_release_date": "2023-01-18T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-01-18T15:55:19+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {}
+}

@@ -1,0 +1,433 @@
+{
+	"document": {
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability within the virtual routing and forwarding (VRF) subsystem of Cisco IOS software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition.\n\r\n\n\r\nThe vulnerability is due to a failure to properly process malicious ICMP version 4 (ICMPv4) messages received on a VRF-enabled interface. An attacker could exploit this vulnerability by submitting ICMPv4 messages designed to trigger the vulnerability on an affected device. When the ICMPv4 messages are processed, the packet queue of the affected interface may not be cleared, leading to a queue wedge. When a wedge occurs, the affected device will stop processing any additional packets received on the wedged interface.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. Workarounds that mitigate this vulnerability are not available.\n\r\n\n\r\n\n\r\n\n\r\nNote: The March 25, 2015, Cisco IOS & XE Software Security Advisory bundled publication includes seven Cisco Security Advisories. The advisories address vulnerabilities in Cisco IOS Software and Cisco IOS XE Software. Individual publication links are in Cisco Event Response: Semiannual Cisco IOS & XE Software Security Advisory Bundled Publication at the following link:\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar15.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar15.html\"]\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Only devices with specific configurations are affected. Cisco devices that are running affected Cisco IOS Software versions are vulnerable when one or more interfaces are assigned to a VRF interface.\n\r\n\n\r\nTo determine whether an interface on a device is enabled for VRF, use the show vrf command-line interface exec CLI command. If the device is not configured for VRF, there will be no output to indicate that VRF is enabled. In the following example, VRF is not enabled on any interface:\n\r\nRouter#show vrf\n\r\nRouter#\r\n\r\n\n\r\nIf the device is configured for VRF, the output will indicate that VRF is enabled and identify the device interfaces on which it has been enabled as shown in the following example:\n\r\nRouter#show vrf\n\r\n  Name\t\tDefault RD\t\tProtocols\t\tInterfaces\r\n  VRF-01\t\t\tipv4\t\t        Gi0/0\r\n\r\nIf the preceding output is returned, but no interfaces are assigned, VRF may be configured but is not enabled on an interface. This output in this situation is shown in the following example:\n\r\nRouter#show vrf\n\r\n  Name\t\tDefault RD\t\tProtocols\t\tInterfaces\r\n  VRF-01\t\t\tipv4\r\n\r\nOnly IPv4 traffic directed to the device will trigger the vulnerability.\n\r\n\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software. The image name displays in parentheses, followed by the Cisco IOS Software release number and release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.2(4)M5 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.2(4)M5, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\nCompiled Fri 13-Sep-13 16:44 by prod_rel_team\r\n!--- output truncated\r\n\r\nAdditional information about Cisco IOS Software release naming conventions is available in White Paper: Cisco IOS and NX-OS Software Reference Guide[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS-XE Software is not affected by this vulnerability.\n\r\n\n\r\nCisco IOS XR Software is not affected by this vulnerability.\n\r\n\n\r\nCisco NX-OS Software is not affected by this vulnerability.\n\r\n\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Devices running Cisco IOS and configured to perform virtual routing and forwarding (VRF) are affected by a vulnerability that may be triggered during the processing of ICMP version 4 (ICMPv4) messages destined for the interface enabled for VRF. The vulnerability is due to a failure to properly process malicious ICMPv4 messages received on a VRF-enabled interface. When a malicious ICMP message enters the packet queue of the affected interface, it may fail to be properly processed or may not be cleared from the input queue, resulting in a queue wedge. When a wedge occurs, the affected device will stop processing any additional packets received on the wedged interface.\n\r\n\n\r\nQueue wedges occur when certain packets are received and queued by a Cisco IOS router or switch but, due to a processing error, are never removed from the queue. Consult the \"Workarounds\" section of this advisory for more information about queue wedges and some detection mechanisms that may be used to identify a blocked interface in Cisco IOS Software. Also see the Cisco Security Blog Cisco IOS Queue Wedges Explained[\"http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/\"].\n\r\n\n\r\nICMP for IP version 4 (IPv4) messages transiting the device will not trigger this vulnerability; only packets terminating on an affected device can trigger the vulnerability.\n\r\n\n\r\nThis vulnerability has been documented in Cisco bug ID CSCsi02145[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsi02145\"] (registered[\"https://sec.cloudapps.cisco.comRPF/register/register.do\"] customers only) and has been assigned the Common Vulnerabilities and Exposures (CVE) ID CVE-2015-0638.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds for this vulnerability, but the following identification mechanisms exist for this vulnerability:\n\r\n\n\r\nEmbedded Event Manager\n\r\n\n\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect an interface queue wedge that is caused by this vulnerability. The policy allows administrators to monitor the interfaces for Cisco IOS device and detect when the interface input queues are full. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade, implement suitable mitigations or reload the device to clear the input queue.\n\r\n\n\r\nThe Tcl script is available for download at the \"Cisco Beyond: Embedded Event Manager (EEM) Scripting Community\" at the following link: https://supportforums.cisco.com/docs/DOC-19337[\"https://supportforums.cisco.com/docs/DOC-19337\"]\n\r\n\n\r\nFor additional information, see the Cisco Security Blog Cisco IOS Queue Wedges Explained[\"http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/\"].",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Alerts archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\n\r\n\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\n\r\n\n\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n\r\n    \r\n        \r\n    \r\n    \r\n        Cisco IOS Software\r\n        Cisco provides a tool to help customers determine their exposure to vulnerabilities in Cisco IOS Software. The Cisco IOS Software Checker[\"https://sec.cloudapps.cisco.com/security/center/selectIOSVersion.x\"] allows customers to perform the following tasks:\r\n\r\n        \r\n            Initiate a search by selecting releases from the drop-down menu or uploading a file from a local system \r\n            Enter show version command output for the tool to parse \r\n            Create a customized search by including all previously published Cisco Security Advisories, a specific publication, or all advisories in the most recent bundled publication \r\n        \r\n        The tool identifies any Cisco Security Advisories that impact a queried software release and the earliest release that corrects all vulnerabilities in each Cisco Security Advisory (\"First Fixed\"). If applicable, the tool also returns the earliest possible release that corrects all vulnerabilities in all displayed advisories (\"Combined First Fixed\"). Please visit the Cisco IOS Software Checker[\"https://sec.cloudapps.cisco.com/security/center/selectIOSVersion.x\"] or enter a Cisco IOS Software release in the following field to determine whether the release is affected by any published Cisco IOS Software advisory. \r\n\r\n        (Example entry: 15.1(4)M2)\r\n        \r\n\r\n        \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n            \r\n\r\n            \r\n            \r\n\r\n        \r\n    \r\n\n\r\n\n\r\nCisco IOS XE Software\r\nCisco IOS XE Software is not affected by the vulnerability that is disclosed in this document.\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected by any of the vulnerabilities that are disclosed in the March 2015 Cisco IOS Software Security Advisory Bundled Publication.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.\n\r\n\n\r\nThis vulnerability was discovered during the investigation of customer issues by the Cisco TAC.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Virtual Routing and Forwarding ICMP Queue Wedge Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20150325-wedge"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Software Virtual Routing and Forwarding ICMP Queue Wedge Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewAlert.x?alertId=37814"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar15.html",
+				"url": "http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar15.html"
+			},
+			{
+				"category": "external",
+				"summary": "White Paper: Cisco IOS and NX-OS Software Reference Guide",
+				"url": "http://www.cisco.com/web/about/security/intelligence/ios-ref.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Queue Wedges Explained",
+				"url": "http://blogs.cisco.com/security/cisco_ios_queue_wedges_explained/"
+			},
+			{
+				"category": "external",
+				"summary": "CSCsi02145",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCsi02145"
+			},
+			{
+				"category": "external",
+				"summary": "registered",
+				"url": "https://sec.cloudapps.cisco.comRPF/register/register.do"
+			},
+			{
+				"category": "external",
+				"summary": "https://supportforums.cisco.com/docs/DOC-19337",
+				"url": "https://supportforums.cisco.com/docs/DOC-19337"
+			},
+			{
+				"category": "external",
+				"summary": "http://www.cisco.com/go/psirt",
+				"url": "http://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco IOS Software Checker",
+				"url": "https://sec.cloudapps.cisco.com/security/center/selectIOSVersion.x"
+			}
+		],
+		"title": "Cisco IOS Software Virtual Routing and Forwarding ICMP Queue Wedge Vulnerability",
+		"tracking": {
+			"current_release_date": "2016-01-14T17:27:00+00:00",
+			"generator": {
+				"date": "2024-01-30T06:05:29+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20150325-wedge",
+			"initial_release_date": "2015-03-25T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2015-03-25T15:47:42+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2015-03-26T19:21:37+00:00",
+					"number": "1.1.0",
+					"summary": "Minor edit to Vulnerable Product Section to clarify that any interface Virtual or Physical that is assigned to a VRF is affected and not just physical interfaces."
+				},
+				{
+					"date": "2016-01-14T16:59:55+00:00",
+					"number": "1.2.0",
+					"summary": "Updated Cisco IOS Checker Software Checker form to query all previously published Cisco IOS Software Security Advisories."
+				}
+			],
+			"status": "final",
+			"version": "1.2.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)GC",
+										"product": {
+											"name": "15.2(2)GC",
+											"product_id": "CSAFPID-116219"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2GC"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(2)S2",
+										"product": {
+											"name": "15.3(2)S2",
+											"product_id": "CSAFPID-191331"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(6)E4",
+										"product": {
+											"name": "15.2(6)E4",
+											"product_id": "CSAFPID-274200"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2E"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JB1",
+										"product": {
+											"name": "15.2(2)JB1",
+											"product_id": "CSAFPID-187085"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JB",
+										"product": {
+											"name": "15.2(2)JB",
+											"product_id": "CSAFPID-187110"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JB2",
+										"product": {
+											"name": "15.2(2)JB2",
+											"product_id": "CSAFPID-191994"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JB3",
+										"product": {
+											"name": "15.2(2)JB3",
+											"product_id": "CSAFPID-194660"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JB4",
+										"product": {
+											"name": "15.2(2)JB4",
+											"product_id": "CSAFPID-197473"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JAX",
+										"product": {
+											"name": "15.2(2)JAX",
+											"product_id": "CSAFPID-187407"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JAX"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JN1",
+										"product": {
+											"name": "15.2(2)JN1",
+											"product_id": "CSAFPID-192691"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.2(2)JN2",
+										"product": {
+											"name": "15.2(2)JN2",
+											"product_id": "CSAFPID-193632"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2JN"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JN",
+										"product": {
+											"name": "15.3(3)JN",
+											"product_id": "CSAFPID-200492"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JN"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.4(25e)JAP1m",
+										"product": {
+											"name": "12.4(25e)JAP1m",
+											"product_id": "CSAFPID-204819"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.4JAP"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JA1n",
+										"product": {
+											"name": "15.3(3)JA1n",
+											"product_id": "CSAFPID-204310"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JA"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.3(3)JK99",
+										"product": {
+											"name": "15.3(3)JK99",
+											"product_id": "CSAFPID-273350"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.3JK"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2015-0638",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCsi02145"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-116219",
+					"CSAFPID-187085",
+					"CSAFPID-187110",
+					"CSAFPID-187407",
+					"CSAFPID-191331",
+					"CSAFPID-191994",
+					"CSAFPID-192691",
+					"CSAFPID-193632",
+					"CSAFPID-194660",
+					"CSAFPID-197473",
+					"CSAFPID-200492",
+					"CSAFPID-204310",
+					"CSAFPID-204819",
+					"CSAFPID-273350",
+					"CSAFPID-274200"
+				]
+			},
+			"release_date": "2015-03-25T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-116219",
+						"CSAFPID-187085",
+						"CSAFPID-187110",
+						"CSAFPID-187407",
+						"CSAFPID-191331",
+						"CSAFPID-191994",
+						"CSAFPID-192691",
+						"CSAFPID-193632",
+						"CSAFPID-194660",
+						"CSAFPID-197473",
+						"CSAFPID-200492",
+						"CSAFPID-204310",
+						"CSAFPID-204819",
+						"CSAFPID-273350",
+						"CSAFPID-274200"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-116219",
+						"CSAFPID-187085",
+						"CSAFPID-187110",
+						"CSAFPID-187407",
+						"CSAFPID-191331",
+						"CSAFPID-191994",
+						"CSAFPID-192691",
+						"CSAFPID-193632",
+						"CSAFPID-194660",
+						"CSAFPID-197473",
+						"CSAFPID-200492",
+						"CSAFPID-204310",
+						"CSAFPID-204819",
+						"CSAFPID-273350",
+						"CSAFPID-274200"
+					]
+				}
+			],
+			"title": "Cisco IOS Software Virtual Routing and Forwarding ICMP Queue Wedge Vulnerability"
+		}
+	]
+}

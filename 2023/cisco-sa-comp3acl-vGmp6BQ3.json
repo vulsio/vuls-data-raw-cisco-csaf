@@ -1,0 +1,189 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the classic access control list (ACL) compression feature of Cisco IOS XR Software could allow an unauthenticated, remote attacker to bypass the protection that is offered by a configured ACL on an affected device.\r\n\r\nThis vulnerability is due to incorrect destination address range encoding in the compression module of an ACL that is applied to an interface of an affected device. An attacker could exploit this vulnerability by sending traffic through the affected device that should be denied by the configured ACL. A successful exploit could allow the attacker to bypass configured ACL protections on the affected device, allowing the attacker to access trusted networks that the device might be protecting.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the September 2023 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: September 2023 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75241\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco products if they were running a vulnerable release of Cisco IOS XR Software and had a classic IPv4 ACL with either level 2 or level 3 compression applied. Hybrid ACLs with the use of object-groups were not affected.\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nDetermine the Device Configuration\r\n\r\nTo determine if an IPv4 ACL has either level 2 or 3 compression applied, use the show running-config | include \"compress level 2|compress level 3\" CLI command. If the command returns output, the device is affected by this vulnerability. However, the impact depends on the configuration of the ACL. See details for more information.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Hybrid ACLs are not affected by this vulnerability. Classic ACLs are affected by this vulnerability if they meet both of the following conditions:\r\n\r\nA compression level of either Level 2 or Level 3 (depending on hardware platform)\r\nAccess Control Entries (ACE) with the same destination address, but with different masks\r\n\r\nWhen using level 2 or level 3 compression internally on a classic ACL, the compression code checks for duplicate IP addresses in the ACE. If two or more entries share the same destination address, the destination mask from the first one is applied to all further duplicate entries, as shown in the following examples:\r\n\r\nExample 1:\r\n\r\n\r\nipv4 access-list CSCwe08950\r\n 10 deny icmp any 198.51.100.0 0.0.0.7 time-exceeded\r\n 20 deny icmp any 198.51.100.0 0.0.0.3\r\n 40 permit ipv4 any any\r\n\r\nIn Example 1, an ICMP echo request to 198.51.100.7 should hit ACE line 40 and be permitted. Because ACE 20 and 10 use the same destination address, when compression is applied, only the first destination mask is applied to the compressed ACL, resulting in the ICMP echo request being denied.\r\n\r\nExample 2:\r\n\r\n\r\nipv4 access-list CSCwe08950\r\n 10 deny icmp any 198.51.100.0 0.0.0.7 time-exceeded\r\n 20 permit ipv4 any 198.51.100.0 0.0.0.3\r\n 30 permit ospf any any\r\n\r\nIn Example 2, we would expect telnet traffic to permitted by the ACL to host 198.51.100.3, but not permitted to host 198.51.100.7. However, because ACE 20 is a duplicate destination address of ACE 10, the ACL compression code has used ACE 10 mask and is permitted.\r\n\r\nExample 3:\r\n\r\n\r\nipv4 access-list CSCwe08950\r\n 10 deny icmp host 1.1.1.1 198.51.100.0 0.0.0.7 time-exceeded\r\n 20 permit icmp host 1.1.1.1 198.51.100.0 0.0.0.255\r\n40 permit ipv4 host 1.1.1.1 198.51.100.0 0.0.0.15\r\n 50 permit ospf any any\r\n\r\nIn Example 3, we would expect an ICMP echo-response sourced from 1.1.1.1 to 198.51.100.30 to be permitted. However, because ACE 20 is a duplicate destination address of ACE 10, the compression applies the ACE 10 mask, and the ICMP echo-response sourced from 1.1.1.1 to 198.51.100.30 is not permitted. The telnet session from 1.1.1.1 to 198.51.100.15 should also have been permitted, but it was dropped because ACE 40 is a duplicate of ACE 10, so the ACE 10 mask was used and dropped.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability.\r\n\r\nCustomers are advised to review their classic ACLs if using level 2 or 3 compression for duplicate destination addresses and adjust accordingly.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, the release information in the following table was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nThe left column lists Cisco software releases, and the right column indicates whether a release was affected by the vulnerability described in this advisory and which release included the fix for this vulnerability.\r\n          Cisco IOS XR Release  First Fixed Release          7.2 and earlier  Migrate to a fixed release.      7.3  7.3.5      7.4  Migrate to a fixed release.      7.5  7.5.4      7.6  Migrate to a fixed release.      7.7  Migrate to a fixed release.      7.8  7.8.2      7.9  7.9.1\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Compression ACL Bypass Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-comp3acl-vGmp6BQ3"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: September 2023 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75241"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software Compression ACL Bypass Vulnerability",
+		"tracking": {
+			"current_release_date": "2023-09-13T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:26:38+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-comp3acl-vGmp6BQ3",
+			"initial_release_date": "2023-09-13T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2023-09-13T15:47:30+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2023-20190",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwe08950"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2023-09-13T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Compression ACL Bypass Vulnerability"
+		}
+	]
+}

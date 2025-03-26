@@ -1,0 +1,121 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Remote Authentication Dial In User Service (RADIUS) authentication on a  device that is running certain versions of Cisco Internetworking Operating  System (IOS) and configured with a fallback method to none can  be bypassed.\r\n\r\nSystems that are configured for other authentication methods or that  are not configured with a fallback method to  none are not affected.\r\n\r\nOnly the systems that are running certain versions of Cisco IOS are  affected. Not all configurations using RADIUS and  none are vulnerable to this issue. Some configurations using  RADIUS, none and an additional method are not  affected.\r\n\r\nCisco has made free software available to address this vulnerability.  There are workarounds available to mitigate the effects of the vulnerability.\r\n\r\nThe vulnerabilities are documented as the following Cisco Bug  ID:\r\n  CSCee45312 -- Radius authentication bypass when  configured with a none fallback method.\r\n\r\nThis advisory is posted at http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050629-aaa [\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050629-aaa\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This section provides details on  affected products.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Systems that are running the following  release trains of Cisco IOS are affected if configured with  RADIUS authentication and a none fallback  method.\r\n\r\n      12.2T based trains\r\n      12.3 based trains\r\n      12.3T based trains\r\n      12.4 based trains\r\n\r\nA system  configured for RADIUS authentication and none  fallback method will have a command line in show  running-configuration output which is similar to the following  .\r\n\r\n\r\naaa authentication login xxxxxx group radius none (This is an affected configuration)\r\n\r\n\r\naaa authentication ppp xxxxxx group radius none (This is an affected configuration)\r\n\r\nA system that is configured for RADIUS  authentication with local and none fallback  methods is also affected. An example to this configuration may look like  similar to the following.\r\n\r\n\r\naaa authentication login xxxxxx group radius local none (This is an affected configuration)\r\n\r\n\r\naaa authentication ppp xxxxxx group radius local none (This is an affected configuration)\r\n\r\nA system is only vulnerable if none method is  used as a fallback to RADIUS without any other method in  between, or if only local method is used in between. Systems  that are configured for RADIUS authentication with a fallback  method other than local prior to none method  are not affected.\r\n\r\nRefer to the  Details section for more information about  affected and unaffected configurations.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "These  products are not vulnerable:\r\n\r\n      Products that are not running Cisco IOS are not affected.\r\n      Products running Cisco IOS versions 12.1 and earlier (including      12.0S) and 12.2 mainline are not affected.\r\n      Products that are running Cisco IOS are not affected unless they are      configured for RADIUS authentication with a fallback method to      none.\r\n\r\nNo other Cisco  products are currently known to be affected by this  vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Authentication, Authorization, and Accounting (AAA) network security  services provide the primary framework through which access control is set up  on a device.\r\n\r\nAAA authentication services are used to control access to different  services on a system. Multiple AAA authentication services can be configured on  a system to fall back to a backup authentication method in case the primary  authentication method is unavailable.\r\n\r\nAAA authentication can be used for different purposes (controlling  access to the routers, authenticating remote subscribers etc.).\r\n\r\nRefer to the following URL for more information on AAA:  http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fsaaa/index.htm [\"http://www.cisco.com/univercd/cc/td/doc/product/software/ios122/122cgcr/fsecur_c/fsaaa/index.htm\"]\r\n\r\nRemote Authentication Dial In User Service (RADIUS) is defined in  RFC2865 and describes a protocol for carrying authentication, authorization,  and configuration information.\r\n\r\nThere is a vulnerability in AAA RADIUS authentication if  none is used as a fallback method. Sending a sufficiently long  username will bypass the RADIUS authentication and succeed.\r\n\r\nFollowing algorithm can be used to determine whether a configuration is  vulnerable:\r\n\r\n  1. Are you using an affected version of IOS?\r\n\r\n  No: You are not vulnerable.\r\n\r\n  Yes: Go to step 2.\r\n\r\n  2. Is AAA RADIUS Authentication  used?\r\n\r\n  No: You are not vulnerable.\r\n\r\n  Yes: Go to step 3.\r\n\r\n  3. Is none used as an alternative to  RADIUS?\r\n\r\n  No: You are not vulnerable.\r\n\r\n  Yes: Go to step 4.\r\n\r\n  4. Is there any other method between  RADIUS and none?\r\n\r\n  No: You are vulnerable.\r\n\r\n  Yes: Go to step 5.\r\n\r\n  5. Is the other authentication method  local?\r\n\r\n  No: You are not vulnerable.\r\n\r\n  Yes: Go to step 4.\r\n\r\nBased on the algorithm above sample affected and unaffected  configurations are given below.\r\n\r\n\r\naaa authentication login xxxxxx group radius none (This is an affected configuration)\r\n\r\n\r\naaa authentication login xxxxxx group radius local none (This is an affected configuration)\r\n\r\n\r\naaa authentication login xxxxxx group radius group tacacs+ none (This is an unaffected configuration)\r\n\r\n\r\naaa authentication login xxxxxx group radius enable none (This is an unaffected configuration)\r\n\r\n\r\naaa authentication login xxxxxx group radius line none (This is an unaffected configuration)\r\n\r\n\r\naaa authentication login xxxxxx group radius local line none (This is an unaffected configuration)\r\n\r\nRemoving the none fallback method or putting at least  one additional method other than local between  RADIUS and none will mitigate this  vulnerability.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\n      Removing none as a fallback to      RADIUS or putting an additional method other than      local between RADIUS and      none will mitigate this vulnerability.\r\nFor example, an affected system which has a configuration similar to      the following aaa authentication login xxxxxx group radius      none can be changed to one of the followingaaa      authentication login xxxxxx group radius      aaa      authentication login xxxxxx group radius      enable      aaa authentication login xxxxxx group      radius enable none      aaa authentication login      xxxxxx group radius line none as a workaround.\r\n      Warning:  Removing none as a fallback      method may create problems if the RADIUS server becomes unavailable. With a      none fallback in place, all authentication requests will succeed when the      RADIUS server is unavailable. Removing none fallback method or replacing it      with enable or another mechanism may result in authentication failure if RADIUS      server becomes unavailable.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, please also consult  http://www.cisco.com/en/US/products/products_security_advisories_listing.html [\"http://www.cisco.com/en/US/products/products_security_advisories_listing.html\"]  and any subsequent advisories to determine exposure and a complete upgrade  solution.\r\n\r\nIn all cases, customers should exercise caution to be certain the  devices to be upgraded contain sufficient memory and that current hardware and  software configurations will continue to be supported properly by the new  release. If the information is not clear, contact the Cisco Technical  Assistance Center (\"TAC\") for assistance.\r\n\r\nEach row of the Cisco IOS software table (below) describes a release  train and the platforms or products for which it is intended. If a given  release train is vulnerable, then the earliest possible releases that contain  the fix (the \"First Fixed Release\") and the anticipated date of availability  for each are listed in the \"Rebuild\" and \"Maintenance\" columns. A device  running a release in the given train that is earlier than the release in a  specific column (less than the First Fixed Release) is known to be vulnerable.  The release should be upgraded at least to the indicated release or a later  version (greater than or equal to the First Fixed Release label).\r\n\r\nFor further information on the terms \"Rebuild\" and \"Maintenance, \"  please consult the following URL:  http://www.cisco.com/web/about/security/intelligence/ios-ref.html [\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]\r\n\r\nMajor Release\r\n\r\nAvailability of Repaired Releases\r\n\r\n              Affected 12.2-Based              Release\r\n\r\n              Rebuild\r\n\r\n              Maintenance\r\n\r\n12.2B\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2BC\r\n\r\nVulnerable; migrate to 12.3(13)BC, available              TBD\r\n\r\n12.2BW\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2BX\r\n\r\nVulnerable; migrate to 12.3(7)XI6, available              TBD\r\n\r\n12.2BY\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2BZ\r\n\r\nVulnerable; migrate to 12.3(7)XI6, available              TBD\r\n\r\n12.2CX\r\n\r\nVulnerable; migrate to 12.3(13)BC, available              TBD\r\n\r\n12.2CY\r\n\r\nVulnerable; migrate to 12.3(13)BC, available              TBD\r\n\r\n12.2CZ\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.2EW\r\n\r\nVulnerable; migrate to 12.2(25)EWA2, available              7-July-05\r\n\r\n12.2EWA\r\n\r\n12.2(25)EWA2,              available              7-July-05\r\n\r\n12.2EY\r\n\r\n12.2(25)EY2\r\n\r\n12.2EZ\r\n\r\nVulnerable; migrate to 12.2(25)SEC, available              21-July-05\r\n\r\n12.2JA\r\n\r\nVulnerable; migrate to 12.3(7)JA, available on              08-Aug-05\r\n\r\n12.2JK\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.2MB\r\n\r\nVulnerable; migrate to              12.2SW\r\n\r\n12.2MC\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2MX\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2SE\r\n\r\n12.2(25)SEB2\r\n\r\n12.2(25)SEC,              available              21-July-05\r\n\r\n12.2SXD\r\n\r\n12.2(18)SXD5\r\n\r\n12.2SXE\r\n\r\n12.2(18)SXE2,              available              18-July-05\r\n\r\n12.2T\r\n\r\nVulnerable; migrate to 12.3              train\r\n\r\n12.2XB\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XC\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2XD\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XE\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XF\r\n\r\nVulnerable; migrate to 12.3(13)BC, available              TBD\r\n\r\n12.2XG\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XH\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XI\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XJ\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XK\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XL\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XM\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XQ\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XR/12.2(2)XR/12.2(4)XR\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2(15)XR\r\n\r\nVulnerable; migrate to 12.3(7)JA, available on              08-Aug-05\r\n\r\n12.2XT\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2XW\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YA\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.2YB\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YC\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YD\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YF\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YG\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YH\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YJ\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YL\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YM\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YN\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YP\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YQ\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YR\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YT\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2YU\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YV\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YW\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2YY\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZB\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZC\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZD\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZE\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2ZF\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZG\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZH\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.2ZJ\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZL\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.2ZN\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.2ZO\r\n\r\nVulnerable; migrate to 12.3(10) or              later\r\n\r\n12.2ZP\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n              Affected              12.3-Based Release\r\n\r\n              Rebuild\r\n\r\n              Maintenance\r\n\r\n12.3\r\n\r\n12.3(10)\r\n\r\n12.3B\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3BC\r\n\r\n12.3(13)BC,              available TBD\r\n\r\n12.3BW\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3JA\r\n\r\n12.3(7)JA, available on 08-Aug-05\r\n\r\n12.3T\r\n\r\n12.3(7)T11, available              TBD\r\n\r\n12.3(11)\r\n\r\n12.3(8)T4\r\n\r\n12.3XA\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XB\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XC\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.3XD\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XE\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XF\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XG\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XH\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XI\r\n\r\n12.3(7)XI6, available              TBD\r\n\r\n12.3XJ\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XK\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3XL\r\n\r\n12.3(11)XL\r\n\r\n12.3XM\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3XN\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3XQ\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3XR\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.3XS\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3XT\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.3XU\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.3XW\r\n\r\nVulnerable; migrate to 12.3(11)T or              later\r\n\r\n12.3XX\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3XY\r\n\r\n12.3(8)XY5\r\n\r\n12.3YA\r\n\r\nVulnerable; migrate to 12.3(14)T or              later\r\n\r\n12.3YB\r\n\r\nVulnerable; contact              TAC\r\n\r\n12.3YD\r\n\r\n12.3(8)YD\r\n\r\n12.3YF\r\n\r\n12.3(11)YF\r\n\r\n12.3YG\r\n\r\n12.3(8)YG\r\n\r\n12.3YH\r\n\r\n12.3(8)YH\r\n\r\n12.3YI\r\n\r\n12.3(8)YI\r\n\r\n12.3YJ\r\n\r\n12.3(11)YJ\r\n\r\n12.3YK\r\n\r\n12.3(11)YK\r\n\r\n12.3YL\r\n\r\n12.3(11)YL\r\n\r\n12.3YN\r\n\r\n12.3(11)YN\r\n\r\n12.3YR\r\n\r\n12.3(11)YR\r\n\r\n12.3YS\r\n\r\n12.3(11)YS\r\n\r\n12.3YQ\r\n\r\n12.3(14)YQ\r\n\r\n              Affected 12.4-Based              Release\r\n\r\n              Rebuild\r\n\r\n              Maintenance\r\n\r\n12.4\r\n\r\n12.4(1)",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "RADIUS Authentication Bypass",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050629-aaa"
+			}
+		],
+		"title": "RADIUS Authentication Bypass",
+		"tracking": {
+			"current_release_date": "2013-02-13T09:01:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:18:18+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20050629-aaa",
+			"initial_release_date": "2005-06-29T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2005-06-29T16:00:00+00:00",
+					"number": "1.1.0",
+					"summary": "Added\r\n            12.2XR/12.2(2)XR/12.2(4)XR and 12.2(15)XR to Software Version and Fixes Table.\r\n            Updated 12.2T row."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {},
+	"vulnerabilities": [
+		{
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {},
+			"references": [
+				{
+					"category": "self",
+					"summary": "RADIUS Authentication Bypass",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20050629-aaa"
+				}
+			],
+			"release_date": "2013-02-13T08:51:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The effectiveness of any workaround is dependent on specific customer  situations such as product mix, network topology, traffic behavior, and  organizational mission. Due to the variety of affected products and releases,  customers should consult with their service provider or support organization to  ensure any applied workaround is the most appropriate for use in the intended  network before it is deployed.\r\n\r\n      Removing none as a fallback to      RADIUS or putting an additional method other than      local between RADIUS and      none will mitigate this vulnerability.\r\nFor example, an affected system which has a configuration similar to      the following aaa authentication login xxxxxx group radius      none can be changed to one of the followingaaa      authentication login xxxxxx group radius      aaa      authentication login xxxxxx group radius      enable      aaa authentication login xxxxxx group      radius enable none      aaa authentication login      xxxxxx group radius line none as a workaround.\r\n      Warning:  Removing none as a fallback      method may create problems if the RADIUS server becomes unavailable. With a      none fallback in place, all authentication requests will succeed when the      RADIUS server is unavailable. Removing none fallback method or replacing it      with enable or another mechanism may result in authentication failure if RADIUS      server becomes unavailable."
+				}
+			],
+			"title": "RADIUS Authentication Bypass"
+		}
+	]
+}

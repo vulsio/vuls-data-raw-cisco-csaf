@@ -1,0 +1,201 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during internal security testing."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the hybrid access control list (ACL) processing of IPv4 packets in Cisco IOS XR Software could allow an unauthenticated, remote attacker to bypass a configured ACL.\r\n\r\nThis vulnerability is due to incorrect handling of packets when a specific configuration of the hybrid ACL exists. An attacker could exploit this vulnerability by attempting to send traffic through an affected device. A successful exploit could allow the attacker to bypass a configured ACL on the affected device.\r\n\r\nFor more information, see the Details [\"#details\"] section of this advisory.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n\r\n\r\nThis advisory is part of the March 2025 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: March 2025 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75548\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected the following products if they were running a vulnerable release of Cisco IOS XR Software and had a hybrid IPv4 ACL configured with compress level 3 that matches specific characteristics:\r\n\r\nIOS XR White box (IOSXRWBD)\r\nNetwork Convergence Series (NCS) 540 Series Routers\r\nNCS 560 Series Routers\r\nNCS 5500 Series\r\nNCS 5700 Series\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nDetermine Whether a Hybrid IPv4 ACL is Vulnerable\r\n\r\n1. Determine whether the device has a hybrid ACL configured.\r\n\r\nTo determine whether a hybrid IPv4 ACL is configured, use the show running-config | include ipv4 access-group .* compress level 3 CLI command. If the command returns output, a hybrid IPv4 ACL is configured, as shown in the following example:\r\n\r\n\r\nRP/0/RP0/CPU0:Router#show running-config | include ipv4 access-group .* compress level 3\r\nWed Mar  12 16:00:00.000 UTC\r\nBuilding configuration...\r\n ipv4 access-group IngressACL ingress compress level 3\r\nRP/0/RP0/CPU0:Router#\r\n\r\nIf it is not configured, the device is not affected by this vulnerability.\r\n\r\nIf it is configured, proceed to Step 2.\r\n\r\n2. Examine the ACLs.\r\n\r\nTo examine the contents of each hybrid ACL that was identified in the previous step, use the show access-list <Name of ACL> CLI command. If the number of different source network object groups is 32 or more or if the number of different destination network object groups is 32 or more, proceed to Step 3. If the number is less than 32, the ACL is not affected by this vulnerability.\r\n\r\nThe following example shows 33 access control entries (ACEs) with 33 unique source network object groups and 33 unique destination network object groups:\r\n\r\n\r\nRP/0/RP0/CPU0:Router#show access-lists CSCwi49569_long\r\nWed Mar  12 16:00:00.000 UTC\r\nipv4 access-list CSCwi49569_long\r\n 400000 permit ipv4 net-group 1_SRC_100 net-group 1_DST_100\r\n 400001 permit ipv4 net-group 1_SRC_101 net-group 1_DST_101\r\n 400002 permit ipv4 net-group 1_SRC_102 net-group 1_DST_102\r\n 400003 permit ipv4 net-group 1_SRC_103 net-group 1_DST_103\r\n 400004 permit ipv4 net-group 1_SRC_104 net-group 1_DST_104\r\n 400005 permit ipv4 net-group 1_SRC_105 net-group 1_DST_105\r\n 400006 permit ipv4 net-group 1_SRC_106 net-group 1_DST_106\r\n 400007 permit ipv4 net-group 1_SRC_107 net-group 1_DST_107\r\n 400008 permit ipv4 net-group 1_SRC_108 net-group 1_DST_108\r\n 400009 permit ipv4 net-group 1_SRC_109 net-group 1_DST_109\r\n 400010 permit ipv4 net-group 1_SRC_110 net-group 1_DST_110\r\n 400011 permit ipv4 net-group 1_SRC_111 net-group 1_DST_111\r\n 400012 permit ipv4 net-group 1_SRC_112 net-group 1_DST_112\r\n 400013 permit ipv4 net-group 1_SRC_113 net-group 1_DST_113\r\n 400014 permit ipv4 net-group 1_SRC_114 net-group 1_DST_114\r\n 400015 permit ipv4 net-group 1_SRC_115 net-group 1_DST_115\r\n 400016 permit ipv4 net-group 1_SRC_116 net-group 1_DST_116\r\n 400017 permit ipv4 net-group 1_SRC_117 net-group 1_DST_117\r\n 400018 permit ipv4 net-group 1_SRC_118 net-group 1_DST_118\r\n 400019 permit ipv4 net-group 1_SRC_119 net-group 1_DST_119\r\n 400020 permit ipv4 net-group 1_SRC_120 net-group 1_DST_120\r\n 400021 permit ipv4 net-group 1_SRC_121 net-group 1_DST_121\r\n 400022 permit ipv4 net-group 1_SRC_122 net-group 1_DST_122\r\n 400023 permit ipv4 net-group 1_SRC_123 net-group 1_DST_123\r\n 400024 permit ipv4 net-group 1_SRC_124 net-group 1_DST_124\r\n 400025 permit ipv4 net-group 1_SRC_125 net-group 1_DST_125\r\n 400026 permit ipv4 net-group 1_SRC_126 net-group 1_DST_126\r\n 400027 permit ipv4 net-group 1_SRC_127 net-group 1_DST_127\r\n 400028 permit ipv4 net-group 1_SRC_128 net-group 1_DST_128\r\n 400029 permit ipv4 net-group 1_SRC_129 net-group 1_DST_129\r\n 400030 permit ipv4 net-group 1_SRC_130 net-group 1_DST_130\r\n 400031 permit ipv4 net-group 1_SRC_131 net-group 1_DST_131\r\n 400032 permit ipv4 net-group 1_SRC_132 net-group 1_DST_132\r\nRP/0/RP0/CPU0:Router#\r\n\r\n3. Examine the object groups.\r\n\r\nIf the command returns output with 32 or more different source network object groups or 32 or more different destination network object groups, then it is necessary to examine the contents of each group that appears in each ACE using the show object-group network ipv4 <name of each network object-group> CLI command from the previous step.\r\n\r\nIf the same IPv4 prefix, host, or range entry is found in 32 or more of the source network object groups or in 32 or more of the destination network object groups, then the ACL is affected by this vulnerability.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.\r\n\r\nCisco has confirmed that this vulnerability does not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Exploitation of this vulnerability could allow an attacker to bypass protections that are provided by an ACL that is applied on an affected device. The overall impact of exploitation is organization specific because it depends on the importance of the assets that the ACL was supposed to protect. Customers should evaluate how exploitation of this vulnerability would impact their network and proceed according to their own vulnerability-handling and remediation processes.",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There is a workaround that addresses this vulnerability.\r\n\r\nExamine the object groups that make up the ACL. If the same IPv4 source or destination or both appear more than 31 times in object groups that comprise the ACL, remove access control entries until there are 31 or fewer entries of the same IPv4 address in both the source and destination entries.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, the release information in the following table(s) was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nIn the following table, the left column lists Cisco software releases or trains. The right column indicates whether a release (train) is affected by the vulnerability that is described in this advisory and the first release that includes the fix for this vulnerability.\r\n          Cisco IOS XR Software Release  First Fixed Release          7.10 and earlier  Migrate to a fixed release.      7.11  7.11.2      24.1 and later  Not affected.\r\nSMUs are also available to address this vulnerability. Customers who require SMUs for platforms or releases that are not available are advised to contact their support organization. For more information on finding which SMUs may have been published for this vulnerability, see the Download section of Understand Cisco IOS XR Software Maintenance Updates (SMUs) [\"https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/116332-maintain-ios-xr-smu-00.html#toc-hId-972485609\"].\r\n\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during internal security testing.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Hybrid Access Control List Bypass Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ncs-hybridacl-crMZFfKQ"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: March 2025 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75548"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Understand Cisco IOS XR Software Maintenance Updates (SMUs)",
+				"url": "https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/116332-maintain-ios-xr-smu-00.html#toc-hId-972485609"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software Hybrid Access Control List Bypass Vulnerability",
+		"tracking": {
+			"current_release_date": "2025-03-12T16:00:00+00:00",
+			"generator": {
+				"date": "2025-03-12T15:55:10+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-ncs-hybridacl-crMZFfKQ",
+			"initial_release_date": "2025-03-12T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2025-03-12T15:54:41+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2025-20144",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwi49569"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2025-03-12T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				},
+				{
+					"category": "workaround",
+					"details": "There is a workaround that addresses this vulnerability.\r\n\r\nExamine the object groups that make up the ACL. If the same IPv4 source or destination or both appear more than 31 times in object groups that comprise the ACL, remove access control entries until there are 31 or fewer entries of the same IPv4 address in both the source and destination entries.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+					"product_ids": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 4,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Access Control List Bypass Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,193 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the health check RPM of Cisco IOS XR Software could allow an unauthenticated, remote attacker to access the Redis instance that is running within the NOSi container.\r\n\r\nThis vulnerability exists because the health check RPM opens TCP port 6379 by default upon activation. An attacker could exploit this vulnerability by connecting to the Redis instance on the open port. A successful exploit could allow the attacker to write to the Redis in-memory database, write arbitrary files to the container filesystem, and retrieve information about the Redis database. Given the configuration of the sandboxed container that the Redis instance runs in, a remote attacker would be unable to execute remote code or abuse the integrity of the Cisco IOS XR Software host system.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, this vulnerability affected Cisco 8000 Series Routers if they were running a vulnerable release of Cisco IOS XR Software and had the health check RPM installed and active.\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n  Determine the Device Configuration\r\nTo determine if the device is in a vulnerable state, issue the run docker ps CLI command. If the output returns a docker container with the name NOSi, as shown in the following example, the device is considered vulnerable:\r\n\r\n\r\nRP/0/RP0/CPU0:8000#run docker ps\r\nWed May 18 04:54:52.502 UTC  CONTAINER ID    IMAGE         COMMAND                 CREATED          STATUS       PORTS  NAMES  54307e434f29    nosi:latest   \"docker-entrypoint.s…\"  9 seconds ago    Up 8 seconds        NOSi  RP/0/RP0/CPU0:8000#",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "There are workarounds that address this vulnerability:\r\n\r\nOption 1: This is the preferred method. Disable health check and explicitly disable the use cases.\r\n\r\nTo effectively disable health check, enter the following commands exactly as shown:\r\n\r\n\r\nRP/0/RP0/CPU0:8000(config)#no healthcheck enable\r\nRP/0/RP0/CPU0:8000(config)#healthcheck use-case asic-reset disable\r\nRP/0/RP0/CPU0:8000(config)#healthcheck use-case packet-drop disable\r\nRP/0/RP0/CPU0:8000(config)#commit\r\nRP/0/RP0/CPU0:8000#\r\n\r\nThen remove the health check RPM from the device:\r\n\r\n\r\nRP/0/RP0/CPU0:8000#install package remove xr-healthcheck\r\nWed May 18 05:00:08.060 UTCInstall remove operation 5.2.2 has started\r\nInstall operation will continue in the background\r\nRP/0/RP0/CPU0:8000#\r\nRP/0/RP0/CPU0:8000#install apply restart\r\nWed May 18 05:01:08.842 UTC\r\nInstall apply operation 5.2 has started\r\nInstall operation will continue in the background\r\nRP/0/RP0/CPU0:8000#\r\nRP/0/RP0/CPU0:8000#show install request\r\nUser request: install apply restart\r\nOperation ID: 7.4\r\nState:        Success since 2024-02-28 14:06:40 UTC\r\nRP/0/RP0/CPU0:8000#install commit\r\nRP/0/RP0/CPU0:8000#\r\n\r\n\r\nOption 2: Use an Infrastructure Access Control List (iACLs) to block port 6379.\r\n\r\nTo protect infrastructure devices and minimize the risk, impact, and effectiveness of direct infrastructure attacks, administrators are advised to deploy infrastructure access control lists (iACLs) to perform policy enforcement of traffic sent to infrastructure equipment. Administrators can construct an iACL by explicitly permitting only authorized traffic sent to infrastructure devices in accordance with existing security policies and configurations. For the maximum protection of infrastructure devices, deployed iACLs should be applied in the ingress direction on all interfaces to which an IP address has been configured. An iACL workaround cannot provide complete protection against this vulnerability when the attack originates from a trusted source address.\r\n\r\nThe iACL policy denies unauthorized Redis communications packets on TCP port 6379 that are sent to affected devices. In the following example, 192.168.60.0/24 is the IP address space that is used by the affected devices. Care should be taken to allow required traffic for routing and administrative access before denying all unauthorized traffic. Whenever possible, infrastructure address space should be distinct from the address space used for user and services segments. Using this addressing methodology will assist with the construction and deployment of iACLs.\r\n\r\n\r\n ipv4 access-list Infrastructure-ACL-Policy\r\n !    !-- The following vulnerability-specific access control entries    !-- (ACEs) can drop Redis Database communication packets    !    deny tcp any 192.168.60.0 0.0.0.255 eq 6379   !    !-- Explicit deny ACE for traffic sent to addresses configured    !-- within the infrastructure address space    !    deny ip any 192.168.60.0 0.0.0.255  !   !-- Permit or deny all other Layer 3 and Layer 4 traffic in   !-- accordance with existing security policies and configurations   !   !-- Apply iACL to interfaces in the ingress direction\r\n!  interface GigabitEthernet0/0   ipv4 access-group Infrastructure-ACL-Policy in\r\n\r\n\r\n\r\nFor additional information about iACLs, see Protecting Your Core: Infrastructure Protection Access Control Lists [\"http://www.cisco.com/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml\"].\r\n\r\nWhile these workarounds have been deployed and were proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n      Fixed Releases\r\nAt the time of publication, the release information in the following table(s) was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n        Cisco IOS XR Release  First Fixed Release          7.2 and earlier  Not affected      7.3.15, 7.3.16, 7.3.1, and 7.3.2  Not affected      7.3.3  SMU ID: 8000-7.3.3.CSCwb82689 and 7.3.4      7.4   Not affected      7.5.1  Not affected      7.5.2  Not affected      7.6  Not affected\r\nNote: SMU ID: 8000-7.3.3.CSCwb82689 needs to be installed using the following steps; otherwise, the old docker container may still be active and not address this vulnerability.\r\n\r\nInstall SMU ID: 8000-7.3.3.CSCwb82689:\r\n\r\nRP/0/RP0/CPU0:ios#show install active summary\r\nFri Mar  1 05:46:02.751 UTC  Active Packages:    XR: 183    All: 1347  Label:              7.3.3  Software Hash:      fd6561ecb682a5cd3b7fcc31b6606292    Optional Packages                                                        Version  ---------------------------------------------------- ---------------------------  xr-8000-mcast                                                      7.3.3v1.0.0-1  xr-8000-netflow                                                    7.3.3v1.0.0-1  xr-bgp                                                             7.3.3v1.0.0-1  xr-healthcheck                                                     7.3.3v1.0.1-1  xr-ipsla                                                           7.3.3v1.0.0-1  xr-is-is                                                           7.3.3v1.0.0-1  xr-lldp                                                            7.3.3v1.0.0-1  xr-mcast                                                           7.3.3v1.0.0-1  xr-mpls-oam                                                        7.3.3v1.0.0-1  xr-netflow                                                         7.3.3v1.0.0-1  xr-ospf                                                            7.3.3v1.0.0-1  xr-perfmgmt                                                        7.3.3v1.0.0-1  xr-track                                                           7.3.3v1.0.0-1    Active Fixes (count: 1):    CSCwb82689: xr-healthcheck\r\n\r\nNOSi is still running the old container, which exposes the redis port.\r\n\r\n\r\n[node0_RP0_CPU0:~]$docker ps\r\nCONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES  f25f8f89bcc1        nosi:latest         \"docker-entrypoint.s…\"   5 minutes ago       Up 5 minutes                            NOSi  [node0_RP0_CPU0:~]$docker exec -it NOSi ps x    PID TTY      STAT   TIME COMMAND  10ts/0    Sl     0:00 redis-server 0.0.0.0:6379\r\n\r\nStop and remove the old docker container and remove the old docker image:\r\n\r\n[node0_RP0_CPU0:~]$docker ps\r\nCONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES  f25f8f89bcc1        nosi:latest         \"docker-entrypoint.s…\"   7 minutes ago       Up 7 minutes                            NOSi  [node0_RP0_CPU0:~]$docker stop NOSi  NOSi  [node0_RP0_CPU0:~]$docker rm NOSi  NOSi  [node0_RP0_CPU0:~]$docker images  REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE  nosi                latest              1dbc91432c6c        2 years ago         840MB  [node0_RP0_CPU0:~]$docker image rm 1dbc91432c6c  Untagged: nosi:latest  Deleted: sha256:1dbc91432c6cde1c00dabf456b6007649af719ea091b3557a333842cdb458b65  .\r\n.\r\n.  Deleted: sha256:87c8a1d8f54f3aa4e05569e8919397b65056aa71cdf48b7f061432c98475eee9\r\n\r\nRestart processes:\r\n\r\nRP/0/RP0/CPU0:ios#process restart appmgr\r\nRP/0/RP0/CPU0:ios#process restart hcmgr\r\n\r\nThe NOsi container came up with a new image.\r\n\r\n\r\n[node0_RP0_CPU0:~]$docker ps\r\nCONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES  c64285f9f2ef        nosi:latest         \"docker-entrypoint.s…\"   2 seconds ago       Up 1 second                             NOSi  [node0_RP0_CPU0:~]$docker exec -it NOSi ps x  PID TTY      STAT   TIME COMMAND  10 pts/0    Sl     0:00 redis-server *:0\r\n\r\nInstall commit:\r\n\r\nRP/0/RP0/CPU0:8000#install commit\r\nRP/0/RP0/CPU0:8000#\r\n\r\n\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "In May 2022, the Cisco PSIRT became aware of attempted exploitation of this vulnerability in the wild. Cisco strongly recommends that customers apply suitable workaround or upgrade to a fixed software release to remediate this vulnerability.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software Health Check Open Port Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-redis-ABJyE5xK"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Protecting Your Core: Infrastructure Protection Access Control Lists",
+				"url": "http://www.cisco.com/en/US/tech/tk648/tk361/technologies_white_paper09186a00801a1a55.shtml"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software Health Check Open Port Vulnerability",
+		"tracking": {
+			"current_release_date": "2024-03-15T16:55:47+00:00",
+			"generator": {
+				"date": "2024-05-10T23:16:16+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-iosxr-redis-ABJyE5xK",
+			"initial_release_date": "2022-05-20T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2022-05-20T16:00:03+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2022-06-01T13:59:56+00:00",
+					"number": "1.1.0",
+					"summary": "Added SMU to the Fixed Releases section."
+				},
+				{
+					"date": "2024-03-15T16:55:47+00:00",
+					"number": "1.2.0",
+					"summary": "Updated workaround information and added directions for installing the SMU."
+				}
+			],
+			"status": "final",
+			"version": "1.2.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2022-20821",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwb82689"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 6.5,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Healthcheck Open Port Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,430 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco IOS XE Software for 1000 Series Aggregation Services Routers (ASR) contains the following denial of service (DoS) vulnerabilities:\r\n\r\n\r\nCisco IOS XE Software IPv6 Multicast Traffic Denial of Service Vulnerability\r\nCisco IOS XE Software MVPNv6 Traffic Denial of Service Vulnerability\r\nCisco IOS XE Software L2TP Traffic Denial of Service Vulnerability\r\nCisco IOS XE Software Bridge Domain Interface Denial of Service Vulnerability\r\nCisco IOS XE Software SIP Traffic Denial of Service Vulnerability\r\nThese vulnerabilities are independent of each other; a release that is affected by one of the vulnerabilities may not be affected by the others.\r\n\r\nSuccessful exploitation of any of these vulnerabilities could allow an unauthenticated remote attacker to trigger a reload of the Embedded Services Processors (ESP) card or the Route Processor (RP) card, causing an interruption of services.\r\nRepeated exploitation could result in a sustained DoS condition.\r\n\r\nNote: Cisco IOS Software and Cisco IOS-XR Software are not affected by these vulnerabilities.\r\n\r\nCisco has released software updates that address these vulnerabilities.\r\n\r\nThis advisory is available at the following link:\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000 [\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000\"]",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS XE Software for 1000 Series ASR contains multiple DoS vulnerabilities. Affected versions of Cisco IOS XE Software for 1000 Series ASR will vary depending on the specific vulnerability. Consult the Software Versions and Fixes section of this security advisory for more information about the affected versions.",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "For specific version information, refer to the Software Versions and Fixes section of this advisory.\r\n\r\nCisco IOS XE Software IPv6 Multicast Traffic Denial of Service Vulnerability and Cisco IOS XE Software MVPNv6 Traffic Denial of Service Vulnerability\r\n\r\nThese vulnerabilities are triggered when a fragmented multicast IP version 6 (IPv6) or a fragmented IPv6 Multicast VPN (MVPNv6) packet is received by an affected Cisco ASR device. The fragmented multicast packet processed by Cisco Multicast Leaf Recycle Elimination (MLRE) may cause a Cisco ESP card on the Cisco ASR device to reload.\r\nMultiple features configured on the Cisco ASR 1000 may trigger this kind of processing that will lead to a crash.\r\n\r\nCisco IOS XE Software may be affected if IPv6 is enabled on an interface that is processing traffic and MLRE is enabled on the affected device.\r\n\r\nTo determine whether IPv6 is enabled on an interface use the show run | include ipv6.(enable|address)\r\nprivileged EXEC command. The presence of ipv6 enable and ipv6 address  in the output of show run | include ipv6.(enable|address) indicates that IPv6 is enabled.\r\nThe following is the output of the show run | include ipv6.(enable|address) in a Cisco IOS XE Software that shows the device is configured for IPv6:\r\n\r\nasr1004# show run | include ipv6.(enable|address)\r\n ipv6 enable\r\n ipv6 address dhcp rapid-commit\r\n ipv6 address autoconfig   ipv6 address MANAGEMENT ::1FFF:0:0:0:3560/128\r\n ipv6 address 2001:DB8::1/64\r\n    There is currently no way to determine if Cisco MLRE is enabled on the device.\r\n\r\nNote: The Cisco MLRE feature is introduced in Cisco IOS XE Software Release 3.4.1S and is enabled by default on all later versions of Cisco IOS XE Software on the Cisco ASR 1000 Series Aggregation Services Routers with Embedded Services Processor 40 (ASR1000-ESP40) or Embedded Services Processor 100 (ASR1000-ESP100). Only Cisco ASR 1000 Series Aggregation Services Routers with Embedded Services Processor 40 (ASR1000-ESP40) or Embedded Services Processor 100 (ASR1000-ESP100) are affected by this vulnerability.\r\n\r\nTo determine whether a Cisco ASR 1000 device has ASR1000-ESP40 or ASR1000-ESP100 installed, administrators can issue the show inventory command. The following is the output of the show inventory in a Cisco IOS XE Software running on a Cisco ASR 1006 Router with Embedded Services Processor 40 (ASR1000-ESP40):\r\n\r\n  asr1006#show inventory   NAME: \"Chassis\", DESCR: \"Cisco ASR1006 Chassis\"  PID: ASR1006            NAME: \"module F1\", DESCR: \"Cisco ASR1000 Embedded Services Processor, 40Gbps\"  PID: ASR1000-ESP40      <output suppressed>\r\n    Note: Cisco IOS devices configured to process multicast IPv6 or MVPNv6 traffic are not affected by this vulnerability. Only Cisco ASR 1000 Series Aggregation Services Routers running affected versions of Cisco IOS XE Software are affected by this vulnerability.\r\n\r\n  Cisco IOS XE Software L2TP Traffic Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that may cause an affected device to reload when processing of a large amount of specific Layer 2 Tunneling Protocol (L2TP) packets when L2TP Network Server (LNS) termination or L2TPv3 Ethernet Pseudowire (xconnect) is enabled. L2TP LNS termination and xconnect are not enabled by default.\r\n\r\nTo verify if L2TP LNS termination is enabled on a device use the show run | include accept-dialin privileged EXEC command. The presence of accept-dialin in the output of show run | include accept-dialin indicates that L2TP LNS termination is enabled.\r\n\r\nThe following is the output of the show run | include accept-dialin on Cisco IOS XE Software that is configured as an L2TP Network Server (LNS):\r\n\r\nasr1004#sho running-config | include accept-dialin\r\naccept-dialin\r\n\r\n  To verify if xconnect is enabled on a device use the show run | include xconnect|l2tpv3 privileged EXEC command. The presence of encapsulation l2tpv3 and xconnect in the output of show run | include xconnect|l2tpv3 indicates that xconnect is enabled.\r\n\r\nThe following is the output of the show run | include xconnect|l2tpv3 on Cisco IOS XE Software that is configured for xconnect:\r\nasr1004#sho running-config | include xconnect|l2tpv3\r\nencapsulation l2tpv3\r\nxconnect 10.0.0.1 1000 encapsulation l2tpv3 pw-class my_class\r\n\r\nNote: Cisco IOS devices configured with L2TPv3 Ethernet Pseudowire (xconnect) or as L2TP LNS are not affected by this vulnerability. Only Cisco ASR 1000 Series Aggregation Services Routers running affected versions of Cisco IOS XE Software are affected by this vulnerability.\r\n\r\nCisco IOS XE Software Bridge Domain Interface Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that may cause an affected device to reload during the processing of packets when the bridge domain interface (BDI) feature is configured.\r\n\r\nCisco IOS XE Software may be affected by this vulnerability if all of the following conditions are satisfied:\r\n\r\nThe physical interface that processes the packet on the ingress path is the layer 3 interface that has the encapsulation type set to untagged.\r\nThe incoming packet is routed through a BDI interface.\r\nThe egress physical interface of the packet has the encapsulation set to rewrite VLAN.\r\n  Note: The BDI feature is not configured by default.\r\n\r\nTo verify if the above conditions are satisfied on a device use the show run | section interface privileged EXEC command. The following is the output of show run | section interface in Cisco IOS XE software on a device configured with the vulnerable BDI setting:\r\nasr1004#sho running-config | section interface\r\ninterface GigabitEthernet0/0/3\r\n        ip address 192.168.2.1 255.255.255.0\r\n        !          interface BDI20          ip address 192.168.1.1 255.255.255.0\r\n!        interface GigabitEthernet0/0/4          no ip address          negotiation auto          service instance 1 ethernet          encapsulation dot1q 201          rewrite egress tag pop 1 symmetric          bridge-domain 20\r\n\r\n  Note: This feature was introduced on the Cisco ASR 1000 Series Aggregation Services Routers in Cisco IOS XE Software version 3.2.0S.\r\n\r\nNote: Cisco IOS devices configured for BDI are not affected by this vulnerability. Only Cisco ASR 1000 Series Aggregation Services Routers running affected versions of Cisco IOS XE Software are affected by this vulnerability.\r\n\r\nCisco IOS XE Software SIP Traffic Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that may cause an affected device to reload while processing Session Initiation Protocol (SIP) packets that undergo Network Address Translation (NAT) within Virtual Routing and Forwarding (VRF) instance and SIP Application Layer Gateway (ALG) inspection. An attacker could exploit this vulnerability by sending a large number of SIP packets traversing a device configured for NAT.\r\n\r\nCisco IOS XE Software may be affected by this vulnerability if VRF-aware NAT and SIP ALG is enabled on an affected device; these services are not enabled by default.\r\n\r\nSIP ALG is enabled on a device as soon as NAT is enabled. Administrators can choose to disable SIP ALG inspection under NAT configuration.\r\n\r\nSIP ALG can also be enabled under Zone-Based Policy Firewall (ZBFW) configuration. Devices configured for SIP ALG under ZBFW are not affected by this vulnerability.\r\n\r\nTo determine whether VRF-aware NAT has been enabled in the Cisco IOS XE Software configuration, either ip nat inside or ip nat outside commands must be present in different interfaces, and at least one ip nat global configuration command must have a vrf keyword.\r\n\r\nThe show running-config | include ip (nat | .* vrf .*) command can be used to determine whether VRF-aware NAT is present in the configuration, as illustrated in the following example of a vulnerable configuration:\r\n\r\nasr1004#show running-config | include ip (nat | .* vrf .*)\r\n ip nat inside\r\n ip nat outside\r\nip nat inside source static 192.168.1.100 10.0.0.1 vrf VRF-SIP\r\n\r\n\r\n\r\n\r\nIf the output is empty, the Cisco IOS XE Software release running on a given device is not vulnerable. If the output returned is not empty, SIP ALG services may be explicitly disabled under NAT configuration. To determine whether SIP ALG is disabled under NAT configuration, use the show run | include ip nat privileged EXEC command. The presence of no ip nat service sip in the output of show run | include ip nat indicates that SIP ALG is disabled under NAT configuration.\r\n\r\nThe following is the output of show run | include ip nat in Cisco IOS XE Software that has the SIP ALG disabled under NAT configuration:\r\n\r\n\r\n      asr1004#show running-config | include ip nat\r\n       ip nat inside\r\n       ip nat outside\r\nip nat inside source static 192.168.1.100 10.0.0.1 vrf sip\r\nno ip nat service sip udp port 5060\r\nno ip nat service sip tcp port 5060\r\n\r\nIf no ip nat service sip is not present in the output of show run | include ip nat, the Cisco IOS XE Software release running on the device is vulnerable.\r\n\r\nNote: Cisco IOS devices configured for SIP ALG inspection are not affected by this vulnerability. Only Cisco ASR 1000 Series Aggregation Services Routers running affected versions of Cisco IOS XE Software are affected by this vulnerability.\r\n\r\n  Determine the Running Software Version  Cisco ASR 1000 Series Aggregation Services Routers IOS XE Software releases correspond to the Cisco IOS Software releases. For example, Cisco IOS XE Software Release 3.6.2S is the software release for Cisco ASR 1000 Series Aggregation Services Routers IOS Software Release 15.2(2)S2.\r\nFor more information about mappings between the Cisco IOS XE Software releases and their associated Cisco IOS Software releases, see:\r\nhttp://www.cisco.com/en/US/docs/routers/asr1000/release/notes/asr1k_rn_intro.html\r\n [\"http://www.cisco.com/en/US/docs/routers/asr1000/release/notes/asr1k_rn_intro.html\"]\r\nTo determine whether a vulnerable version of Cisco IOS XE Software is running on a device, administrators can issue the show version command. The following example shows a Cisco IOS XE Software that is running IOS XE software version 3.6.2S, IOS version 15.2(2)S2:\r\n\r\n\r\n\r\nasr1004#show version\r\nCisco IOS Software, IOS-XE Software (PPC_LINUX_IOSD-ADVENTERPRISEK9-M), Version 15.2(2)S2, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2012 by Cisco Systems, Inc.\r\nCompiled Tue 07-Aug-12 13:40 by mcpre\r\n<output suppressed>\r\n\r\nNote: A Cisco IOS XE Software image consists of seven individual modules, also referred to as subpackages. The packages are designed to use the In Service Software Upgrade (ISSU) capability of the Cisco IOS XE Software. Customers have the capability to upgrade only those packages that need to be upgraded. For more information about the Cisco IOS XE Software packaging, see:\r\nhttp://www.cisco.com/en/US/partner/prod/collateral/routers/ps9343/product_bulletin_c25-448387.html [\"http://www.cisco.com/en/US/partner/prod/collateral/routers/ps9343/product_bulletin_c25-448387.html\"]\r\n\r\nIf packages are upgraded individually, the output of the show version command may vary.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Products running Cisco IOS Software or Cisco IOS-XR Software are not affected by any of these vulnerabilities.\r\n\r\nWith the exception of the Cisco IOS XE Software for 1000 Series ASR, no other Cisco products are currently known to be affected by these vulnerabilities.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The following section provides additional information about each vulnerability.\r\n\r\nCisco IOS XE Software IPv6 Multicast Traffic Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that could allow an unauthenticated remote attacker to cause a DoS condition.\r\n\r\nThe vulnerability is due to improper handling of fragmented IPv6 multicast traffic by Cisco 1000 Series ASR with ASR1000-ESP40 or ASR1000-ESP100. An attacker could exploit this vulnerability by sending fragmented IPv6 multicast packets either traversing or destined to a vulnerable system.\r\n\r\nA successful exploit could allow the attacker to cause a system to reload, resulting in a DoS condition. Repeated exploitation could result in a sustained DoS condition.\r\n\r\nThis vulnerability is documented in Cisco bug ID CSCtz97563 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtz97563\"] (registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2013-1164\r\n\r\nCisco IOS XE Software MVPNv6 Traffic Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that could allow an unauthenticated remote attacker to cause a DoS condition.\r\n\r\nThe vulnerability is due to improper handling of fragmented IPv6 MVPN traffic by Cisco 1000 Series ASR with ASR1000-ESP40 or ASR1000-ESP100. An attacker could exploit this vulnerability by sending fragmented IPv6 MVPN packets either traversing or destined to a vulnerable system.\r\n\r\nA successful exploit could allow the attacker to cause a system to reload, resulting in a DoS condition. Repeated exploitation could result in a sustained DoS condition.\r\n\r\nThis vulnerability is documented in Cisco bug ID CSCub34945 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCub34945\"] (registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-2779\r\n\r\nCisco IOS XE Software L2TP Traffic Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that could allow an unauthenticated remote attacker to cause a DoS condition.\r\n\r\nThe vulnerability is due to improper handling of specific L2TP packets by Cisco 1000 ASR. An attacker could exploit this vulnerability by sending a large number of specific L2TP packets to a vulnerable system; this vulnerability cannot be triggered by L2TP traffic transiting a vulnerable device.\r\n\r\nA successful exploit could allow the attacker to cause a system to reload, resulting in a DoS condition. Repeated exploitation could result in a sustained DoS condition.\r\n\r\nThis vulnerability is documented in Cisco bug ID CSCtz23293 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtz23293\"] (registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-1165\r\n\r\nCisco IOS XE Software Bridge Domain Interface Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that could allow an unauthenticated remote attacker to cause a denial of service (DoS) condition.\r\n\r\nThe vulnerability is due to improper handling of packets by Cisco 1000 Series ASR configured for bridge domain interface (BDI). An attacker could exploit this vulnerability by sending packets that will traverse a vulnerable system. This vulnerability cannot be triggered by sending traffic to a vulnerable device.\r\n\r\nA successful exploit could allow the attacker to cause a system to reload, resulting in a DoS condition. Repeated exploitation could result in a sustained DoS condition.\r\n\r\nThis vulnerability is documented in Cisco bug ID CSCtt11558 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCtt11558\"] (registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-1167\r\n\r\nCisco IOS XE Software SIP Traffic Denial of Service Vulnerability\r\n\r\nCisco IOS XE Software contains a vulnerability that could allow an unauthenticated, remote attacker to cause a DoS condition.\r\n\r\nThe vulnerability is due to improper handling of SIP packets by Cisco 1000 Series ASR when configured for VRF-aware NAT and SIP ALG. An attacker could exploit this vulnerability by sending a large number of SIP packets traversing a device configured for NAT; this vulnerability cannot be triggered by SIP traffic destined to a vulnerable device.\r\n\r\nA successful exploit could allow the attacker to cause a system to reload, resulting in a DoS condition. Repeated exploitation could result in a sustained DoS condition.\r\n\r\nThis vulnerability is documented in Cisco bug ID CSCuc65609 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc65609\"] (registered [\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE ID CVE-2013-1166",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "No workarounds are available to mitigate these vulnerabilities.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt [\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n\r\nEach Cisco IOS XE Software release is classified as either a Standard Support or an Extended Support release. A Standard Support release has a total engineering support lifetime of one year, with two scheduled rebuilds. The Extended Support release provides a total engineering support lifetime of two years, with four scheduled rebuilds.\r\n\r\nFor more information about the Cisco IOS XE Software end-of-life policy and associated support milestones for specific Cisco IOS XE Software releases, see:\r\nhttp://www.cisco.com/en/US/prod/collateral/routers/ps9343/product_bulletin_c25-448258.html  [\"http://www.cisco.com/en/US/prod/collateral/routers/ps9343/product_bulletin_c25-448258.html \"]\r\nCisco IOS XE Software IPv6 Multicast Traffic Denial of Service Vulnerability\r\n\r\n                              Vulnerability              Major Release\r\n              Extended Release              First Fixed Release                                  CSCtz97563\r\n\r\n              2.x               -\r\n              Not affected\r\n                                  3.1              Yes              Not affected                                  3.2              No\r\n              Not affected\r\n                                  3.3              No\r\n              Not affected                                  3.4              Yes\r\n              3.4.4S                                  3.5              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.6              No              Vulnerable; migrate to one of the extended releases\r\n                                  3.7              Yes\r\n              Not affected\r\n                                  3.8              No              Not affected\r\n\r\nCisco IOS XE Software MVPNv6 Traffic Denial of Service Vulnerability\r\n                                Vulnerability              Major Release\r\n              Extended Release\r\n              First Fixed Release                                  CSCub34945\r\n              2.x               -\r\n              Not affected                                  3.1              Yes              Not affected                                  3.2              No\r\n              Not affected                                  3.3              No\r\n              Not affected                                  3.4              Yes\r\n              3.4.5S                                  3.5              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.6              No              Vulnerable; migrate to one of the extended releases\r\n                                  3.7              Yes\r\n              3.7.1S                                  3.8              No              Not affected\r\n\r\nCisco IOS XE Software L2TP Traffic Denial of Service Vulnerability\r\n                                Vulnerability              Major Release\r\n              Extended Release\r\n              First Fixed Release                                  CSCtz23293\r\n              2.x               -\r\n              Vulnerable; migrate to one of the extended releases\r\n                                   3.1              Yes              Vulnerable; migrate to one of the extended releases\r\n                                  3.2              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.3              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.4              Yes\r\n              3.4.5S                                  3.5              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.6              No              Vulnerable; migrate to one of the extended releases\r\n                                  3.7              Yes                            3.7.1S                                  3.8              No              Not affected\r\n\r\nCisco IOS XE Software Bridge Domain Interface Denial of Service Vulnerability\r\n                                Vulnerability              Major Release\r\n              Extended Release\r\n              First Fixed Release                                  CSCtt11558\r\n              2.x               -\r\n              Not affected                                  3.1              Yes              Not affected                                  3.2              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.3              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.4              Yes\r\n              3.4.2S                                  3.5              No\r\n              Vulnerable; migrate to one of the extended releases\r\n                                  3.6              No              Not affected                                  3.7              Yes\r\n              Not affected                                  3.8              No              Not affected\r\n\r\nCisco IOS XE Software SIP Traffic Denial of Service Vulnerability\r\n                                Vulnerability              Major Release\r\n              Extended Release\r\n               First Fixed Release                                  CSCuc65609\r\n              2.x               -\r\n              Not affected                                  3.1              Yes              Not affected                                  3.2              No              Not affected\r\n                                  3.3              No\r\n              Not affected\r\n                                  3.4              Yes\r\n              3.4.5S                                  3.5              No\r\n              Not affected\r\n                                  3.6              No              Not affected\r\n                                  3.7              Yes                            Not affected                                  3.8              No              Not affected\r\nWhen considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt [\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\nRecommended Releases  The Recommended Release table lists the releases that have fixes for all the published vulnerabilities at the time of this advisory. Cisco recommends upgrading to a release equal to or later than the release in the following table.\r\n\r\n\r\nAffected Release\r\n                                          Recommended Release                                          Extended Release                                                              2.x              Vulnerable; migrate to one of the recommended extended releases\r\n               -                                   3.1              Vulnerable; migrate to one of the recommended extended releases\r\n              Yes                                  3.2              Vulnerable; migrate to one of the recommended extended releases\r\n              No                                  3.3              Vulnerable; migrate to one of the recommended extended releases\r\n              No                                  3.4              3.4.5S\r\n              Yes                                   3.5              Vulnerable; migrate to one of the recommended extended releases\r\n              No                                  3.6              Vulnerable; migrate to one of the recommended extended releases\r\n              No                                  3.7              3.7.1S              Yes                                  3.8              Not vulnerable;               No",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerabilities that are described in this advisory.\r\n  Cisco IOS XE Software Bridge Domain Interface Denial of Service Vulnerability was found during the troubleshooting of customer service requests.\r\nOther vulnerabilities were found during internal testing.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000"
+			}
+		],
+		"title": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+		"tracking": {
+			"current_release_date": "2013-04-17T19:11:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:32+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130410-asr1000",
+			"initial_release_date": "2013-04-15T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-04-10T15:32:28+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release"
+				},
+				{
+					"date": "2013-04-10T21:09:04+00:00",
+					"number": "1.1.0",
+					"summary": "Added xconnect to L2TP traffic section of \"Vulnerable Products.\""
+				},
+				{
+					"date": "2013-04-15T19:07:59+00:00",
+					"number": "1.2.0",
+					"summary": "Updated software table for SIP vulnerability"
+				},
+				{
+					"date": "2013-04-17T19:11:35+00:00",
+					"number": "1.3.0",
+					"summary": "Updated CVE assignment. MITRE reassigned CVE-2013-2779 to the MVPNv6 vulnerability."
+				}
+			],
+			"status": "final",
+			"version": "1.3.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.2.0SG",
+										"product": {
+											"name": "3.2.0SG",
+											"product_id": "CSAFPID-112457"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "3.2.1SG",
+										"product": {
+											"name": "3.2.1SG",
+											"product_id": "CSAFPID-112458"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.2SG"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "3.7.0S",
+										"product": {
+											"name": "3.7.0S",
+											"product_id": "CSAFPID-184480"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "3.7S"
+							}
+						],
+						"category": "product_family",
+						"name": "Cisco IOS XE Software"
+					},
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XE Software",
+						"product": {
+							"name": "Cisco IOS XE Software ",
+							"product_id": "CSAFPID-93036"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2013-1164",
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "No workarounds are available to mitigate these vulnerabilities."
+				}
+			],
+			"title": "Cisco IOS XE Software IPv6 Multicast Traffic Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2013-1165",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtz23293",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-112457",
+					"CSAFPID-112458",
+					"CSAFPID-184480"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "No workarounds are available to mitigate these vulnerabilities."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-112457",
+						"CSAFPID-112458",
+						"CSAFPID-184480"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-112457",
+						"CSAFPID-112458",
+						"CSAFPID-184480"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software L2TP Traffic Denial of Service Vulnerability "
+		},
+		{
+			"cve": "CVE-2013-1166",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuc65609",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-184480"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "No workarounds are available to mitigate these vulnerabilities."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-184480"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-184480"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software SIP Traffic Denial of Service Vulnerability "
+		},
+		{
+			"cve": "CVE-2013-1167",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCtt11558",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-93036"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "No workarounds are available to mitigate these vulnerabilities."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-93036"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.1,
+						"vectorString": "AV:N/AC:M/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-93036"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software Bridge Domain Interface Denial of Service Vulnerability"
+		},
+		{
+			"cve": "CVE-2013-2779",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCub34945",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-184480"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Multiple Vulnerabilities in Cisco IOS XE Software for 1000 Series Aggregation Services Routers",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130410-asr1000"
+				}
+			],
+			"release_date": "2013-04-10T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "No workarounds are available to mitigate these vulnerabilities."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-184480"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-184480"
+					]
+				}
+			],
+			"title": "Cisco IOS XE Software MVPNv6 Traffic Denial of Service Vulnerability"
+		}
+	]
+}

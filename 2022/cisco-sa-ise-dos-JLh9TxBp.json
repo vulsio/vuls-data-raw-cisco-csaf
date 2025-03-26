@@ -1,0 +1,228 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in the RADIUS feature of Cisco Identity Services Engine (ISE) could allow an unauthenticated, remote attacker to cause the affected system to stop processing RADIUS packets.\r\n\r\nThis vulnerability is due to improper handling of certain RADIUS requests. An attacker could exploit this vulnerability by attempting to authenticate to a network or a service where the access server is using Cisco ISE as the RADIUS server. A successful exploit could allow the attacker to cause Cisco ISE to stop processing RADIUS requests, causing authentication/authorization timeouts, which would then result in legitimate requests being denied access.\r\n\r\nNote: To recover the ability to process RADIUS packets, a manual restart of the affected Policy Service Node (PSN) is required. See the Details [\"#details\"] section for more information.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability affects Cisco ISE configured with RADIUS authentication services. RADIUS services are enabled by default. If Cisco ISE is being used for TACACS only, the device will not be affected.\r\n\r\nFor information about which Cisco software releases are vulnerable, see the Fixed Software [\"#fs\"] section of this advisory.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "To restore RADIUS processes on an affected node, a restart of that node is required.\r\n\r\nIn a one node deployment, the PSN persona will be located on that one node. That node will need to be restarted.\r\nIn a multi-node deployment, only the affected PSN node will need to be restarted.\r\n\r\nFor more information on Cisco ISE personas, see the Cisco ISE Admin Guide [\"https://www.cisco.com/c/en/us/td/docs/security/ise/3-1/admin_guide/b_ise_admin_3_1/b_ISE_admin_31_deployment.html#typesofpersonas\"].\r\n\r\nNote: If PSNs are behind a load balancer, the exploit traffic can cascade across to other PSNs.\r\n\r\nNote: If PSN node groups are configured, the exploit traffic will not cascade across to other PSNs.\r\n  Restart Cisco ISE\r\nThe procedure that follows is for stopping and then starting a Cisco ISE node from the CLI. During the restart period, any devices already authenticated will still be connected to the network. New authentications will not be processed unless PSN failover is configured.\r\n\r\nMore details on each command can be found in the  Cisco Identity Services Engine CLI Reference Guide [\"https://www.cisco.com/c/en/us/td/docs/security/ise/3-1/cli_guide/b_ise_cli_reference_guide_31/b_ise_CLIReferenceGuide_31_chapter_01.html#wp1286764740\"].\r\n\r\nLog onto the affected PSN via the CLI.\r\nIssue the command application stop ise.\r\nWait for the prompt to return.\r\nIssue the command application start ise.\r\nWait for the prompt to return.\r\nIssue the command show application status ise to see the status of the processes. When the Application Server is running, authentications will take place and the node will be accessible via the GUI.\r\n  PSN Failover Information\r\nFor PSN failover options, see the Policy Service Nodes and Node Groups section of this CiscoPress article [\"https://www.ciscopress.com/articles/article.asp?p=2812072&seqNum=2\"].\r\nFor information on how to configure node groups, see the Policy Service Node section of the Cisco ISE Admin Guide [\"https://www.cisco.com/c/en/us/td/docs/security/ise/3-1/admin_guide/b_ise_admin_3_1/b_ISE_admin_31_deployment.html?bookSearch=true#ID64\"].",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "The indicator of compromise for this vulnerability is \"RADIUS Authentication Failed\" messages in the live logs where the failure reason is due to the EAP session limit being reached.\r\n  Check Live Logs\r\nLog into the Cisco ISE Admin Node GUI.\r\nNavigate to the Operations page.\r\nChoose the RADIUS option.\r\nThen choose the Live Logs page.\r\nFind an \"Authentication Failed\" entry and click on the detailed report icon.\r\n\r\nIf the Failure Reason shows \"5443 RADIUS request dropped due to reaching EAP sessions limit,\" then this vulnerability has been potentially exploited.",
+				"title": "Indicators of Compromise"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "Cisco has released free software updates [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu\"] that address the vulnerability described in this advisory. Customers with service contracts that entitle them to regular software updates should obtain security fixes through their usual update channels.\r\n\r\nCustomers may only install and expect support for software versions and feature sets for which they have purchased a license. By installing, downloading, accessing, or otherwise using such software upgrades, customers agree to follow the terms of the Cisco software license:\r\nhttps://www.cisco.com/c/en/us/products/end-user-license-agreement.html [\"https://www.cisco.com/c/en/us/products/end-user-license-agreement.html\"]\r\n\r\nAdditionally, customers may only download software for which they have a valid license, procured from Cisco directly, or through a Cisco authorized reseller or partner. In most cases this will be a maintenance upgrade to software that was previously purchased. Free security software updates do not entitle customers to a new software license, additional software feature sets, or major revision upgrades.\r\n\r\nThe Cisco Support and Downloads page [\"https://www.cisco.com/c/en/us/support/index.html\"] on Cisco.com provides information about licensing and downloads. This page can also display customer device support coverage for customers who use the My Devices tool.\r\n\r\nWhen considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n  Customers Without Service Contracts\r\nCustomers who purchase directly from Cisco but do not hold a Cisco service contract and customers who make purchases through third-party vendors but are unsuccessful in obtaining fixed software through their point of sale should obtain upgrades by contacting the Cisco TAC: https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html [\"https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html\"]\r\n\r\nCustomers should have the product serial number available and be prepared to provide the URL of this advisory as evidence of entitlement to a free upgrade.\r\n      Fixed Releases\r\nIn the following table(s), the left column lists Cisco software releases. The right column indicates whether a release is affected by the vulnerability described in this advisory and the first release that includes the fix for this vulnerability. Customers are advised to upgrade to an appropriate fixed software release [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"] as indicated in this section.\r\n        Cisco ISE Software Release  First Fixed Release          2.1 and earlier  Not vulnerable.      2.2P16 and earlier  Not vulnerable.      2.2P17 and later  Migrate to fixed release.      2.3  Not vulnerable.      2.4P11 and earlier  Not vulnerable.      2.4P12 and later  Migrate to fixed release.      2.6P4 and earlier  Not vulnerable.      2.6P5 and later  2.6P111 (Target May 19, 2022)      2.7P1 and earlier  Not vulnerable.      2.7P2 and later  2.7P6      3.0  3.0P5      3.1  3.1P1\r\n1. Hotpatch on Cisco ISE 2.6P10 available upon request. Contact Cisco TAC to make the request.\r\n\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco Identity Services Engine RADIUS Service Denial of Service Vulnerability",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ise-dos-JLh9TxBp"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;ISE Admin Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/ise/3-1/admin_guide/b_ise_admin_3_1/b_ISE_admin_31_deployment.html#typesofpersonas"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Identity Services Engine CLI Reference Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/ise/3-1/cli_guide/b_ise_cli_reference_guide_31/b_ise_CLIReferenceGuide_31_chapter_01.html#wp1286764740"
+			},
+			{
+				"category": "external",
+				"summary": "CiscoPress article",
+				"url": "https://www.ciscopress.com/articles/article.asp?p=2812072&amp;seqNum=2"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;ISE Admin Guide",
+				"url": "https://www.cisco.com/c/en/us/td/docs/security/ise/3-1/admin_guide/b_ise_admin_3_1/b_ISE_admin_31_deployment.html?bookSearch=true#ID64"
+			},
+			{
+				"category": "external",
+				"summary": "free software updates",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#ssu"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html",
+				"url": "https://www.cisco.com/c/en/us/products/end-user-license-agreement.html"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Support and Downloads page",
+				"url": "https://www.cisco.com/c/en/us/support/index.html"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco&nbsp;Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html",
+				"url": "https://www.cisco.com/c/en/us/support/web/tsd-cisco-worldwide-contacts.html"
+			}
+		],
+		"title": "Cisco Identity Services Engine RADIUS Service Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2022-03-03T18:35:40+00:00",
+			"generator": {
+				"date": "2024-05-10T23:13:17+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-ise-dos-JLh9TxBp",
+			"initial_release_date": "2022-03-02T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2022-03-02T15:30:25+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2022-03-03T18:35:40+00:00",
+					"number": "1.1.0",
+					"summary": "Clarified fixed and vulnerable releases."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco Identity Services Engine Software",
+						"product": {
+							"name": "Cisco Identity Services Engine Software ",
+							"product_id": "CSAFPID-111903"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2022-20756",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCvz77905"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-111903"
+				]
+			},
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-111903"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 8.6,
+						"baseSeverity": "HIGH",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:H",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-111903"
+					]
+				}
+			],
+			"title": "Cisco Identity Services Engine RADIUS Service Denial of Service Vulnerability"
+		}
+	]
+}

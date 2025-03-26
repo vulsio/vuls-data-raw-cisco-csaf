@@ -1,0 +1,791 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Cisco IOS Software contains a queue wedge vulnerability that can be triggered when processing IP tunneled packets.  Only\r\nCisco IOS Software running on the Cisco 10000 Series router has\r\nbeen demonstrated to be affected.\n\r\n\n\r\nSuccessful exploitation of this vulnerability may prevent traffic from transiting the affected interfaces.\n\r\n\n\r\nCisco has released software updates that address this vulnerability.  There are no workarounds for this vulnerability. \r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-c10k-tunnels[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-c10k-tunnels\"]\n\r\n\n\r\nNote: The September 26, 2012, Cisco IOS Software Security Advisory bundled publication includes nine Cisco Security Advisories. Eight of the advisories address vulnerabilities in Cisco IOS Software, and one advisory addresses a vulnerability in Cisco Unified Communications Manager. Each Cisco IOS Software Security Advisory lists the Cisco IOS Software releases that correct the vulnerability or vulnerabilities detailed in the advisory as well as the Cisco IOS Software releases that correct all Cisco IOS Software vulnerabilities in the September 2012 bundled publication. \r\n\r\nIndividual publication links are in \"Cisco Event Response: Semi-Annual Cisco IOS Software Security Advisory Bundled Publication\" at the following link: \r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep12.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_sep12.html\"]\r\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "\n",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco 10000 Series routers running Cisco IOS Software are potentially affected. See the \"Details\" section below for\r\ninformation on affected versions.\n\r\n\n\r\nA device has an affected configuration if the following conditions are true:\n\r\n\n\r\n\r\n    \r\n    A tunnel interface is configured.  See the following sample to determine if a tunnel exists:\r\n\r\nRouter#show ip interface brief\n\r\nInterface                  IP-Address      OK? Method Status                Protocol\n\r\nGigabitEthernet0/0         172.16.1.1      YES NVRAM  up                    up      \n\r\nGigabitEthernet0/1         172.16.2.1  YES NVRAM  up                    up      \n\r\nNVI0                       unassigned      YES unset  administratively down down    \n\r\nTunnel0                    172.16.5.1         YES manual up                    up    \n\r\n    A tunnel interface can be identified under the \"Interface\" column by the name \"Tunnel#\", where \"#\" indicates an interface number, i.e. \"Tunnel0\" as shown above.\n\r\n\n\r\nNote: A Cisco 10000 Series router may be vulnerable even if the\r\ntunnels are not explicitly configured.  Tunnels may be configured by\r\nother features and these tunnels are also potentially affected.\n\r\n\n\r\n\r\n    \r\n    The tunnel mode is one of the following:\r\n\r\na.  GRE/IP - tunnel mode gre ip\n\r\nb.  IPIP - tunnel mode ipip\n\r\nc.  IPv6inIP - tunnel mode ipv6ip\n\r\nThe above tunnel modes would correspond to IPv4 protocol 47, 4 or 41 packets.\n\r\nDetermining if your device is affected \r\n\r\nAn interface queue wedge is a class of\r\nvulnerabilities in which certain packets are received and queued by a\r\nCisco IOS router or switch, but due to a processing error, are never\r\nremoved from the queue.\r\n\r\nPackets that are received by a device are counted against the interface input \"queue,\"\r\nwhich is of a limited and relatively small size. For example, on most platforms the default interface input queue is\r\n75 packets, which is a value that can be configured via the hold-queue value in\r\nthe interface configuration command. Once the input queue contains nothing\r\nbut packets that, due to a bug, will never be dequeued, the queue is\r\nsaid to be wedged. More recently this condition has been termed a\r\n\"blocked interface.\"\r\n\r\nThis condition can be viewed on a Cisco IOS device when the input queue size is\r\nequal to or greater than (depending on the Cisco IOS Software Release)\r\nthe input queue max value, as shown below. In this example, the current\r\n\"size\" of the input queue is 75, which is equal to the \"max\" size of the\r\ninput queue, which is also 75.\r\n\r\n\r\nRouter#show interface Ethernet 0/0 | include queue\r\n  Input queue: 75/75/44/0 (size/max/drops/flushes);\r\n  Output queue: 0/40 (size/max)\r\n\r\nFor more information about queue wedges and a few detection\r\nmechanisms that may be used to identify a blocked interface on Cisco IOS\r\nSoftware (including an Embedded Event Manager, or EEM, script specifically for this purpose and a\r\nwhitepaper describing how this condition can be detected using SNMP) go\r\nto: http://blogs.cisco.com/security/comments/cisco_ios_queue_wedges_explained/[\"http://blogs.cisco.com/security/comments/cisco_ios_queue_wedges_explained/\"]\r\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.0(1)M1 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.0(1)M1, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\nCompiled Wed 02-Dec-09 17:17 by prod_rel_team\r\n!--- output truncated \r\nAdditional information about Cisco IOS Software release naming conventions is available in \"White Paper: Cisco IOS and NX-OS Software Reference Guide\" at http://www.cisco.com/web/about/security/intelligence/ios-ref.html[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "No other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS Software contains a queue wedge vulnerability that can be triggered when processing tunneled packets.  Only\r\nCisco IOS Software running on the Cisco 10000 Series router has\r\nbeen demonstrated to be affected.\n\r\n\n\r\nThe queue wedge may be triggered when processing ingress IP tunneled packets. The packets that trigger the vulnerability are tunneled IP packets of the following types: GRE/IP, IPIP, and IPv6 in IPv4 packets, for tunnels that terminate at the router. Transit traffic does not cause this vulnerability to be triggered.\n\r\n\n\r\nSuccessful exploitation of this vulnerability may result in an inability to pass traffic on affected interfaces.\n\r\n\n\r\nThis vulnerability is described in Cisco bug ID CSCts66808[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCts66808\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned Common Vulnerabilities and Exposures (CVE) ID CVE-2012-4620\n\r\n\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "There are no workarounds for this vulnerability.\r\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\n\n\r\n\r\nCisco IOS Software\r\nEach row of the following Cisco IOS Software table corresponds to a Cisco IOS Software train. If a particular train is vulnerable, the earliest releases that contain the fix are listed in the First Fixed Release column. The First Fixed Release for All Advisories in the September 2012 Bundled Publication column lists the earliest possible releases that correct all the published vulnerabilities in the Cisco IOS Software Security Advisory bundled publication. Cisco recommends upgrading to the latest available release, where possible.\r\n\r\nThe Cisco IOS Software Checker allows customers to search for Cisco Security Advisories that address specific Cisco IOS Software releases. This tool is available on the Cisco Security (SIO) portal at http://tools.cisco.com/security/center/selectIOSVersion.x[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] \r\n\r\n\n\r\n\n\r\n\r\n    \r\n        \r\n             Major Release\r\n                 Availability of Repaired Releases\r\n        \r\n        \r\n            Affected 12.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.0 based releases\r\n        \r\n        \r\n            Affected 12.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n             12.2\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2B\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.4[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_4\"]\n\r\n            Releases up to and including 12.2(4)B8 are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2BC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2BW\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2BX\r\n            Not vulnerable\n\r\n            \r\n            12.2(15)BX\n\r\n            Releases up to and including 12.2(2)BX1 are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2BY\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2BZ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2CX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2CY\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2CZ\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; migrate to any release in 12.2S\n\r\n            \r\n        \r\n        \r\n             12.2DA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2DD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2DX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2EU\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2EW\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2EWA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2EX\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.0SE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_0SE\"]\n\r\n            Releases up to and including 12.2(37)EX are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2EY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1EY[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_1EY\"]\n\r\n            Releases up to and including 12.2(46)EY are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2EZ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2FX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2FY\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2FZ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IRA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2IRB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2IRC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2IRD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2IRE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2IRF\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2IRG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2IRH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2IRI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2IXA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXF\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2IXH\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2JA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2JK\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2MB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2MC\r\n            Not vulnerable\n\r\n            \r\n            Releases up to and including 12.2(15)MC1 are not\r\n            vulnerable.   Releases 12.2(15)MC2b and later are not vulnerable. First\r\n            fixed in Release 12.4[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_4\"]\n\r\n            \r\n        \r\n        \r\n             12.2MRA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2MRB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2S\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SB\r\n            Vulnerable; only releases 12.2(33)SB through 12.2(33)SB11 are vulnerable\n\r\n            \r\n            12.2(33)SB13\n\r\n            \r\n        \r\n        \r\n             12.2SBC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SB[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SB\"]\n\r\n            \r\n        \r\n        \r\n             12.2SCA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCF[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SCF\"]\n\r\n            \r\n        \r\n        \r\n             12.2SCB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCF[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SCF\"]\n\r\n            \r\n        \r\n        \r\n             12.2SCC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCF[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SCF\"]\n\r\n            \r\n        \r\n        \r\n             12.2SCD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCF[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SCF\"]\n\r\n            \r\n        \r\n        \r\n             12.2SCE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SCF[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SCF\"]\n\r\n            \r\n        \r\n        \r\n             12.2SCF\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SCF4\n\r\n            \r\n        \r\n        \r\n             12.2SCG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SE\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            12.2(46)SE1  \n\r\n            12.2(55)SE6\r\n        \r\n        \r\n             12.2SEA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SEB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SEC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SED\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SEE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SEF\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SEG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SG\r\n            Not vulnerable\n\r\n            \r\n            12.2(53)SG8\n\r\n            Vulnerable; releases up to and including 12.2(46)SG1 are not vulnerable. \r\n        \r\n        \r\n             12.2SGA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SM\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SO\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SQ\r\n            Not vulnerable\n\r\n            \r\n            Releases up to and including 12.2(44)SQ2 are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2SRA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SRB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SRC\r\n            Note: Releases prior to 12.2(33)SRC2 are vulnerable; Releases 12.2(33)SRC2 and later are not vulnerable.\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2SRD\r\n            Note: Releases prior to 12.2(33)SRD1 are vulnerable; Releases 12.2(33)SRD1 and later are not vulnerable.\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SRE[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SRE\"]\n\r\n            \r\n        \r\n        \r\n             12.2SRE\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SRE7\n\r\n            \r\n        \r\n        \r\n             12.2STE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SU\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SV\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SVA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SVC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SVD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SVE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SW\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SXA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SXB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SXD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SXE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SXF\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2SXH\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            Vulnerable; releases up to and including 12.2(33)SXH7 are not vulnerable \r\n        \r\n        \r\n             12.2SXI\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SXI10\n\r\n            \r\n        \r\n        \r\n             12.2SXJ\r\n            Not vulnerable\n\r\n            \r\n            12.2(33)SXJ4\n\r\n            \r\n        \r\n        \r\n             12.2SY\r\n            Not vulnerable\n\r\n            \r\n            12.2(50)SY3\n\r\n            \r\n        \r\n        \r\n             12.2SZ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2T\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.4[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_4\"]\n\r\n            Releases up to and including 12.2(8)T10 are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2TPC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2WO\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.0SG[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_0SG\"]\n\r\n            \r\n        \r\n        \r\n             12.2XA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XF\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XH\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XI\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XJ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XK\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XL\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XM\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XNA\r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             12.2XNB\r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             12.2XNC\r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             12.2XND\r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             12.2XNE\r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             12.2XNF\r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             12.2XO\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SG[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SG\"]\n\r\n            Releases up to and including 12.2(40)XO are not vulnerable. \n\r\n            \r\n        \r\n        \r\n             12.2XQ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XR\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XS\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XT\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XU\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XV\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2XW\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2YD\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YE\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YK\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YO\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YP\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YT\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2YW\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YY\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2YZ\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2ZA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2ZB\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2ZC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2ZD\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2ZE\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.4[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_4\"]\n\r\n            \r\n        \r\n        \r\n             12.2ZH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.4[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_4\"]\n\r\n            \r\n        \r\n        \r\n             12.2ZJ\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2ZP\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             12.2ZU\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2ZX\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 12.2SB[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#12_2SB\"]\n\r\n            \r\n        \r\n        \r\n             12.2ZY\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             12.2ZYA\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n            Affected 12.3-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.3 based releases\r\n        \r\n        \r\n            Affected 12.4-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.4 based releases\r\n        \r\n        \r\n            Affected 15.0-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n             15.0EX\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             15.0EY\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             15.0M\r\n            Not vulnerable\n\r\n            \r\n            15.0(1)M9\n\r\n            \r\n        \r\n        \r\n             15.0MR\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.0MRA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.0S\r\n            15.0(1)S5\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            15.0(1)S6\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"] \r\n        \r\n        \r\n             15.0SE\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            15.0(2)SE  \r\n        \r\n        \r\n             15.0SG\r\n            Not vulnerable\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            15.0(2)SG5 \n\r\n            15.0(2)SG6; Available on 11-OCT-12\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"] \r\n        \r\n        \r\n             15.0SY\r\n            Not vulnerable\n\r\n            \r\n            15.0(1)SY2\n\r\n            \r\n        \r\n        \r\n             15.0XA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_1M\"]\n\r\n            \r\n        \r\n        \r\n             15.0XO\r\n            Cisco IOS XE devices: Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS-XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"] \r\n        \r\n        \r\n            Affected 15.1-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n             15.1EY\r\n            Not vulnerable\n\r\n            \r\n            15.1(2)EY4\n\r\n            \r\n        \r\n        \r\n             15.1GC\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_1M\"]\n\r\n            \r\n        \r\n        \r\n             15.1M\r\n            Not vulnerable\n\r\n            \r\n            15.1(4)M5\n\r\n            \r\n        \r\n        \r\n             15.1MR\r\n            Not vulnerable\n\r\n            \r\n            15.1(3)MR; Available on 01-OCT-12\n\r\n            \r\n        \r\n        \r\n             15.1S\r\n            Not vulnerable\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            \n\r\n            15.1(3)S \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"] \r\n        \r\n        \r\n             15.1SG\r\n            Not vulnerable\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            15.1(1)SG1\n\r\n            \n\r\n            15.1(2)SG 12-NOV-12 \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"] \r\n        \r\n        \r\n             15.1SNG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1SNH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1SNI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; migrate to any release in 15.2SNG\n\r\n            \r\n        \r\n        \r\n             15.1SV\r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1T\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_1M\"]\n\r\n            \r\n        \r\n        \r\n             15.1XB\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_1M\"]\n\r\n            \r\n        \r\n        \r\n            Affected 15.2-Based Releases\r\n            First Fixed Release\r\n            First Fixed Release for All Advisories in the September 2012 Cisco IOS Software Security Advisory Bundled Publication\r\n        \r\n        \r\n             15.2GC\r\n            Not vulnerable\n\r\n            \r\n            Releases prior to 15.2(3)GC are vulnerable; Releases 15.2(3)GC and later are not vulnerable. First fixed in Release 15.2T[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#15_2T\"]\n\r\n            \r\n        \r\n        \r\n             15.2JA\r\n            Not vulnerable\n\r\n            \r\n            Not Vulnerable\n\r\n            \r\n        \r\n        \r\n             15.2M\r\n            Not vulnerable\n\r\n            \r\n            \n\r\n            Not vulnerable \r\n        \r\n        \r\n             15.2S\r\n            Not vulnerable\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"]\n\r\n            \r\n            15.2(1)S2 \n\r\n            15.2(2)S1 \n\r\n            15.2(4)S\n\r\n            \n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"https://tvce.cisco.com/security/AIMS/SecurityPublicationDetail.aspx?Mode=Edit&ID=31369&Version=2&Revision=1&newversion=true#iosxe\"] \r\n        \r\n        \r\n             15.2SNG\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             15.2T\r\n            Not vulnerable\n\r\n            \r\n            15.2(1)T3 \n\r\n            15.2(2)T2 \n\r\n            15.2(3)T2; Available on 12-OCT-12\n\r\n            \r\n        \r\n    \r\n\r\n\n\r\n\r\n\r\n\r\n\r\nCisco IOS XE Software\r\n\r\nCisco IOS XE Software is not affected by the vulnerability that is disclosed in this document.\n\r\n\n\r\n\n\r\n\r\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected by the vulnerability that is disclosed in this document.\r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found during troubleshooting of a customer issue.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Tunneled Traffic Queue Wedge Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-c10k-tunnels"
+			}
+		],
+		"title": "Cisco IOS Software Tunneled Traffic Queue Wedge Vulnerability",
+		"tracking": {
+			"current_release_date": "2013-01-18T17:16:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:26+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20120926-c10k-tunnels",
+			"initial_release_date": "2012-09-26T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2012-09-25T21:13:36+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2013-01-18T17:16:08+00:00",
+					"number": "1.1.0",
+					"summary": "Corrected software table placement."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB3",
+										"product": {
+											"name": "12.2(33)SB3",
+											"product_id": "CSAFPID-103655"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB2",
+										"product": {
+											"name": "12.2(34)SB2",
+											"product_id": "CSAFPID-103841"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8b",
+										"product": {
+											"name": "12.2(33)SB8b",
+											"product_id": "CSAFPID-104064"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB9",
+										"product": {
+											"name": "12.2(33)SB9",
+											"product_id": "CSAFPID-104213"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8e",
+										"product": {
+											"name": "12.2(33)SB8e",
+											"product_id": "CSAFPID-104332"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB10",
+										"product": {
+											"name": "12.2(33)SB10",
+											"product_id": "CSAFPID-104344"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB6",
+										"product": {
+											"name": "12.2(33)SB6",
+											"product_id": "CSAFPID-104409"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB4d",
+										"product": {
+											"name": "12.2(34)SB4d",
+											"product_id": "CSAFPID-104508"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB5",
+										"product": {
+											"name": "12.2(33)SB5",
+											"product_id": "CSAFPID-104676"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB4b",
+										"product": {
+											"name": "12.2(34)SB4b",
+											"product_id": "CSAFPID-104840"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8",
+										"product": {
+											"name": "12.2(33)SB8",
+											"product_id": "CSAFPID-105093"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB3",
+										"product": {
+											"name": "12.2(34)SB3",
+											"product_id": "CSAFPID-105390"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB4",
+										"product": {
+											"name": "12.2(34)SB4",
+											"product_id": "CSAFPID-105750"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB6a",
+										"product": {
+											"name": "12.2(33)SB6a",
+											"product_id": "CSAFPID-105950"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB4a",
+										"product": {
+											"name": "12.2(34)SB4a",
+											"product_id": "CSAFPID-105951"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8c",
+										"product": {
+											"name": "12.2(33)SB8c",
+											"product_id": "CSAFPID-105978"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB1a",
+										"product": {
+											"name": "12.2(33)SB1a",
+											"product_id": "CSAFPID-106159"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB2",
+										"product": {
+											"name": "12.2(33)SB2",
+											"product_id": "CSAFPID-106261"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8d",
+										"product": {
+											"name": "12.2(33)SB8d",
+											"product_id": "CSAFPID-106840"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB4c",
+										"product": {
+											"name": "12.2(34)SB4c",
+											"product_id": "CSAFPID-107233"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB6b",
+										"product": {
+											"name": "12.2(33)SB6b",
+											"product_id": "CSAFPID-107280"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(34)SB1",
+										"product": {
+											"name": "12.2(34)SB1",
+											"product_id": "CSAFPID-107297"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB",
+										"product": {
+											"name": "12.2(33)SB",
+											"product_id": "CSAFPID-107387"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB1b",
+										"product": {
+											"name": "12.2(33)SB1b",
+											"product_id": "CSAFPID-107455"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB7",
+										"product": {
+											"name": "12.2(33)SB7",
+											"product_id": "CSAFPID-107473"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB1",
+										"product": {
+											"name": "12.2(33)SB1",
+											"product_id": "CSAFPID-107585"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB4",
+										"product": {
+											"name": "12.2(33)SB4",
+											"product_id": "CSAFPID-107700"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8f",
+										"product": {
+											"name": "12.2(33)SB8f",
+											"product_id": "CSAFPID-107926"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB11",
+										"product": {
+											"name": "12.2(33)SB11",
+											"product_id": "CSAFPID-109132"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8g",
+										"product": {
+											"name": "12.2(33)SB8g",
+											"product_id": "CSAFPID-112836"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SB8a",
+										"product": {
+											"name": "12.2(33)SB8a",
+											"product_id": "CSAFPID-230960"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.2SB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "12.2(33)SRD",
+										"product": {
+											"name": "12.2(33)SRD",
+											"product_id": "CSAFPID-107019"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "12.2SRD"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S2",
+										"product": {
+											"name": "15.0(1)S2",
+											"product_id": "CSAFPID-103751"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S1",
+										"product": {
+											"name": "15.0(1)S1",
+											"product_id": "CSAFPID-106152"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S",
+										"product": {
+											"name": "15.0(1)S",
+											"product_id": "CSAFPID-106712"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S3a",
+										"product": {
+											"name": "15.0(1)S3a",
+											"product_id": "CSAFPID-108588"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S4",
+										"product": {
+											"name": "15.0(1)S4",
+											"product_id": "CSAFPID-108998"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.0(1)S4a",
+										"product": {
+											"name": "15.0(1)S4a",
+											"product_id": "CSAFPID-111018"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.0S"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.2(2)SC3",
+										"product": {
+											"name": "15.2(2)SC3",
+											"product_id": "CSAFPID-209060"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.2SC"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVS",
+										"product": {
+											"name": "15.1(3)SVS",
+											"product_id": "CSAFPID-277232"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SVS"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVT1",
+										"product": {
+											"name": "15.1(3)SVT1",
+											"product_id": "CSAFPID-280759"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVT3",
+										"product": {
+											"name": "15.1(3)SVT3",
+											"product_id": "CSAFPID-284785"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVT4",
+										"product": {
+											"name": "15.1(3)SVT4",
+											"product_id": "CSAFPID-286399"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SVT"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVU1",
+										"product": {
+											"name": "15.1(3)SVU1",
+											"product_id": "CSAFPID-283833"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVU10",
+										"product": {
+											"name": "15.1(3)SVU10",
+											"product_id": "CSAFPID-284291"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVU2",
+										"product": {
+											"name": "15.1(3)SVU2",
+											"product_id": "CSAFPID-284566"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVU11",
+										"product": {
+											"name": "15.1(3)SVU11",
+											"product_id": "CSAFPID-286400"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SVU"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVV1",
+										"product": {
+											"name": "15.1(3)SVV1",
+											"product_id": "CSAFPID-284341"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVV2",
+										"product": {
+											"name": "15.1(3)SVV2",
+											"product_id": "CSAFPID-286029"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SVV"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVW",
+										"product": {
+											"name": "15.1(3)SVW",
+											"product_id": "CSAFPID-286451"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SVW"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(3)SVX",
+										"product": {
+											"name": "15.1(3)SVX",
+											"product_id": "CSAFPID-286927"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1SVX"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2012-4620",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCts66808",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-103655",
+					"CSAFPID-103751",
+					"CSAFPID-103841",
+					"CSAFPID-104064",
+					"CSAFPID-104213",
+					"CSAFPID-104332",
+					"CSAFPID-104344",
+					"CSAFPID-104409",
+					"CSAFPID-104508",
+					"CSAFPID-104676",
+					"CSAFPID-104840",
+					"CSAFPID-105093",
+					"CSAFPID-105390",
+					"CSAFPID-105750",
+					"CSAFPID-105950",
+					"CSAFPID-105951",
+					"CSAFPID-105978",
+					"CSAFPID-106152",
+					"CSAFPID-106159",
+					"CSAFPID-106261",
+					"CSAFPID-106712",
+					"CSAFPID-106840",
+					"CSAFPID-107019",
+					"CSAFPID-107233",
+					"CSAFPID-107280",
+					"CSAFPID-107297",
+					"CSAFPID-107387",
+					"CSAFPID-107455",
+					"CSAFPID-107473",
+					"CSAFPID-107585",
+					"CSAFPID-107700",
+					"CSAFPID-107926",
+					"CSAFPID-108588",
+					"CSAFPID-108998",
+					"CSAFPID-109132",
+					"CSAFPID-111018",
+					"CSAFPID-112836",
+					"CSAFPID-209060",
+					"CSAFPID-230960",
+					"CSAFPID-277232",
+					"CSAFPID-280759",
+					"CSAFPID-283833",
+					"CSAFPID-284291",
+					"CSAFPID-284341",
+					"CSAFPID-284566",
+					"CSAFPID-284785",
+					"CSAFPID-286029",
+					"CSAFPID-286399",
+					"CSAFPID-286400",
+					"CSAFPID-286451",
+					"CSAFPID-286927"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Tunneled Traffic Queue Wedge Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20120926-c10k-tunnels"
+				}
+			],
+			"release_date": "2012-09-26T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "There are no workarounds for this vulnerability.\r\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-103655",
+						"CSAFPID-103751",
+						"CSAFPID-103841",
+						"CSAFPID-104064",
+						"CSAFPID-104213",
+						"CSAFPID-104332",
+						"CSAFPID-104344",
+						"CSAFPID-104409",
+						"CSAFPID-104508",
+						"CSAFPID-104676",
+						"CSAFPID-104840",
+						"CSAFPID-105093",
+						"CSAFPID-105390",
+						"CSAFPID-105750",
+						"CSAFPID-105950",
+						"CSAFPID-105951",
+						"CSAFPID-105978",
+						"CSAFPID-106152",
+						"CSAFPID-106159",
+						"CSAFPID-106261",
+						"CSAFPID-106712",
+						"CSAFPID-106840",
+						"CSAFPID-107019",
+						"CSAFPID-107233",
+						"CSAFPID-107280",
+						"CSAFPID-107297",
+						"CSAFPID-107387",
+						"CSAFPID-107455",
+						"CSAFPID-107473",
+						"CSAFPID-107585",
+						"CSAFPID-107700",
+						"CSAFPID-107926",
+						"CSAFPID-108588",
+						"CSAFPID-108998",
+						"CSAFPID-109132",
+						"CSAFPID-111018",
+						"CSAFPID-112836",
+						"CSAFPID-209060",
+						"CSAFPID-230960",
+						"CSAFPID-277232",
+						"CSAFPID-280759",
+						"CSAFPID-283833",
+						"CSAFPID-284291",
+						"CSAFPID-284341",
+						"CSAFPID-284566",
+						"CSAFPID-284785",
+						"CSAFPID-286029",
+						"CSAFPID-286399",
+						"CSAFPID-286400",
+						"CSAFPID-286451",
+						"CSAFPID-286927"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-103655",
+						"CSAFPID-103751",
+						"CSAFPID-103841",
+						"CSAFPID-104064",
+						"CSAFPID-104213",
+						"CSAFPID-104332",
+						"CSAFPID-104344",
+						"CSAFPID-104409",
+						"CSAFPID-104508",
+						"CSAFPID-104676",
+						"CSAFPID-104840",
+						"CSAFPID-105093",
+						"CSAFPID-105390",
+						"CSAFPID-105750",
+						"CSAFPID-105950",
+						"CSAFPID-105951",
+						"CSAFPID-105978",
+						"CSAFPID-106152",
+						"CSAFPID-106159",
+						"CSAFPID-106261",
+						"CSAFPID-106712",
+						"CSAFPID-106840",
+						"CSAFPID-107019",
+						"CSAFPID-107233",
+						"CSAFPID-107280",
+						"CSAFPID-107297",
+						"CSAFPID-107387",
+						"CSAFPID-107455",
+						"CSAFPID-107473",
+						"CSAFPID-107585",
+						"CSAFPID-107700",
+						"CSAFPID-107926",
+						"CSAFPID-108588",
+						"CSAFPID-108998",
+						"CSAFPID-109132",
+						"CSAFPID-111018",
+						"CSAFPID-112836",
+						"CSAFPID-209060",
+						"CSAFPID-230960",
+						"CSAFPID-277232",
+						"CSAFPID-280759",
+						"CSAFPID-283833",
+						"CSAFPID-284291",
+						"CSAFPID-284341",
+						"CSAFPID-284566",
+						"CSAFPID-284785",
+						"CSAFPID-286029",
+						"CSAFPID-286399",
+						"CSAFPID-286400",
+						"CSAFPID-286451",
+						"CSAFPID-286927"
+					]
+				}
+			],
+			"title": "Cisco IOS Software Tunneled Traffic Queue Wedge Denial of Service Vulnerability"
+		}
+	]
+}

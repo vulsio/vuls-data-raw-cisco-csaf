@@ -1,0 +1,245 @@
+{
+	"document": {
+		"acknowledgments": [
+			{
+				"summary": "CVE-2024-20315: This vulnerability was found during internal security testing.\r\n\r\nCVE-2024-20322: This vulnerability was found during the resolution of a Cisco TAC support case."
+			}
+		],
+		"category": "csaf_security_advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "Multiple vulnerabilities in the IP access control list (ACL) processing in the ingress direction on MPLS and Pseudowire (PW) interfaces of Cisco IOS XR Software could allow an unauthenticated, remote attacker to bypass a configured ACL.\r\n\r\nFor more information about these vulnerabilities, see the Details [\"#details\"] section of this advisory.\r\n\r\nCisco has released software updates that address these vulnerabilities. There are workarounds that address CVE-2024-20315. There are no workarounds that address CVE-2024-20322.\r\n\r\n\r\n\r\nThis advisory is part of the March 2024 release of the Cisco IOS XR Software Security Advisory Bundled Publication. For a complete list of the advisories and links to them, see Cisco Event Response: March 2024 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication [\"https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75299\"].",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "At the time of publication, these vulnerabilities affected the following Cisco products if they were running a vulnerable release of Cisco IOS XR Software and had IP packet filtering enabled in the ingress direction on MPLS or PW-Ether interfaces:\r\n\r\n8000 Series Routers\r\nIOS XR White box (IOSXRWBD)\r\nNetwork Convergence Series (NCS) 540 Series Routers\r\nNCS 560 Series Routers\r\nNCS 5500 Series\r\nNCS 5700 Series\r\n\r\nNote: IP ingress ACL filtering on MPLS interfaces is not currently supported on any other Cisco IOS XR platforms.\r\n\r\nFor information about which Cisco software releases were vulnerable at the time of publication, see the Fixed Software [\"#fs\"] section of this advisory. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n  Determine Whether IP Packet Filtering is Enabled\r\nMPLS Interfaces – CVE-2024-20315\r\n\r\nTo determine whether IP packet filtering in the ingress direction is enabled on any MPLS interface, complete the following steps:\r\n  1. Identify all MPLS Interfaces\r\nTo identify all MPLS interfaces, use the show mpls interfaces CLI command and look for interfaces with Yes in the Enabled column.\r\n\r\nThe following example shows the output of the show mpls interfaces command on a device on which interfaces TenGigE0/0/0/0 and TenGigE0/0/0/1 are MPLS enabled:\r\n\r\n\r\nRP/0/RP0/CPU0:NCS5501#show mpls interfaces\r\nTue Jan 16 02:47:56.142 UTC\r\nInterface                  LDP      Tunnel   Static   Enabled\r\n-------------------------- -------- -------- -------- --------\r\nTenGigE0/0/0/0             No       No       No       Yes\r\nTenGigE0/0/0/1             No       No       No       Yes\r\nRP/0/RP0/CPU0:NCS5501#\r\n  2. Determine the Interface IP Packet Filtering Configuration\r\nTo determine if an interface has an IPv4 or IPv6 ACL configured, use the show running-config interface if_name CLI command.\r\n\r\nThe following example shows the output of the show running-config interface TenGigE0/0/0/0 command on a device that has both an IPv4 and an IPv6 ACL configured on interface TenGigE0/0/0/0 in the ingress direction:\r\n\r\n\r\nRP/0/RP0/CPU0:NCS5501#show running-config interface TenGigE0/0/0/0\r\nTue Jan 16 02:49:45.385 UTC\r\ninterface TenGigE0/0/0/0\r\n description ** Example where IPv4 and IPv6 ACL ingress applied **\r\n ipv4 address 192.168.12.1 255.255.255.0\r\n ipv4 access-group INGRESS_MPLS_IPV4_ACL ingress\r\nipv6 access-group INGRESS_MPLS_IPV6_ACL ingress\r\n!\r\n\r\nRP/0/RP0/CPU0:NCS5501#\r\n\r\nIf at least one MPLS interface has an IPv4 or IPv6 (or both) ingress ACL applied, the device is affected by this vulnerability.\r\n\r\nPW-Ether Interfaces – CVE-2024-20322\r\n\r\nTo determine whether IP packet filtering in the ingress direction is enabled on any PW-Ether interface, complete the following steps:\r\n  1. Identify all PW-Ether Interfaces\r\nTo identify all PW-Ether interfaces use the show running-config | include ^interface PW-Ether CLI command.\r\n\r\nThe following example shows the output of the show running-config | include ^interface PW-Ether command on a device which has the two PW-Ether interfaces PW-Ether1 and PW-Ether2 configured:\r\n\r\n\r\nRP/0/RP0/CPU0:NCS5501#show running-config | include ^interface PW-Ether\r\nTue Jan 16 10:59:15.163 UTC\r\nBuilding configuration...\r\ninterface PW-Ether1\r\ninterface PW-Ether2\r\nRP/0/RP0/CPU0:NCS5501#\r\n  2. Determine the Interface IP Packet Filtering Configuration\r\nUse the show running-config interface if_name CLI command to determine if an interface has an IPv4 or IPv6 ACL configured.\r\n\r\nThe following example shows the output of the show running-config interface PW-Ether2 command on a device that has an IPv4 ACL configured on interface PW-Ether2 in the ingress direction:\r\n\r\n\r\nRP/0/RP0/CPU0:NCS5501#show running-config interface PW-Ether2\r\nTue Jan 16 11:16:42.356 UTC\r\ninterface PW-Ether2\r\nmtu 9000\r\nvrf vxlan2\r\nipv4 address 196.168.48.1 255.255.255.0\r\n attach generic-interface-list txlist1\r\n ipv4 access-group INGRESS_VXLAN_IPV4_ACL ingress\r\n!\r\n\r\nRP/0/RP0/CPU0:NCS5501#\r\n\r\nIf at least one PW-Ether interface has an IPv4 or IPv6 (or both) ingress ACL applied, the device is affected by this vulnerability.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Only products listed in the Vulnerable Products [\"#vp\"] section of this advisory are known to be affected by these vulnerabilities.\r\n\r\nCisco has confirmed that these vulnerabilities do not affect the following Cisco products:\r\n\r\nIOS Software\r\nIOS XE Software\r\nNX-OS Software",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The vulnerabilities are not dependent on one another. Exploitation of one of the vulnerabilities is not required to exploit the other vulnerability. In addition, a software release that is affected by one of the vulnerabilities may not be affected by the other vulnerability.\r\n\r\nExploitation of these vulnerabilities could allow an attacker to bypass protections that are provided by an ACL that is applied on an affected device. The overall impact of exploitation is organization specific because it depends on the importance of the assets that the ACL was supposed to protect. Customers should evaluate how exploitation of these vulnerabilities would impact their network and proceed according to their own vulnerability-handling and remediation processes.\r\n\r\nDetails about the vulnerabilities are as follows:\r\n  CVE-2024-20315: Cisco IOS XR Software MPLS Interfaces Access Control List Bypass Vulnerability\r\nA vulnerability in the ACL processing on MPLS interfaces in the ingress direction of Cisco IOS XR Software could allow an unauthenticated, remote attacker to bypass a configured ACL.\r\n\r\nThis vulnerability is due to improper assignment of lookup keys to internal interface contexts. An attacker could exploit this vulnerability by attempting to send traffic through an affected device. A successful exploit could allow the attacker to access resources behind the affected device that were supposed to be protected by a configured ACL.\r\n\r\nCisco has released software updates that address this vulnerability. There are workarounds that address this vulnerability.\r\n\r\nBug ID(s): CSCwf99658 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf99658\"]\r\nCVE ID: CVE-2024-20315\r\nSecurity Impact Rating (SIR): Medium\r\nCVSS Base Score: 5.8\r\nCVSS Vector: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N\r\n    CVE-2024-20322: Cisco IOS XR Software Pseudowire Interfaces Access Control List Bypass Vulnerability\r\nA vulnerability in the ACL processing on Pseudowire interfaces in the ingress direction of Cisco IOS XR Software could allow an unauthenticated, remote attacker to bypass a configured ACL.\r\n\r\nThis vulnerability is due to improper assignment of lookup keys to internal interface contexts. An attacker could exploit this vulnerability by attempting to send traffic through an affected device. A successful exploit could allow the attacker to access resources behind the affected device that were supposed to be protected by a configured ACL.\r\n\r\nCisco has released software updates that address this vulnerability. There are no workarounds that address this vulnerability.\r\n\r\nBug ID(s): CSCwh77265 [\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwh77265\"]\r\nCVE ID: CVE-2024-20322\r\nSecurity Impact Rating (SIR): Medium\r\nCVSS Base Score: 5.8\r\nCVSS Vector: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "CVE-2024-20315: There is a workaround that addresses this vulnerability.\r\n\r\nCustomers could remove the ingress ACLs from the MPLS-enabled interfaces and use egress ACLs in their environment instead. Egress hybrid ACLs are supported in Cisco IOS XR releases 7.6.2 and later.\r\n\r\nWhile this workaround has been deployed and was proven successful in a test environment, customers should determine the applicability and effectiveness in their own environment and under their own use conditions. Customers should be aware that any workaround or mitigation that is implemented may negatively impact the functionality or performance of their network based on intrinsic customer deployment scenarios and limitations. Customers should not deploy any workarounds or mitigations before first evaluating the applicability to their own environment and any impact to such environment.\r\n\r\nCVE-2024-20322: There are no workarounds that address this vulnerability.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades [\"https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes\"], customers are advised to regularly consult the advisories for Cisco products, which are available from the Cisco Security Advisories page [\"https://www.cisco.com/go/psirt\"], to determine exposure and a complete upgrade solution.\r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers.\r\n    Fixed Releases\r\nAt the time of publication, the release information in the following table(s) was accurate. See the Details section in the bug ID(s) at the top of this advisory for the most complete and current information.\r\n\r\nThe left column lists Cisco software releases, and the right column indicates whether a release was affected by the vulnerability that is described in this advisory and which release included the fix for this vulnerability.\r\n  CVE-2024-20315             Cisco IOS XR Software Release  Affected Releases  First Fixed Release          7.8 and earlier  Not vulnerable.  Not vulnerable.      7.9  7.9.1 and 7.9.2  Migrate to a fixed release.       7.10  7.10.1  7.10.2      7.11  Not vulnerable.  Not vulnerable.          CVE-2024-20322             Cisco IOS XR Software Release  Affected Releases  First Fixed Release          7.9 and earlier  Not vulnerable.  Not vulnerable.      7.10  7.10.2  Migrate to a fixed release.      7.11  7.11.1  7.11.2\r\nThe Cisco Product Security Incident Response Team (PSIRT) validates only the affected and fixed release information that is documented in this advisory.",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy [\"http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html\"]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco PSIRT is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory.",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "general",
+				"text": "CVE-2024-20315: This vulnerability was found during internal security testing.\r\n\r\nCVE-2024-20322: This vulnerability was found during the resolution of a Cisco TAC support case.",
+				"title": "Source"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA standalone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy and may lack important information or contain factual errors. The information in this document is intended for end users of Cisco products.",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "psirt@cisco.com",
+			"issuing_authority": "Cisco PSIRT",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS XR Software MPLS and Pseudowire Interfaces Access Control List Bypass Vulnerabilities",
+				"url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-iosxr-acl-bypass-RZU5NL3e"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Event Response: March 2024 Semiannual Cisco IOS XR Software Security Advisory Bundled Publication",
+				"url": "https://sec.cloudapps.cisco.com/security/center/viewErp.x?alertId=ERP-75299"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Vulnerability Policy",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwf99658",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf99658"
+			},
+			{
+				"category": "external",
+				"summary": "CSCwh77265",
+				"url": "https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwh77265"
+			},
+			{
+				"category": "external",
+				"summary": "considering software upgrades",
+				"url": "https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#fixes"
+			},
+			{
+				"category": "external",
+				"summary": "Cisco Security Advisories page",
+				"url": "https://www.cisco.com/go/psirt"
+			},
+			{
+				"category": "external",
+				"summary": "Security Vulnerability Policy",
+				"url": "http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html"
+			}
+		],
+		"title": "Cisco IOS XR Software MPLS and Pseudowire Interfaces Access Control List Bypass Vulnerabilities",
+		"tracking": {
+			"current_release_date": "2024-03-13T16:00:00+00:00",
+			"generator": {
+				"date": "2024-05-10T23:29:23+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-iosxr-acl-bypass-RZU5NL3e",
+			"initial_release_date": "2024-03-13T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2024-03-13T15:56:38+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco IOS XR Software",
+						"product": {
+							"name": "Cisco IOS XR Software ",
+							"product_id": "CSAFPID-5834"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2024-20315",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwf99658"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2024-03-13T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software MPLS Access Contol List Bypass Vulnerability"
+		},
+		{
+			"cve": "CVE-2024-20322",
+			"ids": [
+				{
+					"system_name": "Cisco Bug ID",
+					"text": "CSCwh77265"
+				}
+			],
+			"notes": [
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-5834"
+				]
+			},
+			"release_date": "2024-03-13T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "vendor_fix",
+					"details": "Cisco has released software updates that address this vulnerability.",
+					"product_ids": [
+						"CSAFPID-5834"
+					],
+					"url": "https://software.cisco.com"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v3": {
+						"baseScore": 5.8,
+						"baseSeverity": "MEDIUM",
+						"vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N",
+						"version": "3.1"
+					},
+					"products": [
+						"CSAFPID-5834"
+					]
+				}
+			],
+			"title": "Cisco IOS XR Software Pseudowire Interfaces Access Control List Bypass Vulnerability"
+		}
+	]
+}

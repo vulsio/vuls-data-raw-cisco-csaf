@@ -1,0 +1,165 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "A vulnerability in Cisco Adaptive Security Appliance (ASA) Software for the Cisco ASA 1000V Cloud Firewall may cause the Cisco ASA 1000V to reload after processing a malformed H.323 message. Cisco ASA 1000V Cloud Firewall is affected when H.323 inspection is enabled.\n\r\n\n\r\nCisco has released software updates that address this vulnerability.\n\r\n\n\r\nThis advisory is posted at the following link:\n\r\n\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130116-asa1000v[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130116-asa1000v\"]\n\r\n\n\r\nNote:  Only Cisco ASA Software for the Cisco ASA 1000V Cloud Firewall is affected by the vulnerability described in this advisory. Cisco ASA 5500 Series Adaptive Security Appliances, Cisco Catalyst 6500 Series ASA Services Module or Cisco Catalyst 6500 Series Firewall Services Module (FWSM) are not affected by this vulnerability.",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "\n",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Versions 8.7.1 and 8.7.1.1 of Cisco ASA Software for the Cisco ASA 1000V Cloud Firewall are affected by this vulnerability if H.323 inspection is enabled. H.323 Inspection for both H.225 and Registration, Admission and Status (RAS) messages is enabled by default.\n\r\n\n\r\nThe vulnerability exists only if H.323 inspection for H.225 messages is enabled. H.323 inspection for RAS messages has no effect on this vulnerability.\n\r\n\n\r\nTo determine whether H.323 H.225 inspection is enabled, issue the show service-policy inspect h323 h225 command and verify that a class map is configured with the H.225 inspection engine. If H.323 inspection for H.225 messages is configured, the relevant H.323 output will appear under the referenced class map.\n\r\n\n\r\nExample output follows:\r\n\r\nASA1000v# show service-policy inspect h323 h225 \r\nGlobal policy: \r\n  Service-policy: global_policy\r\n    Class-map: inspection_default\r\n      Inspect: h323 h225 _default_h323_map, packet 0, lock fail 0, drop 0, reset-drop 0\r\n               tcp-proxy: bytes in buffer 0, bytes dropped 0\r\n        h245-tunnel-block drops 0 connection\r\n\n\r\n\r\nNote: The preceding output identifies a policy map with a class map that has H.323 inspection for H.225 messages applied.\n\r\n\r\n\n\r\nAlternatively, a device that has H.323 inspection for H.225 messages enabled has a configuration similar to the following:\n\r\n\n\r\n\r\nclass-map inspection_default \r\n match default-inspection-traffic\r\n!\r\npolicy-map global_policy\r\n class inspection_default\r\n  ...\r\n  inspect h323 h225\r\n  ...\r\n!\r\nservice-policy global_policy global\r\n\n\r\nNote: Global application is shown in the preceding example, but the service policy could also be applied to a specific interface\n\r\n\n\r\nCustomers who use Cisco Adaptive Security Device Manager (ASDM) to manage devices can check the Service Policy section under the global or interface specific policies to determine whether the inspection is enabled.\n\r\n\n\r\nCustomers who use Cisco Virtual Network Management Center (VNMC) to manage multiple devices can locate the Packet Inspection section under Policy Management > Security Policies > Root > Tenant > Data Center > Policies to determine whether the inspection is enabled.\r\n\r\n\n\r\nTo determine the version of Cisco ASA Software for the Cisco ASA 1000V Cloud Firewall that is running, issue the show version command from the Cisco ASA 1000V command line.\n\r\n\r\n\r\n\n\r\nThe following example shows a system that is running an affected software version (8.7.1):\r\n\r\n\r\n\n\r\n\r\nASA1000v(config)# show version\nCisco Adaptive Security Appliance Software Version 8.7(1)\nDevice Manager Version 6.3(5)\r\n\n\r\nCustomers who use the Cisco Adaptive Security Device Manager (ASDM) to manage their devices can find the version of the software displayed in the table in the login window or in the upper left corner of the ASDM window. \n\r\n\r\n\r\n\n\r\nAlternatively, version information can be obtained from the Summary tab of the Cisco ASA 1000V Cloud Firewall resource in the VMware vCenter Server.",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "With the exception of Cisco ASA 1000V Cloud Firewall, no other Cisco products are currently known to be affected by this vulnerability.\n",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco ASA 1000V Cloud Firewall is a virtual security appliance that secures the tenant edge in multitenant private and public cloud deployments. It runs on VMware vSphere Hypervisor software and the Cisco Nexus 1000V Series Switch exclusively. \n\r\n\n\r\nThe Cisco ASA 1000V Cloud Firewall allows virtual machines (VMs) in a virtual data center to access the Internet securely, functions as the default gateway for the VMs, and protects against network-based attacks.\n\r\n\n\r\nCisco ASA Software for the 1000V Cloud Firewall versions 8.7.1 and 8.7.1.1 contain a vulnerability that could allow an unauthenticated, remote attacker to cause a reload of the Cisco 1000V Cloud Firewall.\n\r\n\n\r\nThe vulnerability is due to incorrect handling of malformed H.323 packets. An attacker could exploit this vulnerability by sending a crafted H.323 packet through the affected device. An exploit could allow the attacker to reload the Cisco ASA 1000V Cloud Firewall, resulting in denial of service (DoS) condition.\n\r\n\n\r\nA Cisco ASA 1000V device that is configured to inspect H.323 through-the-box traffic may reload when a malformed H.323 IPv4 packet is received. \n\r\n\n\r\nThe H.323 control channel handles H.225, H.245 and H.323 RAS messages. H.323 inspection uses the following well-known ports:\n\r\n\r\n\r\n1718—Gatekeeper Discovery UDP port\n\r\n1719—RAS UDP port\n\r\n1720—TCP control port\r\n\r\n\r\nAdditional dynamic UDP and TCP ports may be negotiated during the H.323 call signaling setup procedure.\n\r\n\n\r\nA malformed packet sent to any of the well-known ports used by H.323 inspection, or to ports dynamically negotiated by H.323 call signaling setup, may trigger this vulnerability.\n\r\n\n\r\nOnly through-the-box traffic may trigger this vulnerability. Cisco ASA 1000V Cloud Firewall is affected only if H.323 inspection for H.225 messages is enabled.\n\r\n\n\r\nCisco ASA 1000V Cloud Firewall does not support H.323 inspection over IPv6 transport.\n\r\n\n\r\nThis vulnerability is documented in Cisco Bug ID CSCuc42812[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc42812\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and CSCuc88741[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCuc88741\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned CVE-2012-5419.\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "If H.323 inspection is not required, it can be disabled so the device is no longer affected by the vulnerability. Administrators can disable H.323 inspection for H.225 messages by issuing the no inspect h323 h225 command in class configuration submode in the policy map configuration. H.323 inspection for H.225 messages should be disabled for the workaround to be effective. \n\r\n\n\r\nThe following example shows how to disable H.323 inspection from the default policy-map:\n\r\n\r\n\r\n\r\n\r\nASA1000v(config)# policy-map global_policy\r\nASA1000v(config-pmap)# class inspection_default\r\nASA1000v(config-pmap-c)# no inspect h323 h225\r\n\r\n\r\nIf H.323 inspection for H.225 messages is required, there are no workarounds.",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories and Responses archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution.\n\r\n\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \n\r\n\n\r\nThis vulnerability has been fixed in Cisco ASA Software for the Cisco ASA 1000V Cloud Firewall version 8.7.1.3 and later.\n\r\n\n\r\nCisco ASA Software for the Cisco ASA 1000V Cloud Firewall can be downloaded at the following link:\n\r\n\n\r\nhttp://software.cisco.com/download/type.html?mdfid=284145419&catid=null[\"http://software.cisco.com/download/type.html?mdfid=284145419&catid=null\"]\n\r\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was found during internal testing.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco ASA 1000V Cloud Firewall H.323 Inspection Denial of Service Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130116-asa1000v"
+			}
+		],
+		"title": "Cisco ASA 1000V Cloud Firewall H.323 Inspection Denial of Service Vulnerability",
+		"tracking": {
+			"current_release_date": "2013-01-16T16:00:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:30+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130116-asa1000v",
+			"initial_release_date": "2013-01-16T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-01-16T15:24:36+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				}
+			],
+			"status": "final",
+			"version": "1.0.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"category": "product_family",
+						"name": "Cisco ASA 1000V Cloud Firewall Software",
+						"product": {
+							"name": "Cisco ASA 1000V Cloud Firewall Software ",
+							"product_id": "CSAFPID-185561"
+						}
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2012-5419",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCuc42812,CSCuc88741",
+					"title": "Cisco Bug IDs"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-185561"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco ASA 1000V Cloud Firewall H.323 Inspection Denial of Service Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130116-asa1000v"
+				}
+			],
+			"release_date": "2013-01-16T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "If H.323 inspection is not required, it can be disabled so the device is no longer affected by the vulnerability. Administrators can disable H.323 inspection for H.225 messages by issuing the no inspect h323 h225 command in class configuration submode in the policy map configuration. H.323 inspection for H.225 messages should be disabled for the workaround to be effective. \n\r\n\n\r\nThe following example shows how to disable H.323 inspection from the default policy-map:\n\r\n\r\n\r\n\r\n\r\nASA1000v(config)# policy-map global_policy\r\nASA1000v(config-pmap)# class inspection_default\r\nASA1000v(config-pmap-c)# no inspect h323 h225\r\n\r\n\r\nIf H.323 inspection for H.225 messages is required, there are no workarounds."
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-185561"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-185561"
+					]
+				}
+			],
+			"title": "Cisco ASA 1000V Cloud Firewall H.323 Inspection Denial of Service Vulnerability"
+		}
+	]
+}

@@ -1,0 +1,419 @@
+{
+	"document": {
+		"category": "Cisco Security Advisory",
+		"csaf_version": "2.0",
+		"notes": [
+			{
+				"category": "summary",
+				"text": "The Cisco IOS Software Internet Key Exchange (IKE) feature contains a  denial of service (DoS) vulnerability.\n\r\n\n\r\nCisco has released software updates that address this vulnerability. Workarounds that mitigate this vulnerability are not available.\n\r\n\n\r\nThis advisory is available at the following link:\n\r\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ike[\"http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ike\"]\n\r\nNote: The March 27, 2013, Cisco IOS Software Security Advisory bundled publication includes seven Cisco Security Advisories. All advisories address vulnerabilities in Cisco IOS Software. Each Cisco IOS Software Security Advisory lists the Cisco IOS Software releases that correct the vulnerability or vulnerabilities detailed in the advisory as well as the Cisco IOS Software releases that correct all Cisco IOS Software vulnerabilities in the March 2013 bundled publication. \r\n\r\nIndividual publication links are in \"Cisco Event Response: Semiannual Cisco IOS Software Security Advisory Bundled Publication\" at the following link: \r\n\r\nhttp://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar13.html[\"http://www.cisco.com/web/about/security/intelligence/Cisco_ERP_mar13.html\"]\r\n\n",
+				"title": "Summary"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS devices are vulnerable when running a software image of an affected version of Cisco IOS Software that does not support IKE version 2 (IKEv2) and is configured to use IKE version 1 (IKEv1).",
+				"title": "Affected Products"
+			},
+			{
+				"category": "general",
+				"text": "Determine if the Device is Running an Affected Version of Cisco IOS Software\r\nThis vulnerability affects the 15.1GC, 15.1T, and 15.1XB Cisco IOS Software release trains.  No other Cisco IOS Software release trains are affected.\n\r\nTo determine the Cisco IOS Software release that is running on a Cisco product, administrators can log in to the device and issue the show version command to display the system banner. The system banner confirms that the device is running Cisco IOS Software by displaying text similar to \"Cisco Internetwork Operating System Software\" or \"Cisco IOS Software.\" The image name displays in parentheses, followed by \"Version\" and the Cisco IOS Software release name. Other Cisco devices do not have the show version command or may provide different output.\r\n\r\nThe following example identifies a Cisco product that is running Cisco IOS Software Release 15.0(1)M1 with an installed image name of C3900-UNIVERSALK9-M:\r\n\r\nRouter> show version \nCisco IOS Software, C3900 Software (C3900-UNIVERSALK9-M), Version 15.0(1)M1, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\nCompiled Wed 02-Dec-09 17:17 by prod_rel_team\r\n!--- output truncated \r\nAdditional information about Cisco IOS Software release naming conventions is available in \"White Paper: Cisco IOS and NX-OS Software Reference Guide\" at http://www.cisco.com/web/about/security/intelligence/ios-ref.html[\"http://www.cisco.com/web/about/security/intelligence/ios-ref.html\"]. \r\n\n\r\nDetermine if the Cisco IOS Software Version Supports IKEv2\r\nCisco IOS Software introduced support for IKEv2 in software version 15.1(1)T for select platforms.  To determine if the device has an image that supports IKEv2, log into the device and execute the command line interface (CLI) command show subsys | include ikev2.  If the output contains ikev2 Library then the device has support for IKEv2.  If the output does not contain ikev2 Library then the device does not support IKEv2.  In the following example the device has support for IKEv2:\r\nISR2900#show subsys | include ikev2\nikev2               Library     1.000.001\nikev2_cli_registry  Registry    1.000.001\nISR2900#\n\n\r\nIn the following example the device does not have support for IKEv2:\n\r\nCISCO2821#show subsys | include ikev2\nikev2_cli_registry  Registry    1.000.001\nCISCO2821#\r\n\r\nDetermine if the Device is Configured for IKEv1\r\nA number of features use IKEv1, including different Virtual Private Networks (VPN) such as:\r\n\r\n    \r\n    LAN-to-LAN VPN\r\n    \r\n    Remote access VPN (excluding SSLVPN)\r\n    Dynamic Multipoint VPN (DMVPN)\r\n    Group Domain of Interpretation (GDOI) \r\n\r\nThere are two methods to determine if a device is configured for IKEv1:\r\n\r\n    Determine if IKE ports are open on a running device\r\n    Determine if IKEv1 features are included in the device configuration\r\n\r\nDetermine if IKE Ports are Open on a Running Device\r\n The preferred method to determine if a device has been configured for IKE is to issue the\r\nshow udp CLI command. If the device has UDP port 500, UDP port 4500, UDP port 848, or UDP port 4848 open, it is processing IKE packets.\r\n\r\nIn the following example, the device is configured to process IKE packets on UDP port 500 and UDP port 4500,\r\nusing either IPv4 or IPv6:\r\n\r\n\r\n\r\nRouter#show udp\nProto        Remote      Port      Local       Port  In Out  Stat TTY OutputIF\n 17       --listen--          --any--          1975   0   0 1000001   0\n 17       --listen--          192.168.100.1     500   0   0 1001011   0\n 17(v6)   --listen--          FD80::1           500   0   0 1020011   0\n 17       --listen--          192.168.100.1    4500   0   0 1001011   0\n 17(v6)   --listen--          FD80::1          4500   0   0 1020011   0\nRouter#\r\n\r\nDetermine if IKEv1 Features are included in the Device Configuration\r\n\n\r\n\n\r\nTo determine if a Cisco IOS device configuration is vulnerable, the\r\nadministrator needs to determine whether there is at least one configured\r\nfeature that uses IKE. This can be achieved by using the\r\n show run | include crypto map|tunnel protection ipsec|crypto gdoi enable mode command.\r\nIf the output of this command contains either tunnel protection ipsec, or, crypto gdoi then the device contains an IKE configuration. If the output of this command contains crypto map, check that the crypto map is configured as ipsec-isakmp.\r\nThe following example shows a device that has been configured for IKE:\r\nrouter# show run | include crypto map|tunnel protection ipsec|crypto gdoi\r\ncrypto map CM 100 ipsec-isakmp \r\n crypto map CM\r\nrouter#\r\n\r\n",
+				"title": "Vulnerable Products"
+			},
+			{
+				"category": "general",
+				"text": "Cisco devices that are running an affected version of Cisco IOS Software which has support for IKEv2 are not affected, regardless if IKEv1 is configured or not.\n\r\n\n\r\nThe following products have support for both IKEv1 and IKEv2 and are confirmed not affected by this vulnerability:\n\r\n\r\n    Cisco ASR 5000 Series Small Cell Gateway\r\n    Cisco Access Service Network (ASN) Gateway \r\n    Cisco ePDG (On ASR5000)\r\n    The SAMI based Wireless Security Gateway (WSG).\r\n    Cisco NX-OS Software\r\n    Cisco ASA Software\r\n    Cisco AnyConnect \r\n    Cisco CGR 1000 routers\r\n\r\nNo other Cisco products are currently known to be affected by this vulnerability.",
+				"title": "Products Confirmed Not Vulnerable"
+			},
+			{
+				"category": "general",
+				"text": "Cisco IOS Software contains a vulnerability that could allow an unauthenticated, remote attacker to cause a DoS condition.\n\r\n\n\r\nThe vulnerability is due to insufficient validation of IKE packets by the affected software. An attacker could exploit this vulnerability by sending specific IKE packets to a device configured with features that leverage IKEv1. An exploit could allow the attacker to cause a memory leak on the affected device which could lead to a DoS condition.\n\r\nTo identify if a device is being exploited by this vulnerability, examine the contents of the old buffers.  A device that is affected by this vulnerability will show a buffer leak in the Crypto IKE Dis user and will show buffers being leaked in Crypto IK.  The following example shows a system that is experiencing a memory leak due to this vulnerability: \n\r\n\r\nRouter#show buffer leak\n\n  Header DataArea  Pool  Size Link  Enc    Flags      Input     Output User\n\n49AB48C0 3F405384 Small     0    0    0        0       None       None Init\n49ABB8DC 3F4072C4 Middl   419    7    1       80      Gi0/0       None Crypto IK\n49ABBD58 3F407604 Middl   419    7    1       80      Gi0/0       None Crypto IK\n49ABC1D4 3F407944 Middl   419    7    1       80      Gi0/0       None Crypto IK\n49ABC650 3F407C84 Middl   419    7    1       80      Gi0/0       None Crypto IK\n\n\nRouter#show buffer leak resource user\nResource User:           Init count:       21\nResource User: Crypto IKE Dis count:      100\nResource User:  EEM ED Syslog count:       10\nResource User: IP ARP Adjacen count:        1\n\n\r\nIf the network is experiencing active exploitation, the Crypto IKE Dis count will increase.  This vulnerability can be exploited via either IPv4 or IPv6.  Only traffic destined to the device can trigger the vulnerability; transit traffic is not an exploit vector.\n\r\n\n\r\nThis vulnerability has been documented in Cisco Bug ID CSCth81055[\"https://bst.cloudapps.cisco.com/bugsearch/bug/CSCth81055\"] (registered[\"http://tools.cisco.com/RPF/register/register.do\"] customers only) and has been assigned the Common Vulnerabilities and Exposures (CVE) ID CVE-2013-1144.\n",
+				"title": "Details"
+			},
+			{
+				"category": "general",
+				"text": "The following identification mechanism exist for this vulnerability.\n\r\nEmbedded Event Manager (EEM)\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect a memory leak that is caused by this vulnerability. The policy allows administrators to monitor the memory for the affected process on a Cisco IOS device. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade or reload the device to recover the lost memory at a suitable time. The example policy is based on a Tcl script that sends a syslog when the memory keeps dropping and reaches EEM_IKE_BUFF_INCR_THRES and when the IKE buffers have dropped EEM_IKE_BUFF_INCR_THRES times. If IKE buffers are freed the counter starts counting from zero. After generating the memory leak syslog the script re-initializes.\r\nThe Tcl script is available for download at the \"Cisco Beyond: Embedded Event Manager (EEM) Scripting Community\" at the following link: https://supportforums.cisco.com/docs/DOC-30300[\"https://supportforums.cisco.com/docs/DOC-30300\"]. A sample device configuration is provided below.\n\r\n\n\r\n\r\nevent manager environment EEM_MEM_LEAK_INTERVAL 20\nevent manager environment EEM_MEM_LEAK_MAX_RUNTIME 5\nevent manager environment EEM_IKE_BUFF_INCR_THRES 3\nevent manager environment EEM_FREE_MEMORY_THRES 70\nevent manager directory user policy \"flash:/\"\nevent manager policy eem_ike_mem_leak.tcl\r\n\n",
+				"title": "Workarounds"
+			},
+			{
+				"category": "general",
+				"text": "When considering software upgrades, customers are advised to consult the Cisco Security Advisories, Responses, and Notices archive at http://www.cisco.com/go/psirt[\"http://www.cisco.com/go/psirt\"] and review subsequent advisories to determine exposure and a complete upgrade solution. \r\n\r\nIn all cases, customers should ensure that the devices to be upgraded contain sufficient memory and  confirm that current hardware and software configurations will continue to be supported properly by the new release. If the information is not clear, customers are advised to contact the Cisco Technical Assistance Center (TAC) or their contracted maintenance providers. \r\n\r\nCisco IOS Software\r\nEach row of the following Cisco IOS Software table corresponds to a Cisco IOS Software train. If a particular train is vulnerable, the earliest releases that contain the fix are listed in the First Fixed Release column. The First Fixed Release for All Advisories in the March 2013 Bundled Publication column lists the earliest possible releases that correct all the published vulnerabilities in the Cisco IOS Software Security Advisory bundled publication. Cisco recommends upgrading to the latest available release where possible.\r\n\r\nThe Cisco IOS Software Checker allows customers to search for Cisco Security Advisories that address specific Cisco IOS Software releases. This tool is available on the Cisco Security (SIO) portal at http://tools.cisco.com/security/center/selectIOSVersion.x[\"http://tools.cisco.com/security/center/selectIOSVersion.x\"] \r\n\r\n\n\r\n\n\r\n\r\n    \r\n        \r\n             Major Release\r\n                 Availability of Repaired Releases\r\n        \r\n        \r\n            Affected 12.0-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.0 based releases\r\n        \r\n        \r\n            Affected 12.2-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.2 based releases\r\n        \r\n        \r\n            Affected 12.3-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.3 based releases\r\n        \r\n        \r\n            Affected 12.4-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 12.4 based releases\r\n        \r\n        \r\n            Affected 15.0-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.0 based releases\r\n        \r\n        \r\n            Affected 15.1-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n             15.1EY\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; First fixed in Release 15.2S[\"#15_2S\"]\n\r\n            \r\n        \r\n        \r\n             15.1GC\r\n            15.1(4)GC\n\r\n            \r\n            15.1(4)GC1\n\r\n            \r\n        \r\n        \r\n             15.1M\r\n            Not vulnerable\n\r\n            \r\n            15.1(4)M6\n\r\n            \r\n        \r\n        \r\n             15.1MR\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1MRA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1S\r\n            Not vulnerable\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n            † See footnote[\"#15.1S_footnote\"]\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"] \r\n        \r\n        \r\n             15.1SG\r\n            Not vulnerable\n\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\r\n            Cisco IOS XE devices: Please see Cisco IOS XE Software Availability[\"#iosxe\"]\n\r\n            \r\n        \r\n        \r\n             15.1SNG\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1SNH\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1SNI\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1SVA\r\n            Not vulnerable\n\r\n            \r\n            Vulnerable; contact your support organization per the instructions in Obtaining Fixed Software[\"#fixes\"] section of this advisory.\n\r\n            \r\n        \r\n        \r\n             15.1SVC\r\n            Not vulnerable\n\r\n            \r\n            Not vulnerable\n\r\n            \r\n        \r\n        \r\n             15.1SY\r\n            Not vulnerable\n\r\n            \r\n            15.1(1)SY1; Available on 24-MAY-13\n\r\n            \r\n        \r\n        \r\n             15.1T\r\n            15.1(3)T\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"#15_1M\"]\n\r\n            \r\n        \r\n        \r\n             15.1XB\r\n            Vulnerable; First fixed in Release 15.1T[\"#15_1T\"]\n\r\n            \r\n            Vulnerable; First fixed in Release 15.1M[\"#15_1M\"]\n\r\n            \r\n        \r\n        \r\n            Affected 15.2-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.2 based releases\r\n        \r\n        \r\n            Affected 15.3-Based Releases\r\n            First Fixed Release\r\n            Bundle First Fixed Release for All Advisories in the March 2013 Bundled Publication\r\n        \r\n        \r\n            There are no affected 15.3 based releases\r\n        \r\n    \r\n\r\n* For Cisco 7600 Series Routers, the first fixed release for all Cisco Security Advisories in the March 2013 bundled publication is Cisco IOS Software Release 15.1(3)S5. For Cisco 7200 and 7300 Series Routers, the first fixed release for all advisories in the March 2013 bundled publication is Cisco IOS Software Release 15.1(3)S5a, which will be available on April 15, 2013.\r\n\r\nCisco IOS XE Software\r\nCisco IOS XE Software is not affected by the vulnerability that is disclosed in this advisory.\n\r\nCisco IOS XR Software\r\nCisco IOS XR Software is not affected by the vulnerability that is disclosed in this advisory.\n\r\n\n",
+				"title": "Fixed Software"
+			},
+			{
+				"category": "general",
+				"text": "To learn about Cisco security vulnerability disclosure policies and publications, see the Security Vulnerability Policy[http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html]. This document also contains instructions for obtaining fixed software and receiving security vulnerability information from Cisco.",
+				"title": "Vulnerability Policy"
+			},
+			{
+				"category": "general",
+				"text": "The Cisco Product Security Incident Response Team (PSIRT) is not aware of any public announcements or malicious use of the vulnerability that is described in this advisory. \r\n\r\nThis vulnerability was discovered as part of internal vulnerability testing.\r\n",
+				"title": "Exploitation and Public Announcements"
+			},
+			{
+				"category": "legal_disclaimer",
+				"text": "THIS DOCUMENT IS PROVIDED ON AN \"AS IS\" BASIS AND DOES NOT IMPLY ANY KIND OF GUARANTEE OR WARRANTY, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. YOUR USE OF THE INFORMATION ON THE DOCUMENT OR MATERIALS LINKED FROM THE DOCUMENT IS AT YOUR OWN RISK. CISCO RESERVES THE RIGHT TO CHANGE OR UPDATE THIS DOCUMENT AT ANY TIME.\r\n\r\nA stand-alone copy or paraphrase of the text of this document that omits the distribution URL is an uncontrolled copy, and may lack important information or contain factual errors. The information in this document is intended for end-users of Cisco products.\r\n",
+				"title": "Legal Disclaimer"
+			}
+		],
+		"publisher": {
+			"category": "vendor",
+			"contact_details": "Emergency Support:\r\n+1 877 228 7302 (toll-free within North America)\r\n+1 408 525 6532 (International direct-dial)\r\nNon-emergency Support:\r\nEmail: psirt@cisco.com\r\nSupport requests that are received via e-mail are typically acknowledged within 48 hours.",
+			"issuing_authority": "Cisco product security incident response is the responsibility of the Cisco Product Security Incident Response Team (PSIRT). The Cisco PSIRT is a dedicated, global team that manages the receipt, investigation, and public reporting of security vulnerability information that is related to Cisco products and networks. The on-call Cisco PSIRT works 24x7 with Cisco customers, independent security researchers, consultants, industry organizations, and other vendors to identify possible security issues with Cisco products and networks.\r\nMore information can be found in Cisco Security Vulnerability Policy available at http://www.cisco.com/web/about/security/psirt/security_vulnerability_policy.html",
+			"name": "Cisco",
+			"namespace": "https://wwww.cisco.com"
+		},
+		"references": [
+			{
+				"category": "self",
+				"summary": "Cisco IOS Software Internet Key Exchange Vulnerability",
+				"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ike"
+			}
+		],
+		"title": "Cisco IOS Software Internet Key Exchange Vulnerability",
+		"tracking": {
+			"current_release_date": "2013-04-11T15:30:00+00:00",
+			"generator": {
+				"date": "2022-07-15T00:20:36+00:00",
+				"engine": {
+					"name": "TVCE"
+				}
+			},
+			"id": "cisco-sa-20130327-ike",
+			"initial_release_date": "2013-03-27T16:00:00+00:00",
+			"revision_history": [
+				{
+					"date": "2013-03-27T15:47:57+00:00",
+					"number": "1.0.0",
+					"summary": "Initial public release."
+				},
+				{
+					"date": "2013-04-11T15:30:45+00:00",
+					"number": "1.1.0",
+					"summary": "Changed bundle first fix release data for 15.1SG."
+				}
+			],
+			"status": "final",
+			"version": "1.1.0"
+		}
+	},
+	"product_tree": {
+		"branches": [
+			{
+				"branches": [
+					{
+						"branches": [
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T",
+										"product": {
+											"name": "15.1(2)T",
+											"product_id": "CSAFPID-100214"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T4",
+										"product": {
+											"name": "15.1(1)T4",
+											"product_id": "CSAFPID-103759"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T1",
+										"product": {
+											"name": "15.1(1)T1",
+											"product_id": "CSAFPID-105178"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T0a",
+										"product": {
+											"name": "15.1(2)T0a",
+											"product_id": "CSAFPID-106078"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T3",
+										"product": {
+											"name": "15.1(1)T3",
+											"product_id": "CSAFPID-106205"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T3",
+										"product": {
+											"name": "15.1(2)T3",
+											"product_id": "CSAFPID-106246"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T4",
+										"product": {
+											"name": "15.1(2)T4",
+											"product_id": "CSAFPID-106454"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T2",
+										"product": {
+											"name": "15.1(1)T2",
+											"product_id": "CSAFPID-106988"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T2a",
+										"product": {
+											"name": "15.1(2)T2a",
+											"product_id": "CSAFPID-107123"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T",
+										"product": {
+											"name": "15.1(1)T",
+											"product_id": "CSAFPID-107433"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T2",
+										"product": {
+											"name": "15.1(2)T2",
+											"product_id": "CSAFPID-107626"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T1",
+										"product": {
+											"name": "15.1(2)T1",
+											"product_id": "CSAFPID-107691"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)T5",
+										"product": {
+											"name": "15.1(2)T5",
+											"product_id": "CSAFPID-108770"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)T5",
+										"product": {
+											"name": "15.1(1)T5",
+											"product_id": "CSAFPID-113965"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1T"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB",
+										"product": {
+											"name": "15.1(1)XB",
+											"product_id": "CSAFPID-104546"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB3",
+										"product": {
+											"name": "15.1(1)XB3",
+											"product_id": "CSAFPID-105260"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB1",
+										"product": {
+											"name": "15.1(1)XB1",
+											"product_id": "CSAFPID-105906"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(1)XB2",
+										"product": {
+											"name": "15.1(1)XB2",
+											"product_id": "CSAFPID-106077"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1XB"
+							},
+							{
+								"branches": [
+									{
+										"category": "service_pack",
+										"name": "15.1(2)GC",
+										"product": {
+											"name": "15.1(2)GC",
+											"product_id": "CSAFPID-105759"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)GC1",
+										"product": {
+											"name": "15.1(2)GC1",
+											"product_id": "CSAFPID-108649"
+										}
+									},
+									{
+										"category": "service_pack",
+										"name": "15.1(2)GC2",
+										"product": {
+											"name": "15.1(2)GC2",
+											"product_id": "CSAFPID-114130"
+										}
+									}
+								],
+								"category": "product_version",
+								"name": "15.1GC"
+							}
+						],
+						"category": "product_family",
+						"name": "IOS"
+					}
+				],
+				"category": "vendor",
+				"name": "Cisco"
+			}
+		]
+	},
+	"vulnerabilities": [
+		{
+			"cve": "CVE-2013-1144",
+			"notes": [
+				{
+					"category": "other",
+					"text": "CSCth81055",
+					"title": "Cisco Bug IDs"
+				},
+				{
+					"category": "other",
+					"text": "Complete.",
+					"title": "Affected Product Comprehensiveness"
+				}
+			],
+			"product_status": {
+				"known_affected": [
+					"CSAFPID-100214",
+					"CSAFPID-103759",
+					"CSAFPID-104546",
+					"CSAFPID-105178",
+					"CSAFPID-105260",
+					"CSAFPID-105759",
+					"CSAFPID-105906",
+					"CSAFPID-106077",
+					"CSAFPID-106078",
+					"CSAFPID-106205",
+					"CSAFPID-106246",
+					"CSAFPID-106454",
+					"CSAFPID-106988",
+					"CSAFPID-107123",
+					"CSAFPID-107433",
+					"CSAFPID-107626",
+					"CSAFPID-107691",
+					"CSAFPID-108649",
+					"CSAFPID-108770",
+					"CSAFPID-113965",
+					"CSAFPID-114130"
+				]
+			},
+			"references": [
+				{
+					"category": "self",
+					"summary": "Cisco IOS Software Internet Key Exchange Vulnerability",
+					"url": "http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20130327-ike"
+				}
+			],
+			"release_date": "2013-03-27T16:00:00+00:00",
+			"remediations": [
+				{
+					"category": "workaround",
+					"details": "The following identification mechanism exist for this vulnerability.\n\r\nEmbedded Event Manager (EEM)\r\nA Cisco IOS Embedded Event Manager (EEM) policy that is based on Tool Command Language (Tcl) can be used on vulnerable Cisco IOS devices to identify and detect a memory leak that is caused by this vulnerability. The policy allows administrators to monitor the memory for the affected process on a Cisco IOS device. When Cisco IOS EEM detects potential exploitation of this vulnerability, the policy can trigger a response by sending an alert to the network administrator, who could then decide to implement an upgrade or reload the device to recover the lost memory at a suitable time. The example policy is based on a Tcl script that sends a syslog when the memory keeps dropping and reaches EEM_IKE_BUFF_INCR_THRES and when the IKE buffers have dropped EEM_IKE_BUFF_INCR_THRES times. If IKE buffers are freed the counter starts counting from zero. After generating the memory leak syslog the script re-initializes.\r\nThe Tcl script is available for download at the \"Cisco Beyond: Embedded Event Manager (EEM) Scripting Community\" at the following link: https://supportforums.cisco.com/docs/DOC-30300[\"https://supportforums.cisco.com/docs/DOC-30300\"]. A sample device configuration is provided below.\n\r\n\n\r\n\r\nevent manager environment EEM_MEM_LEAK_INTERVAL 20\nevent manager environment EEM_MEM_LEAK_MAX_RUNTIME 5\nevent manager environment EEM_IKE_BUFF_INCR_THRES 3\nevent manager environment EEM_FREE_MEMORY_THRES 70\nevent manager directory user policy \"flash:/\"\nevent manager policy eem_ike_mem_leak.tcl\r\n\n"
+				}
+			],
+			"scores": [
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103759",
+						"CSAFPID-104546",
+						"CSAFPID-105178",
+						"CSAFPID-105260",
+						"CSAFPID-105759",
+						"CSAFPID-105906",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106205",
+						"CSAFPID-106246",
+						"CSAFPID-106454",
+						"CSAFPID-106988",
+						"CSAFPID-107123",
+						"CSAFPID-107433",
+						"CSAFPID-107626",
+						"CSAFPID-107691",
+						"CSAFPID-108649",
+						"CSAFPID-108770",
+						"CSAFPID-113965",
+						"CSAFPID-114130"
+					]
+				},
+				{
+					"cvss_v2": {
+						"baseScore": 7.8,
+						"vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:C/E:F/RL:OF/RC:C",
+						"version": "2.0"
+					},
+					"products": [
+						"CSAFPID-100214",
+						"CSAFPID-103759",
+						"CSAFPID-104546",
+						"CSAFPID-105178",
+						"CSAFPID-105260",
+						"CSAFPID-105759",
+						"CSAFPID-105906",
+						"CSAFPID-106077",
+						"CSAFPID-106078",
+						"CSAFPID-106205",
+						"CSAFPID-106246",
+						"CSAFPID-106454",
+						"CSAFPID-106988",
+						"CSAFPID-107123",
+						"CSAFPID-107433",
+						"CSAFPID-107626",
+						"CSAFPID-107691",
+						"CSAFPID-108649",
+						"CSAFPID-108770",
+						"CSAFPID-113965",
+						"CSAFPID-114130"
+					]
+				}
+			],
+			"title": "Cisco IOS Software Internet Key Exchange Vulnerability"
+		}
+	]
+}
